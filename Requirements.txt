@@ -1,4 +1,4 @@
 Django>=4.2,<5.0
 gunicorn
 payments
-payments-chile
+django-payments-chile
