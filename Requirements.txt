@@ -1,4 +1,4 @@
 Django>=4.2,<5.0
 gunicorn
-payments
-django-payments-chile
+git+https://github.com/yolo45osea/django-payments.git@main
+git+https://github.com/yolo45osea/django-payments-chile.git@main
