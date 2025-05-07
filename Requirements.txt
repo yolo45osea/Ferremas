@@ -1,5 +1,5 @@
 Django>=4.2,<5.0
 gunicorn
 requests
-phonenumber_field
+django-phonenumber_field
 babel
