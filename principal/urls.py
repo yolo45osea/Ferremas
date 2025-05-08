@@ -13,5 +13,11 @@ urlpatterns = [
     path('pago', views.pago, name='pago'),
     path('admininstrador', views.admin, name='admininstrador'),
     path('contador', views.contador, name='contador'),
+
+    path('nosotros', views.nosotros, name='nosotros'),
+    path('Cambios', views.Cambios, name='Cambios'),
+    path('TerminosyCondiciones', views.TerminosyCondiciones, name='TerminosyCondiciones'),
+    path('base', views.base, name='base'),
+    path('contacto', views.contacto, name='contacto'),
     path('pagos/cancel/', views.webpay_cancel, name='webpay_cancel'),
 ]
