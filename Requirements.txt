@@ -5,3 +5,4 @@ django-phonenumber_field
 babel
 phonenumbers
 whitenoise
+psycopg2-binary
