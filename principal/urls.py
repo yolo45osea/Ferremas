@@ -8,4 +8,5 @@ urlpatterns = [
     path('shop', views.shop, name='shop'),
     path('detail', views.detail, name='detail'),
     path('carrito', views.carrito, name='carrito'),
+    path('pagos/cancel/', views.webpay_cancel, name='webpay_cancel'),
 ]
