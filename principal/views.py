@@ -316,3 +316,18 @@ def admin(request):
 
 def contador(request):
     return render(request, 'contador.html')
+
+def nosotros(request):
+    return render(request, 'nosotros.html')
+
+def TerminosyCondiciones(request):
+    return render(request, 'TerminosyCondiciones.html')
+
+def Cambios(request):
+    return render(request, 'Cambios.html')
+
+def base(request):
+    return render(request, 'base.html')
+
+def contacto(request):
+    return render(request, 'contacto.html')
