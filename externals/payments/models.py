@@ -186,7 +186,7 @@ class BasePayment(models.Model):
         raise NotImplementedError
 
     def get_process_url(self) -> str:
-        return f"https://ferremas-svwd.onrender.com/{reverse('process_payment', kwargs={'token': self.token})}"
+        return f"https://ferremas-svwd.onrender.com{reverse('process_payment', kwargs={'token': self.token})}"
 
     def capture(self, amount=None):
         """Capture a pre-authorized payment.
