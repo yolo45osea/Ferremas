@@ -7,6 +7,7 @@
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <meta content="Free HTML Templates" name="keywords">
     <meta content="Free HTML Templates" name="description">
+    {% extends 'base.html' %}
 
     <!---------------------------------------------------------------------- Favicon ------------------------------------------------------------------------------->
     <link href="img/favicon.png" rel="icon">
@@ -295,7 +296,7 @@
 
 
     <!-------------------------------------------------------------------- Cambios ---------------------------------------------------------------------------------------->
-
+{% block content %}
     <div style="background-color: white; padding: 40px 20px;">
         <div style="max-width: 1500px; margin: auto; font-family: Arial, sans-serif; color: #041e41;">
           <h2 style="text-align: center; font-weight: bold;">Política de Cambios y Devoluciones</h2>
@@ -360,7 +361,7 @@
         </div>
       </div>
       
-
+{% endblock %}
 
     <!-------------------------------------------------------------------- Footer ---------------------------------------------------------------------------------------->
     <div class="col-auto" style="background-color: #041e41;">
