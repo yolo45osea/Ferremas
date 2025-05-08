@@ -54,6 +54,12 @@ def process_data(request, token, provider=None):
     """
     Payment = get_payment_model()
     payment = get_object_or_404(Payment, token=token)
+
+    if 'TBK_TOKEN' in request.GET and 'token_ws' not in request.GET:
+        payment.status = 'rejected'  # o 'cancelled'
+        payment.save()
+        return render(request, 'pagos/cancel.html', {"payment": payment})
+        
     if not provider:
         try:
             provider = provider_factory(payment.variant, payment)
