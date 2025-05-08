@@ -7,36 +7,28 @@
     <meta content="Free HTML Templates" name="keywords">
     <meta content="Free HTML Templates" name="description">
 
-    <!---------------------------------------------------------------------- Favicon ------------------------------------------------------------------------------->
-    <link href="static/img/favicon.png" rel="icon">
+    <!-- Favicon -->
+    <link href="{% static 'img/favicon.png' %}" rel="icon">
 
-    <!---------------------------------------------------------------- Fuentes y Librerias ------------------------------------------------------------------------->
+    <!-- Fuentes y Librerías -->
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">  
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
-    <link href="static/lib/animate/animate.min.css" rel="stylesheet">
-    <link href="static/lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
-    <link href="static/css/style.css" rel="stylesheet">
+    <link href="{% static 'lib/animate/animate.min.css' %}" rel="stylesheet">
+    <link href="{% static 'lib/owlcarousel/assets/owl.carousel.min.css' %}" rel="stylesheet">
+    <link href="{% static 'css/style.css' %}" rel="stylesheet">
 
-
-    <link rel="stylesheet" href="lib/owlcarousel/assets/owl.carousel.min.css">
-    <link rel="stylesheet" href="lib/owlcarousel/assets/owl.theme.default.min.css">
-    <script src="static/lib/owlcarousel/owl.carousel.min.js"></script>
-
-
-    <!-- Owl Carousel CSS -->
+    <!-- Owl Carousel -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.theme.default.min.css">
-
+    <script src="{% static 'lib/owlcarousel/owl.carousel.min.js' %}"></script>
 </head>
 <body>
     <div class="container-fluid">
         <div class="row py-1 px-xl-5" style="background-color: #041e41; margin-bottom: 0;">
-            <div class="col-lg-6 d-none d-lg-block">
-            </div>
+            <div class="col-lg-6 d-none d-lg-block"></div>
 
-    <!---------------------------------------------------------------- Inicio de Sesión ------------------------------------------------------------------------------->
-
+            <!-- Inicio de Sesión -->
             <div class="col-lg-6 text-center text-lg-right" style="background-color: #041e41;">
                 <div class="d-inline-flex align-items-center">
                     <div class="btn-group">
@@ -46,11 +38,10 @@
                             <button class="dropdown-item" type="button">Registrarse</button>
                         </div>
                     </div>
-    <!-------------------------------------------------------------------- Idiomas y Dinero ---------------------------------------------------------------------------->
+
+                    <!-- Idiomas y Moneda -->
                     <div class="btn-group mx-2" id="moneda">
-                        <button type="button" class="btn btn-sm btn-light dropdown-toggle" data-toggle="dropdown" style="background-color: #feb81f;">
-                            CLP
-                        </button>
+                        <button type="button" class="btn btn-sm btn-light dropdown-toggle" data-toggle="dropdown" style="background-color: #feb81f;">CLP</button>
                         <div class="dropdown-menu dropdown-menu-right">
                             <form method="post">
                                 {% csrf_token %}
@@ -61,20 +52,11 @@
                         </div>
                     </div>
                     <div class="btn-group">
-                        <button type="button" class="btn btn-sm btn-light dropdown-toggle" data-toggle="dropdown"
-                        style="background-color: #feb81f;">
-                        EN</button>
-
+                        <button type="button" class="btn btn-sm btn-light dropdown-toggle" data-toggle="dropdown" style="background-color: #feb81f;">EN</button>
                         <div class="dropdown-menu dropdown-menu-right">
-                            <button class="dropdown-item" type="button">
-                                FR
-                            </button>
-                            <button class="dropdown-item" type="button">
-                                AR
-                            </button>
-                            <button class="dropdown-item" type="button">
-                                RU
-                            </button>
+                            <button class="dropdown-item" type="button">FR</button>
+                            <button class="dropdown-item" type="button">AR</button>
+                            <button class="dropdown-item" type="button">RU</button>
                         </div>
                     </div>
                 </div>
@@ -367,16 +349,18 @@
     
         <!-- Back to Top -->
         <a href="#" class="btn btn-primary back-to-top"><i class="fa fa-angle-double-up"></i></a>
+        <!-- Scripts desde CDNs (se dejan igual) -->
         <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
-        <script src="static/lib/easing/easing.min.js"></script>
-        <script src="static/lib/owlcarousel/owl.carousel.min.js"></script>
-        <script src="static/mail/jqBootstrapValidation.min.js"></script>
-        <script src="static/mail/contact.js"></script>
-        <script src="static/js/main.js"></script>
         <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
-        
+
+        <!-- Scripts locales con {% static %} -->
+        <script src="{% static 'lib/easing/easing.min.js' %}"></script>
+        <script src="{% static 'lib/owlcarousel/owl.carousel.min.js' %}"></script>
+        <script src="{% static 'mail/jqBootstrapValidation.min.js' %}"></script>
+        <script src="{% static 'mail/contact.js' %}"></script>
+        <script src="{% static 'js/main.js' %}"></script>
     
 </body>
 </html>
