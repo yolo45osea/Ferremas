@@ -7,6 +7,7 @@
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <meta content="Free HTML Templates" name="keywords">
     <meta content="Free HTML Templates" name="description">
+    {% extends 'base.html' %}
 
     <!---------------------------------------------------------------------- Favicon ------------------------------------------------------------------------------->
     <link href="img/favicon.png" rel="icon">
@@ -294,7 +295,7 @@
     </div>
 
         <!----------------------------------------------------------------- Terminos y Condiciones ------------------------------------------------------------------------>
-
+{% block content %}
         <div style="background-color: white; padding: 40px 20px;">
             <div style="max-width: 1500px; margin: auto; font-family: Arial, sans-serif; color: #041e41;">
               <h2 style="text-align: center; font-weight: bold;">Términos y Condiciones</h2>
@@ -347,7 +348,7 @@
           
 
 
-
+{% endblock %}
 <!-- Back to Top -->
 <a href="#" class="btn btn-primary back-to-top"><i class="fa fa-angle-double-up"></i></a>
 
