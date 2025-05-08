@@ -83,12 +83,8 @@ WSGI_APPLICATION = 'Ferremas.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'ferremas_78nc',
-        'USER': 'ferremas_78nc_user',
-        'PASSWORD': 'UEIDWpAjjFMdO1zuYZgqRcphHyRlKwSX',
-        'HOST': 'dpg-d0e1ds15pdvs73alb3b0-a',
-        'PORT': '5432',
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 
