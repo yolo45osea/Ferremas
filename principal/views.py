@@ -47,7 +47,8 @@ def index(request):
     if request.method == "POST":
         # FORMULARIO LOGIN
         if 'login_form' in request.POST:
-            login_form = AuthenticationForm(data=request.POST)
+            login_form = AuthenticationForm(request, data=request.POST)
+            print(f"form: {login_form}")
             if login_form.is_valid():
                 username = login_form.cleaned_data.get('username')
                 password = login_form.cleaned_data.get('password')
@@ -58,7 +59,9 @@ def index(request):
                 else:
                     messages.error(request, "Usuario o contraseña inválidos.")
             else:
+                print('tonto')
                 messages.error(request, "Usuario o contraseña inválidos.")
+
 
         # FORMULARIO REGISTRO
         elif 'registro_form' in request.POST:
@@ -217,6 +220,9 @@ def cuenta(request):
 
 
     if request.method == 'POST':
+        if 'logout' in request.POST:
+            logout(request)
+            return redirect('index')
         usuario.nombre = request.POST.get('nombre', usuario.nombre)
         usuario.apellido = request.POST.get('apellido', usuario.apellido)
         usuario.telefono = request.POST.get('telefono', usuario.telefono)
@@ -269,3 +275,44 @@ def webpay_cancel(request):
         'orden': orden,
         'tbk_token': tbk_token,
     })
+
+
+def resumen(request):
+    return render(request, 'resumen.html')
+
+def pago(request):
+    payment_model = get_payment_model()  # Obtienes el modelo de pago de django-payments
+
+    if request.method == 'POST':
+        monto = request.POST.get('valor')
+        try:
+            # Crear un objeto de pago
+            payment = payment_model.objects.create(
+                variant="webpay",  # Debe coincidir con el nombre configurado en PAYMENT_VARIANTS
+                description="Pago por Orden #123",
+                total=monto,  # Monto en centavos (10000 = 100 pesos)
+                currency="CLP",
+                billing_first_name="Juan",
+                billing_last_name="Pérez",
+                billing_email="juan.perez@example.com",
+            )
+
+            # Obtener el formulario que hace POST automáticamente a Webpay
+            form = payment.get_form()
+            
+
+            # Mostrar el formulario para que el navegador lo envíe automáticamente a Webpay
+            return render(request, 'redirigir_webpay.html', {'form': form})
+
+        except RedirectNeeded as redirect_to:
+            return redirect(str(redirect_to))
+        except Exception as e:
+            logger.error(f"Error al crear pago: {str(e)}")
+            return HttpResponse(f"Hubo un error: {str(e)}")
+    return render(request, 'pago.html')
+
+def admin(request):
+    return render(request, 'admin.html')
+
+def contador(request):
+    return render(request, 'contador.html')

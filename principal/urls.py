@@ -9,5 +9,9 @@ urlpatterns = [
     path('detail', views.detail, name='detail'),
     path('carrito', views.carrito, name='carrito'),
     path('cuenta', views.cuenta, name='cuenta'),
+    path('resumen', views.resumen, name='resumen'),
+    path('pago', views.pago, name='pago'),
+    path('admininstrador', views.admin, name='admininstrador'),
+    path('contador', views.contador, name='contador'),
     path('pagos/cancel/', views.webpay_cancel, name='webpay_cancel'),
 ]
