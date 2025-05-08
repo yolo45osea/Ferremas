@@ -99,3 +99,16 @@ def carrito(request):
             logger.error(f"Error al crear pago: {str(e)}")
             return HttpResponse(f"Hubo un error: {str(e)}")
     return render(request, 'cart.html')
+
+def webpay_cancel(request):
+    """Vista para manejar cancelaciones desde Webpay."""
+    # Puedes leer los parámetros como TBK_TOKEN, TBK_ORDEN_COMPRA, etc.
+    tbk_token = request.GET.get('TBK_TOKEN')
+    orden = request.GET.get('TBK_ORDEN_COMPRA')
+    
+    # Aquí podrías registrar el intento fallido en logs, base de datos, etc.
+
+    return render(request, 'pagos/cancel.html', {
+        'orden': orden,
+        'tbk_token': tbk_token,
+    })
