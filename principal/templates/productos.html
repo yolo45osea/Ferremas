@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>FERREMAS - Materiales de Construcción</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="Free HTML Templates" name="keywords">
+    <meta content="Free HTML Templates" name="description">
+    {% extends 'base.html' %}
+
+    <!---------------------------------------------------------------------- Favicon ------------------------------------------------------------------------------->
+    <link href="img/favicon.png" rel="icon">
+
+    <!---------------------------------------------------------------- Fuentes y Librerias ------------------------------------------------------------------------->
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">  
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="lib/animate/animate.min.css" rel="stylesheet">
+    <link href="lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+
+
+    <link rel="stylesheet" href="lib/owlcarousel/assets/owl.carousel.min.css">
+    <link rel="stylesheet" href="lib/owlcarousel/assets/owl.theme.default.min.css">
+    <script src="lib/owlcarousel/owl.carousel.min.js"></script>
+
+
+    <!-- Owl Carousel CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.theme.default.min.css">
+
+
+</head>
+
+    <!------------------------------------------------------------------------ Body --------------------------------------------------------------------------------->
+
+<body>
+    <div class="container-fluid">
+        <div class="row py-1 px-xl-5" style="background-color: #041e41; margin-bottom: 0;">
+            <div class="col-lg-6 d-none d-lg-block">
+            </div>
+
+    <!---------------------------------------------------------------- Inicio de Sesión ------------------------------------------------------------------------------->
+
+            <div class="col-lg-6 text-center text-lg-right" style="background-color: #041e41;">
+                <div class="d-inline-flex align-items-center">
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-sm btn-light dropdown-toggle" data-toggle="dropdown" style="background-color: #feb81f;">Mi Cuenta</button>
+                        <div class="dropdown-menu dropdown-menu-right">
+                            <button class="dropdown-item" type="button">Iniciar Sesión</button>
+                            <button class="dropdown-item" type="button">Registrarse</button>
+                        </div>
+                    </div>
+    <!-------------------------------------------------------------------- Idiomas y Dinero ---------------------------------------------------------------------------->
+                    <div class="btn-group mx-2">
+                        <button type="button" class="btn btn-sm btn-light dropdown-toggle" data-toggle="dropdown" style="background-color: #feb81f;">USD</button>
+                        <div class="dropdown-menu dropdown-menu-right">
+                            <button class="dropdown-item" type="button">EUR</button>
+                            <button class="dropdown-item" type="button">GBP</button>
+                            <button class="dropdown-item" type="button">CAD</button>
+                        </div>
+                    </div>
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-sm btn-light dropdown-toggle" data-toggle="dropdown"
+                        style="background-color: #feb81f;">
+                        EN</button>
+
+                        <div class="dropdown-menu dropdown-menu-right">
+                            <button class="dropdown-item" type="button">
+                                FR
+                            </button>
+                            <button class="dropdown-item" type="button">
+                                AR
+                            </button>
+                            <button class="dropdown-item" type="button">
+                                RU
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--------------------------------------------------------------------- Inicio Topbar ------------------------------------------------------------------------------->
+
+    <div class="container-fluid px-4 py-2" style="background-color: #041e41;">
+        <div class="row align-items-center">
+  
+    <!----------------------------------------------------------------------- Logo--------------------------------------------------------------------------------------->
+
+      <div class="col-auto">
+        <a href="index.html">
+          <img src="img/logo3.png" alt="Logo" style="height: 75px;">
+        </a>
+      </div>
+  
+    <!---------------------------------------------------------------- Botón Categorías----------------------------------------------------------------------------------->
+
+      <div class="col-auto">
+        <a class="btn btn-warning text-dark d-flex align-items-center" data-toggle="collapse" href="#navbar-vertical"
+           style="height: 45px; padding: 0 25px; font-size: 16px;">
+          <i class="fa fa-bars mr-2"></i>
+          Categorías
+          <i class="fa fa-angle-down ml-2"></i>
+        </a>
+        <nav class="collapse position-absolute navbar navbar-vertical navbar-light align-items-start p-0 bg-light mt-1"
+             id="navbar-vertical"
+             style="width: 250px; z-index: 999;">
+          <div class="navbar-nav w-100">
+            <div class="nav-item dropdown dropright">
+              <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">
+                Puertas y Ventanas<i class="fa fa-angle-right float-right mt-1"></i>
+              </a>
+              <div class="dropdown-menu position-absolute rounded-0 border-0 m-0">
+                <a href="#" class="dropdown-item">Molduras</a>
+                <a href="#" class="dropdown-item">Puertas para Exterior</a>
+                <a href="#" class="dropdown-item">Puertas para Interior</a>
+                <a href="#" class="dropdown-item">Ventanas</a>
+              </div>
+            </div>
+
+            <div class="nav-item dropdown dropright">
+                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">
+                    Herramientas<i class="fa fa-angle-right float-right mt-1"></i>
+                </a>
+                <div class="dropdown-menu position-absolute rounded-0 border-0 m-0">
+                  <a href="#" class="dropdown-item">Herramientas Electricas</a>
+                  <a href="#" class="dropdown-item">Maquinarias</a>
+                  <a href="#" class="dropdown-item">Herramientas Manuales</a>
+                  <a href="#" class="dropdown-item">Herramientas y Maquinarias de Construccion</a>
+                </div>
+              </div>
+
+              <div class="nav-item dropdown dropright">
+                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">
+                    Pinturas<i class="fa fa-angle-right float-right mt-1"></i>
+                </a>
+                <div class="dropdown-menu position-absolute rounded-0 border-0 m-0">
+                  <a href="#" class="dropdown-item">Acabado para Superficies</a>
+                  <a href="#" class="dropdown-item">Adhesivos, Selladores y Siliconas</a>
+                  <a href="#" class="dropdown-item">Herramientas y Accesorios para Pintar</a>
+                  <a href="#" class="dropdown-item">Tratamiento de Superficies</a>
+                </div>
+              </div>
+
+              <div class="nav-item dropdown dropright">
+                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">
+                    Baño<i class="fa fa-angle-right float-right mt-1"></i>
+                </a>
+                <div class="dropdown-menu position-absolute rounded-0 border-0 m-0">
+                  <a href="#" class="dropdown-item">Sanitarios y Accesorios</a>
+                  <a href="#" class="dropdown-item">Cabinas y Duchas</a>
+                  <a href="#" class="dropdown-item">Griferia</a>
+                  <a href="#" class="dropdown-item">Muebles Vanitorios y Lavamanos</a>
+                </div>
+              </div>
+
+              <div class="nav-item dropdown dropright">
+                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">
+                    Cocina<i class="fa fa-angle-right float-right mt-1"></i>
+                </a>
+                <div class="dropdown-menu position-absolute rounded-0 border-0 m-0">
+                  <a href="#" class="dropdown-item">Muebles de Cocina</a>
+                  <a href="#" class="dropdown-item">Griferia de Cocina</a>
+                  <a href="#" class="dropdown-item">Lavaplatos y Lavaderos</a>
+                </div>
+              </div>
+
+              <div class="nav-item dropdown dropright">
+                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">
+                    Gasfiteria<i class="fa fa-angle-right float-right mt-1"></i>
+                </a>
+                <div class="dropdown-menu position-absolute rounded-0 border-0 m-0">
+                  <a href="#" class="dropdown-item">Canerias, Tubos y Fitting</a>
+                  <a href="#" class="dropdown-item">Calefont y Termos</a>
+                  <a href="#" class="dropdown-item">Bombas, Motobombas y Accesorios</a>
+                  <a href="#" class="dropdown-item">Llaves y Válvulas</a>
+                </div>
+              </div>
+
+              <div class="nav-item dropdown dropright">
+                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">
+                    Ferreteria<i class="fa fa-angle-right float-right mt-1"></i>
+                </a>
+                <div class="dropdown-menu position-absolute rounded-0 border-0 m-0">
+                  <a href="#" class="dropdown-item">Fijaciones</a>
+                  <a href="#" class="dropdown-item">Cerraduras</a>
+                  <a href="#" class="dropdown-item">Elementos de Protección</a>
+                </div>
+              </div>
+
+              <div class="nav-item dropdown dropright">
+                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">
+                    Jardin<i class="fa fa-angle-right float-right mt-1"></i>
+                </a>
+                <div class="dropdown-menu position-absolute rounded-0 border-0 m-0">
+                  <a href="#" class="dropdown-item">Maquinarias de Jardin</a>
+                  <a href="#" class="dropdown-item">Riego</a>
+                  <a href="#" class="dropdown-item">Piscina</a>
+                </div>
+              </div>
+
+              <div class="nav-item dropdown dropright">
+                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">
+                    Electricidad<i class="fa fa-angle-right float-right mt-1"></i>
+                </a>
+                <div class="dropdown-menu position-absolute rounded-0 border-0 m-0">
+                  <a href="#" class="dropdown-item">Canalizacion</a>
+                  <a href="#" class="dropdown-item">Interruptores Electricos</a>
+                  <a href="#" class="dropdown-item">Complementos Electricos</a>
+                </div>
+              </div>
+
+              <div class="nav-item dropdown dropright">
+                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">
+                    Iluminacion<i class="fa fa-angle-right float-right mt-1"></i>
+                </a>
+                <div class="dropdown-menu position-absolute rounded-0 border-0 m-0">
+                  <a href="#" class="dropdown-item">Ampolletas y Tubos</a>
+                  <a href="#" class="dropdown-item">Iluminacion Comercial</a>
+                  <a href="#" class="dropdown-item">Iluminacion Interior</a>
+                  <a href="#" class="dropdown-item">Iluminacion Exterior</a>
+                </div>
+              </div>
+
+              <div class="nav-item dropdown dropright">
+                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">
+                    Maderas y Tableros<i class="fa fa-angle-right float-right mt-1"></i>
+                </a>
+                <div class="dropdown-menu position-absolute rounded-0 border-0 m-0">
+                  <a href="#" class="dropdown-item">Madera</a>
+                  <a href="#" class="dropdown-item">Tableros Construccion</a>
+                  <a href="#" class="dropdown-item">Tableros Muebleria</a>
+                  <a href="#" class="dropdown-item">Tableros Revestimiento</a>
+                </div>
+              </div>
+
+              <div class="nav-item dropdown dropright">
+                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">
+                    Revestimientos<i class="fa fa-angle-right float-right mt-1"></i>
+                </a>
+                <div class="dropdown-menu position-absolute rounded-0 border-0 m-0">
+                  <a href="#" class="dropdown-item">Ceramica Piso</a>
+                  <a href="#" class="dropdown-item">Ceramica Muro</a>
+                  <a href="#" class="dropdown-item">Pisos Flotantes</a>
+                </div>
+              </div>
+
+              <div class="nav-item dropdown dropright">
+                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">
+                    Materiales<i class="fa fa-angle-right float-right mt-1"></i>
+                </a>
+                <div class="dropdown-menu position-absolute rounded-0 border-0 m-0">
+                  <a href="#" class="dropdown-item">Tabiqueria y Aislación</a>
+                  <a href="#" class="dropdown-item">Techumbre y Complementos</a>
+                  <a href="#" class="dropdown-item">Perfiles de Acero</a>
+                </div>
+              </div>
+          </div>
+        </nav>
+      </div>
+  
+    <!----------------------------------------------------------------------- Buscador ------------------------------------------------------------------------------------>
+
+      <div class="col">
+        <form action="">
+          <div class="input-group">
+            <input type="text" class="form-control" placeholder="¿Qué quieres buscar hoy?">
+            <div class="input-group-append">
+              <button class="btn btn-outline-light bg-white" type="submit">
+                <i class="fa fa-search text-dark"></i>
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+  
+    <!---------------------------------------------------------------------- Carrito ------------------------------------------------------------------------------------>
+      <div class="col-auto ml-auto d-flex align-items-center">
+        <a href="#" class="btn px-3" style="font-size: 1.5rem;">
+          <i class="fas fa-shopping-cart text-warning"></i>
+        </a>
+      </div>
+  
+    </div>
+  </div>
+
+    <!----------------------------------------------------------------------- Mensaje Informativo ------------------------------------------------------------------------>
+    <div class="w-100 text-center py-2" style="background-color: #d6d6d6;">
+        <strong style="color: #041e41; font-weight: bold;">
+            Tus compras en ferremas.cl en hasta <span style="text-transform: uppercase;">3 cuotas sin interés</span>
+        </strong>
+    </div>
+
+    <!------------------------------------------------------------- Banner Informativo Horizontal -------------------------------------------------------------------------->
+
+    <div class="w-100">
+        <img src="img/banner.png" alt="Banner Informativo" class="img-fluid" style="width: 100%; max-height: 150px; object-fit: cover;">
+    </div>
+
+    {% block content %}
+    <!------------------------------------------------------------- Productos -------------------------------------------------------------------------->
+    <div class="w-100 text-center py-3">
+        <h5 class="m-0" style="color: #041e41; font-size: 1.75rem; font-weight: 700;">
+            Nuestros Productos
+        </h5>
+    </div>
+    <style>
+        .product-card {
+          width: 240px;
+          margin: 10px;
+          border: 1px solid #ddd;
+          border-radius: 12px;
+          overflow: hidden;
+          transition: box-shadow 0.3s ease;
+          background-color: white;
+        }
+      
+        .product-card:hover {
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+      
+        .product-card img {
+          height: 180px;
+          object-fit: cover;
+          width: 100%;
+        }
+      
+        .product-card .card-body {
+          padding: 12px;
+        }
+      
+        .product-card .product-price {
+          font-weight: bold;
+          color: #041e41;
+          margin: 0 12px;
+        }
+      
+        .quantity-control {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin: 10px 0;
+          gap: 5px;
+        }
+      
+        .quantity-control button {
+          background-color: #feb81f;
+          border: none;
+          width: 32px;
+          height: 32px;
+          font-weight: bold;
+          color: #041e41;
+          border-radius: 4px;
+          cursor: pointer;
+        }
+      
+        .quantity-control input {
+          width: 40px;
+          text-align: center;
+          border: 1px solid #ccc;
+          border-radius: 4px;
+        }
+      
+        .btn-agregar {
+          background-color: #feb81f;
+          color: #041e41;
+          border: none;
+          width: 100%;
+          padding: 8px 0;
+          font-weight: bold;
+          border-radius: 0 0 12px 12px;
+        }
+      
+        .btn-agregar:hover {
+          background-color: #e0a81a;
+        }
+      </style>
+      
+      <div class="container-fluid">
+        <div class="row px-xl-5">
+            <!-- Shop Sidebar Start -->
+            <div class="col-lg-3 col-md-4">
+                <!-- Price Start -->
+                <h5 class="section-title position-relative text-uppercase mb-3"><span class="bg-secondary pr-3">Filtros</span></h5>
+                <div class="bg-light p-4 mb-30">
+                    <form>
+                        <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
+                            <input type="checkbox" class="custom-control-input" checked id="price-all">
+                            <label class="custom-control-label" for="price-all">Todos los Precios</label>
+                            <span class="badge border font-weight-normal">1000</span>
+                        </div>
+                        <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
+                            <input type="checkbox" class="custom-control-input" id="price-1">
+                            <label class="custom-control-label" for="price-1">$0 - $50.000</label>
+                            <span class="badge border font-weight-normal">150</span>
+                        </div>
+                        <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
+                            <input type="checkbox" class="custom-control-input" id="price-2">
+                            <label class="custom-control-label" for="price-2">$50.000 - $100.000</label>
+                            <span class="badge border font-weight-normal">295</span>
+                        </div>
+                        <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
+                            <input type="checkbox" class="custom-control-input" id="price-3">
+                            <label class="custom-control-label" for="price-3">$100.000 - $150.000</label>
+                            <span class="badge border font-weight-normal">246</span>
+                        </div>
+                        <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
+                            <input type="checkbox" class="custom-control-input" id="price-4">
+                            <label class="custom-control-label" for="price-4">$150.000- $200.000</label>
+                            <span class="badge border font-weight-normal">145</span>
+                        </div>
+                    </form>
+                </div>
+                <!-- Price End -->
+                
+                <h5 class="section-title position-relative text-uppercase mb-3"><span class="bg-secondary pr-3">Sub-Categoría</span></h5>
+                <div class="bg-light p-4 mb-30">
+                    <form>
+                        <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
+                            <input type="checkbox" class="custom-control-input" checked id="cat-0">
+                            <label class="custom-control-label" for="cat-0">Puertas y Ventanas</label>
+                            <span class="badge border font-weight-normal">1000</span>
+                        </div>
+                        <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
+                            <input type="checkbox" class="custom-control-input" id="cat-1">
+                            <label class="custom-control-label" for="cat-1">Herramientas</label>
+                            <span class="badge border font-weight-normal">150</span>
+                        </div>
+                        <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
+                            <input type="checkbox" class="custom-control-input" id="cat-2">
+                            <label class="custom-control-label" for="cat-2">Pinturas</label>
+                            <span class="badge border font-weight-normal">295</span>
+                        </div>
+                        <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
+                            <input type="checkbox" class="custom-control-input" id="cat-3">
+                            <label class="custom-control-label" for="cat-3">Baño</label>
+                            <span class="badge border font-weight-normal">246</span>
+                        </div>
+                        <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
+                            <input type="checkbox" class="custom-control-input" id="cat-4">
+                            <label class="custom-control-label" for="cat-4">Cocina</label>
+                            <span class="badge border font-weight-normal">145</span>
+                        </div>
+                        <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
+                            <input type="checkbox" class="custom-control-input" id="cat-5">
+                            <label class="custom-control-label" for="cat-5">Gasfiteria</label>
+                            <span class="badge border font-weight-normal">168</span>
+                        </div>
+                        <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
+                            <input type="checkbox" class="custom-control-input" id="cat-6">
+                            <label class="custom-control-label" for="cat-6">Ferreteria</label>
+                            <span class="badge border font-weight-normal">168</span>
+                        </div>
+                        <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
+                            <input type="checkbox" class="custom-control-input" id="cat-7">
+                            <label class="custom-control-label" for="cat-7">Jardín</label>
+                            <span class="badge border font-weight-normal">168</span>
+                        </div>
+                        <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
+                            <input type="checkbox" class="custom-control-input" id="cat-8">
+                            <label class="custom-control-label" for="cat-8">Electricidad</label>
+                            <span class="badge border font-weight-normal">168</span>
+                        </div>
+                        <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
+                            <input type="checkbox" class="custom-control-input" id="cat-9">
+                            <label class="custom-control-label" for="cat-9">Iluminación</label>
+                            <span class="badge border font-weight-normal">168</span>
+                        </div>
+                        <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
+                            <input type="checkbox" class="custom-control-input" id="cat-10">
+                            <label class="custom-control-label" for="cat-10">Maderas y Tableros</label>
+                            <span class="badge border font-weight-normal">168</span>
+                        </div>
+                        <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
+                            <input type="checkbox" class="custom-control-input" id="cat-11">
+                            <label class="custom-control-label" for="cat-11">Revestimientos</label>
+                            <span class="badge border font-weight-normal">168</span>
+                        </div>
+                        <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between">
+                            <input type="checkbox" class="custom-control-input" id="cat-12">
+                            <label class="custom-control-label" for="cat-12">Materiales</label>
+                            <span class="badge border font-weight-normal">168</span>
+                        </div>
+                    </form>
+                </div>
+            </div> 
+            <!-- Shop Sidebar End -->
+
+
+      <div class="container py-4">
+        <div class="d-flex flex-wrap justify-content-center" style="gap: 20px; max-width: 1300px; margin: 0 auto;">
+          
+          <!-- Producto 1 -->
+          {% for producto in productos %}
+            <div class="product-card product" data-precio="{{ producto.precio }}">
+              <img src="data:image/jpeg;base64,{{ producto.imagen_base64 }}" alt="Producto {{ producto.idproducto }}">
+              <div class="card-body">
+                <h5 class="card-title">{{ producto.nombre }}</h5>
+                <!--<p class="card-text">{{ producto.descripcion }}</p>-->
+              </div>
+              <div class="product-price" >${{ producto.precio }} CLP C/U</div>
+              <div class="product-price product-precio-convertido" >${{ producto.precio }} {{ moneda }} C/U</div>
+              <div class="quantity-control">
+                <button>-</button>
+                <input type="text" value="1">
+                <button>+</button>
+              </div>
+              <button class="btn btn-agregar">AGREGAR</button>
+            </div>
+          {% endfor %}
+      
+          
+    <!------------------------------------------------------------------ Paginación -------------------------------------------------------------------------------->
+        <nav aria-label="Page navigation" class="mt-4">
+            <ul class="pagination justify-content-center">
+              <li class="page-item disabled">
+                <a class="page-link" href="#">Anterior</a>
+              </li>
+              <li class="page-item active"><a class="page-link" href="#">1</a></li>
+              <li class="page-item"><a class="page-link" href="#">2</a></li>
+              <li class="page-item"><a class="page-link" href="#">3</a></li>
+              <li class="page-item">
+                <a class="page-link" href="#">Siguiente</a>
+              </li>
+            </ul>
+          </nav>
+      </div>
+      </div>
+      {% endblock %}
+    <!-------------------------------------------------------------------- Footer ---------------------------------------------------------------------------------------->
+    <div class="col-auto" style="background-color: #041e41;">
+        <div class="row px-xl-5 pt-5">
+            <div class="col-lg-4 col-md-12 mb-5 pr-3 pr-xl-5 text-center">
+                <img src="img/logo3.png" alt="Logo Footer" class="img-fluid mb-3" style="max-width: 250px;">
+                
+                <div class="d-flex justify-content-center">
+                    <a class="btn btn-primary btn-square mr-2" href="#"><i class="fab fa-twitter"></i></a>
+                    <a class="btn btn-primary btn-square mr-2" href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a class="btn btn-primary btn-square mr-2" href="#"><i class="fab fa-linkedin-in"></i></a>
+                    <a class="btn btn-primary btn-square" href="#"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+            
+        
+            <div class="col-lg-8 col-md-12">
+                <div class="row">
+                    <div class="col-md-4 mb-5">
+                        <h5 class="text-secondary text-uppercase mb-4">TÉRMINOS Y CONDICIONES</h5>
+                        <div class="d-flex flex-column justify-content-start">
+                            <a class="text-secondary mb-2" href="nosotros.html"><i class="fa fa-angle-right mr-2"></i>Nuestra Empresa</a>
+                            <a class="text-secondary mb-2" href="Cambios.html"><i class="fa fa-angle-right mr-2"></i>Cambios y Devoluciones</a>
+                            <a class="text-secondary mb-2" href="TerminosyCondiciones.html"><i class="fa fa-angle-right mr-2"></i>Términos y Condiciones</a>
+                        </div>
+                    </div>
+    
+                    <div class="col-md-4 mb-5">
+                        <h5 class="text-secondary text-uppercase mb-4">CONTÁCTANOS</h5>
+                        <div class="d-flex flex-column justify-content-start">
+                            <a class="text-secondary mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>Contáctanos</a>
+                            <a class="text-secondary mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>Ayuda</a>
+                            <a class="text-secondary mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>+56 2 2890 9000</a>
+                        </div>
+                    </div>
+ 
+                    <div class="col-md-4 mb-5">
+                        <h5 class="text-secondary text-uppercase mb-4">SUSCRÍBETE A NUESTRO NEWSLETTER</h5>
+                        <form action="">
+                            <div class="input-group">
+                                <input type="text" class="form-control" placeholder="Tu correo electrónico">
+                                <div class="input-group-append">
+                                    <button class="btn btn-primary">Suscribirse</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+        <div class="row border-top mx-xl-5 py-4" style="border-color: rgba(256, 256, 256, .1) !important;">
+            <div class="col-md-6 px-xl-0">
+                <p class="mb-md-0 text-center text-md-left text-secondary">
+                    &copy; <a class="text-primary" href="#">Synergia</a>. © Todos los derechos reservados FERREMAS
+                </p>
+            </div>
+            <div class="col-md-6 px-xl-0 text-center text-md-right">
+                <img class="img-fluid" src="img/payments.png" alt="">
+            </div>
+        </div>
+    </div>
+    
+    <!-- Back to Top -->
+    <a href="#" class="btn btn-primary back-to-top"><i class="fa fa-angle-double-up"></i></a>
+
+
+    <!------------------------------------------------------------------ Librerias JavaScript ----------------------------------------------------------------------->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
+    <script src="lib/easing/easing.min.js"></script>
+    <script src="lib/owlcarousel/owl.carousel.min.js"></script>
+    <script src="mail/jqBootstrapValidation.min.js"></script>
+    <script src="mail/contact.js"></script>
+    <script src="js/main.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      const tasaUSD = 0.0011; // Por ejemplo, 1 CLP = 0.0011 USD
+    
+      document.querySelectorAll('.product').forEach(producto => {
+        const precioCLP = parseFloat(producto.dataset.precio);
+        const precioUSD = (precioCLP * tasaUSD).toFixed(2);
+        producto.querySelector('.product-precio-convertido').textContent = `$${precioUSD} USD`;
+      });
+    </script>
+</body>
+
+</html>
+

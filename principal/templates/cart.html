@@ -7,7 +7,7 @@
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <meta content="Free HTML Templates" name="keywords">
     <meta content="Free HTML Templates" name="description">
-    {% extends 'base.html' %}
+
     <!-- Favicon -->
     <link href="img/favicon.ico" rel="icon">
 
@@ -189,7 +189,6 @@
     </div>
     <!-- Breadcrumb End -->
 
-    {% block content %}
 
     <!-- Cart Start -->
     <div class="container-fluid">
@@ -340,11 +339,7 @@
                             <h5>Total</h5>
                             <h5>$160</h5>
                         </div>
-                        <form method="post">
-                            {% csrf_token %}
-                            <input type="hidden" name="valor" value="150000">
-                            <button type="submit" class="btn btn-block btn-primary font-weight-bold my-3 py-3">Pagar</button>
-                        </form>
+                        <button class="btn btn-block btn-primary font-weight-bold my-3 py-3">Proceed To Checkout</button>
                     </div>
                 </div>
             </div>
@@ -352,7 +347,6 @@
     </div>
     <!-- Cart End -->
 
-    {% endblock %}
 
     <!-- Footer Start -->
     <div class="container-fluid bg-dark text-secondary mt-5 pt-5">

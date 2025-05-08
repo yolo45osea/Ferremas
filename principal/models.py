@@ -26,6 +26,7 @@ class Administrador(models.Model):
 
 class Cliente(models.Model):
     idcliente = models.AutoField(primary_key=True)
+    usuario = models.CharField(max_length=25)
     nombre = models.CharField(max_length=25)
     apellido = models.CharField(max_length=25)
     rut = models.CharField(max_length=12, unique=True)
@@ -34,6 +35,9 @@ class Cliente(models.Model):
     direccion = models.TextField()
     telefono = models.CharField(max_length=20)
     fecha_registro = models.DateField()
+
+    def __str__(self):
+        return f"{self.nombre} ({self.correo})"
 
 class Contador(models.Model):
     idcontador = models.AutoField(primary_key=True)
@@ -55,7 +59,8 @@ class Inventario(models.Model):
     descripcion = models.CharField(max_length=255)
     marca = models.CharField(max_length=50)
     categoria = models.CharField(max_length=25)
-    precio = models.DecimalField(max_digits=10, decimal_places=2)
+    precio = models.IntegerField()
+    imagen_base64 = models.TextField(blank=True, null=True)
     stock = models.IntegerField()
     alerta = models.BooleanField()
     fecha_actualizacion = models.DateField()

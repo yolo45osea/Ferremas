@@ -5,8 +5,9 @@ from pagos import views as view
 urlpatterns = [
     #path('crear_pago', view.crear_pago, name='crear_pago'),
     path('', views.index, name='index'),
-    path('shop', views.shop, name='shop'),
+    path('productos/<str:categoria>', views.productos, name='productos'),
     path('detail', views.detail, name='detail'),
     path('carrito', views.carrito, name='carrito'),
+    path('cuenta', views.cuenta, name='cuenta'),
     path('pagos/cancel/', views.webpay_cancel, name='webpay_cancel'),
 ]

@@ -32,13 +32,23 @@
             <!-- Inicio de Sesión -->
             <div class="col-lg-6 text-center text-lg-right" style="background-color: #041e41;">
                 <div class="d-inline-flex align-items-center">
-                    <div class="btn-group">
-                        <button type="button" class="btn btn-sm btn-light dropdown-toggle" data-toggle="dropdown" style="background-color: #feb81f;">Mi Cuenta</button>
-                        <div class="dropdown-menu dropdown-menu-right">
-                            <button class="dropdown-item" type="button">Iniciar Sesión</button>
-                            <button class="dropdown-item" type="button">Registrarse</button>
-                        </div>
-                    </div>
+                {% if user.is_authenticated %}  
+                  <div class="btn-group">
+                    <button type="button" class="btn btn-sm btn-light dropdown-toggle" data-toggle="dropdown" style="background-color: #feb81f;">Mi Cuenta</button>
+                    <div class="dropdown-menu dropdown-menu-right">
+                        <a class="dropdown-item" href="{% url 'cuenta' %}">Ver Perfil</a>
+                        
+                    </div>   
+                  </div>
+                {% else %}
+                  <div class="btn-group">
+                    <button type="button" class="btn btn-sm btn-light dropdown-toggle" data-toggle="dropdown" style="background-color: #feb81f;">Mi Cuenta</button>
+                    <div class="dropdown-menu dropdown-menu-right">
+                        <button class="dropdown-item" type="button" data-toggle="modal" data-target="#loginModal">Iniciar Sesión</button>
+                        <button class="dropdown-item" type="button" data-toggle="modal" data-target="#registerModal">Registrarse</button>
+                    </div>   
+                  </div>
+                {% endif %}
 
                     <!-- Idiomas y Moneda -->
                     <div class="btn-group mx-2" id="moneda">
@@ -55,9 +65,13 @@
                     <div class="btn-group">
                         <button type="button" class="btn btn-sm btn-light dropdown-toggle" data-toggle="dropdown" style="background-color: #feb81f;">EN</button>
                         <div class="dropdown-menu dropdown-menu-right">
-                            <button class="dropdown-item" type="button">FR</button>
-                            <button class="dropdown-item" type="button">AR</button>
-                            <button class="dropdown-item" type="button">RU</button>
+                            <form method="get">
+                              
+                              <button class="dropdown-item" type="submit" name="traduccion" value="FR">FR</button>
+                              <button class="dropdown-item" type="submit" name="traduccion" value="AR">AR</button>
+                              <button class="dropdown-item" type="submit" name="traduccion" value="RU">RU</button>
+                              <button class="dropdown-item" type="submit" name="traduccion" value="ES">ES</button>
+                            </form>
                         </div>
                     </div>
                 </div>
@@ -108,7 +122,7 @@
                     Herramientas<i class="fa fa-angle-right float-right mt-1"></i>
                 </a>
                 <div class="dropdown-menu position-absolute rounded-0 border-0 m-0">
-                  <a href="{% url 'shop' %}" class="dropdown-item">Herramientas Electricas</a>
+                  <a href="{% url 'productos' 'Herramientas Electricas' %}" class="dropdown-item">Herramientas Electricas</a>
                   <a href="#" class="dropdown-item">Maquinarias</a>
                   <a href="#" class="dropdown-item">Herramientas Manuales</a>
                   <a href="#" class="dropdown-item">Herramientas y Maquinarias de Construccion</a>
@@ -261,7 +275,7 @@
   
     <!---------------------------------------------------------------------- Carrito ------------------------------------------------------------------------------------>
       <div class="col-auto ml-auto d-flex align-items-center">
-        <a href="{% url 'carrito' %}" class="btn px-3" style="font-size: 1.5rem;">
+        <a href="#" class="btn px-3" id="toggleCart" style="font-size: 1.5rem;">
           <i class="fas fa-shopping-cart text-warning"></i>
         </a>
       </div>
@@ -346,7 +360,171 @@
         </div>
         
         <!----------------------------------------------------------------------------- Fin Footer ----------------------------------------------------------------------->
-    
+        <div class="modal fade" id="loginModal" tabindex="-1" role="dialog">
+          <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content p-0" style="border-radius: 16px; border: none;">
+              
+              <!-- Fondo superior con color -->
+              <div style="background-color: #041e41; border-top-left-radius: 16px; border-top-right-radius: 16px; padding: 20px;" class="text-center">
+                <img src="static/img/logo3.png" alt="Logo" style="height: 60px;">
+              </div>
+        
+              <!-- Contenido principal del modal -->
+              <div class="p-4">
+                <div class="text-center">
+                  <h5 class="mb-2" style="color: #041e41; font-weight: bold;">Iniciar Sesión</h5>
+                  <p class="text-muted small">Ingresa a tu cuenta</p>
+                </div>
+                <form>
+                  <div class="form-group">
+                    <label>Correo</label>
+                    <input type="email" class="form-control" placeholder="Tu correo electrónico">
+                  </div>
+                  <div class="form-group">
+                    <label>Contraseña</label>
+                    <input type="password" class="form-control" placeholder="Tu contraseña">
+                  </div>
+                  <button type="submit" class="btn btn-block mt-3" style="background-color:#feb81f; color:#041e41; font-weight:bold;">Entrar</button>
+                </form>
+                <div class="text-center mt-3">
+                  <a href="#" class="small text-muted">¿Olvidaste tu contraseña?</a>
+                </div>
+                <div class="text-center mt-2">
+                  <span class="small text-muted">¿No tienes cuenta? <a href="#" data-dismiss="modal" data-toggle="modal" data-target="#registerModal">Regístrate</a></span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        
+        <form method="post" action="{% url 'index' %}" id="registro">
+        {% csrf_token %}
+        <div class="modal fade" id="registerModal" tabindex="-1" role="dialog">
+          <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content" style="border-radius: 12px; overflow: hidden;">
+              
+              <!-- Encabezado con color y logo -->
+              <div style="background-color: #041e41; padding: 20px; text-align: center;">
+                <img src="static/img/logo3.png" alt="FERREMAS Logo" style="max-height: 40px;">
+              </div>
+        
+              <!-- Contenido del formulario -->
+              <div class="modal-body p-4">
+                <h5 class="text-center mb-1" style="color: #041e41; font-weight: 600;">Registrarse</h5>
+                <p class="text-center text-muted mb-4" style="font-size: 14px;">Crea tu cuenta para comenzar</p>
+                
+                  <div class="form-group">
+                    <label>Nombre</label>
+                    <input type="text" class="form-control" name="username" id="username" placeholder="Tu nombre completo">
+                  </div>
+                  <div class="form-group">
+                    <label>Correo</label>
+                    <input type="email" class="form-control" name="email" id="email" placeholder="ejemplo@mail.com">
+                  </div>
+                  <div class="form-group">
+                    <label>Contraseña</label>
+                    <input type="password" class="form-control" name="password1" id="password1" placeholder="Crear contraseña">
+                  </div>
+                  <div class="form-group">
+                    <label>Repita Contraseña</label>
+                    <input type="password" class="form-control" name="password2" id="password2" placeholder="Repita contraseña">
+                  </div>
+                  <input type="hidden" name="registro_form" value="1">
+                  <button type="submit" class="btn btn-block" style="background-color:#feb81f; color:#041e41; font-weight:bold;" name="registro_form">Registrarse</button>
+                  <div class="text-center mt-3" style="font-size: 14px;">
+                    ¿Ya tienes una cuenta? <a href="#" style="color: #007bff; font-weight: 500;">Inicia sesión</a>
+                  </div>
+                
+              </div>
+            </div>
+          </div>
+        </div>
+        </form>
+        <style>
+          .side-cart {
+            position: fixed;
+            top: 0;
+            right: -400px;
+            width: 320px;
+            height: 100%;
+            background: white;
+            box-shadow: -2px 0 5px rgba(0, 0, 0, 0.3);
+            transition: right 0.4s ease;
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+          }
+        
+          .side-cart.open {
+            right: 0;
+          }
+        
+          .side-cart-header,
+          .side-cart-footer {
+            padding: 15px;
+            background-color: #f5f5f5;
+            border-bottom: 1px solid #ddd;
+          }
+        
+          .side-cart-body {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 15px;
+          }
+        
+          .cart-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+          }
+        
+          .cart-item img {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            margin-right: 10px;
+          }
+        
+          .cart-info {
+            flex-grow: 1;
+          }
+        
+          .remove-btn,
+          .close-btn {
+            background: none;
+            border: none;
+            color: red;
+            font-size: 20px;
+            cursor: pointer;
+          }
+        </style>
+        
+        <!-------------------------------------- Panel lateral del carrito ----------------------------------------------->
+            
+            <div id="sideCart" class="side-cart">
+              <div class="side-cart-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Tu Carrito</h5>
+                <button class="close-btn" onclick="toggleCart()">&times;</button>
+              </div>
+              <div class="side-cart-body">
+                <div class="cart-item">
+                  <img src="img/producto1.png" alt="Producto">
+                  <div class="cart-info">
+                    <strong>Estante Metálico</strong>
+                    <p>$29.990</p>
+                  </div>
+                  <button class="remove-btn">&times;</button>
+                </div>
+              </div>
+              <div class="side-cart-footer">
+                <p>Total: <strong>$29.990</strong></p>
+                <a class="btn btn-warning btn-block" href="{% url 'carrito' %}">Finalizar Compra</a>
+              </div>
+            </div>
+      
+      <!----------------------------------------------------------------------------- Fin Footer ----------------------------------------------------------------------->
+  
     
         <!-- Back to Top -->
         <a href="#" class="btn btn-primary back-to-top"><i class="fa fa-angle-double-up"></i></a>
@@ -361,6 +539,39 @@
         <script src="{% static 'mail/jqBootstrapValidation.min.js' %}"></script>
         <script src="{% static 'mail/contact.js' %}"></script>
         <script src="{% static 'js/main.js' %}"></script>
+        <script>
+          function toggleCart() {
+            const cart = document.getElementById("sideCart");
+            if (cart) cart.classList.toggle("open");
+          }
+        
+          document.addEventListener("DOMContentLoaded", function () {
+            const toggle = document.getElementById("toggleCart");
+            if (toggle) {
+              toggle.addEventListener("click", function (e) {
+                e.preventDefault();
+                toggleCart();
+              });
+            }
+          });
+        </script>
+        {% if registro_form.errors %}
+        <script>
+          document.addEventListener("DOMContentLoaded", function() {
+            var modal = new bootstrap.Modal(document.getElementById('registerModal'));
+            modal.show();
+          });
+        </script>
+        {% endif %}
+        <script>
+          const tasaUSD = {{tasa}}; // Por ejemplo, 1 CLP = 0.0011 USD
+        
+          document.querySelectorAll('.product').forEach(producto => {
+            const precioCLP = parseFloat(producto.dataset.precio);
+            const precioUSD = (precioCLP * tasaUSD).toFixed(2);
+            producto.querySelector('.product-precio-convertido').textContent = `$${precioUSD} {{ moneda }}`;
+          });
+        </script>
     
 </body>
 </html>
