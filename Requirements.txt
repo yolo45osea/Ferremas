@@ -4,3 +4,4 @@ requests
 django-phonenumber_field
 babel
 phonenumbers
+whitenoise
