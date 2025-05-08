@@ -33,13 +33,33 @@
             <div class="col-lg-6 text-center text-lg-right" style="background-color: #041e41;">
                 <div class="d-inline-flex align-items-center">
                 {% if user.is_authenticated %}  
-                  <div class="btn-group">
-                    <button type="button" class="btn btn-sm btn-light dropdown-toggle" data-toggle="dropdown" style="background-color: #feb81f;">Mi Cuenta</button>
-                    <div class="dropdown-menu dropdown-menu-right">
-                        <a class="dropdown-item" href="{% url 'cuenta' %}">Ver Perfil</a>
-                        
-                    </div>   
-                  </div>
+                  {% if user.is_staff %}
+                    {% if user.is_superuser %}
+                      <div class="btn-group">
+                        <button type="button" class="btn btn-sm btn-light dropdown-toggle" data-toggle="dropdown" style="background-color: #feb81f;">Mi Cuenta</button>
+                        <div class="dropdown-menu dropdown-menu-right">
+                            <a class="dropdown-item" href="{% url 'admininstrador' %}">Administrar</a>
+                            
+                        </div>   
+                      </div>
+                    {% else %}
+                      <div class="btn-group">
+                        <button type="button" class="btn btn-sm btn-light dropdown-toggle" data-toggle="dropdown" style="background-color: #feb81f;">Mi Cuenta</button>
+                        <div class="dropdown-menu dropdown-menu-right">
+                            <a class="dropdown-item" href="{% url 'contador' %}">Administrar</a>
+                            
+                        </div>   
+                      </div>
+                    {% endif %}
+                  {% else %}
+                    <div class="btn-group">
+                      <button type="button" class="btn btn-sm btn-light dropdown-toggle" data-toggle="dropdown" style="background-color: #feb81f;">Mi Cuenta</button>
+                      <div class="dropdown-menu dropdown-menu-right">
+                          <a class="dropdown-item" href="{% url 'cuenta' %}">Ver Perfil</a>
+                          
+                      </div>   
+                    </div>
+                  {% endif %}
                 {% else %}
                   <div class="btn-group">
                     <button type="button" class="btn btn-sm btn-light dropdown-toggle" data-toggle="dropdown" style="background-color: #feb81f;">Mi Cuenta</button>
@@ -87,8 +107,8 @@
     <!----------------------------------------------------------------------- Logo--------------------------------------------------------------------------------------->
 
       <div class="col-auto">
-        <a href="index.html">
-          <img src="static/img/logo3.png" alt="Logo" style="height: 75px;">
+        <a href="{% url 'index' %}">
+          <img src="{% static 'img/logo3.png' %}" alt="Logo" style="height: 75px;">
         </a>
       </div>
   
@@ -275,7 +295,7 @@
   
     <!---------------------------------------------------------------------- Carrito ------------------------------------------------------------------------------------>
       <div class="col-auto ml-auto d-flex align-items-center">
-        <a href="#" class="btn px-3" id="toggleCart" style="font-size: 1.5rem;">
+        <a href="{% url 'resumen' %}" class="btn px-3" id="toggleCart" style="font-size: 1.5rem;">
           <i class="fas fa-shopping-cart text-warning"></i>
         </a>
       </div>
@@ -360,6 +380,8 @@
         </div>
         
         <!----------------------------------------------------------------------------- Fin Footer ----------------------------------------------------------------------->
+        <form method="post" action="{% url 'index' %}" id="inicio">
+          {% csrf_token %}
         <div class="modal fade" id="loginModal" tabindex="-1" role="dialog">
           <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content p-0" style="border-radius: 16px; border: none;">
@@ -375,17 +397,18 @@
                   <h5 class="mb-2" style="color: #041e41; font-weight: bold;">Iniciar Sesión</h5>
                   <p class="text-muted small">Ingresa a tu cuenta</p>
                 </div>
-                <form>
+                
                   <div class="form-group">
-                    <label>Correo</label>
-                    <input type="email" class="form-control" placeholder="Tu correo electrónico">
+                    <label>Usuario</label>
+                    <input type="text" class="form-control" name="username" placeholder="Tu nombre de usuario">
                   </div>
                   <div class="form-group">
                     <label>Contraseña</label>
-                    <input type="password" class="form-control" placeholder="Tu contraseña">
+                    <input type="password" class="form-control" name="password" placeholder="Tu contraseña">
                   </div>
-                  <button type="submit" class="btn btn-block mt-3" style="background-color:#feb81f; color:#041e41; font-weight:bold;">Entrar</button>
-                </form>
+                  <input type="hidden" name="login_form" value="1">
+                  <button type="submit" class="btn btn-block mt-3" style="background-color:#feb81f; color:#041e41; font-weight:bold;" name="login_form">Entrar</button>
+                
                 <div class="text-center mt-3">
                   <a href="#" class="small text-muted">¿Olvidaste tu contraseña?</a>
                 </div>
@@ -396,7 +419,7 @@
             </div>
           </div>
         </div>
-        
+        </form>
         
         <form method="post" action="{% url 'index' %}" id="registro">
         {% csrf_token %}
@@ -519,7 +542,7 @@
               </div>
               <div class="side-cart-footer">
                 <p>Total: <strong>$29.990</strong></p>
-                <a class="btn btn-warning btn-block" href="{% url 'carrito' %}">Finalizar Compra</a>
+                <a class="btn btn-warning btn-block" href="{% url 'resumen' %}">Finalizar Compra</a>
               </div>
             </div>
       

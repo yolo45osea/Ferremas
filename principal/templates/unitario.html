@@ -7,7 +7,6 @@
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <meta content="Free HTML Templates" name="keywords">
     <meta content="Free HTML Templates" name="description">
-    {% extends 'base.html' %}
 
     <!---------------------------------------------------------------------- Favicon ------------------------------------------------------------------------------->
     <link href="img/favicon.png" rel="icon">
@@ -302,363 +301,327 @@
         </strong>
     </div>
 
-    {% block content %}
+    <!------------------------------------------------------------- Banner Informativo Horizontal -------------------------------------------------------------------------->
 
+    <div class="w-100">
+      <img src="img/banner.png" alt="Banner Informativo" class="img-fluid" style="width: 100%; max-height: 150px; object-fit: cover;">
+  </div>
 
-
-
-
-
-    <!----------------------------------VISTA PANEL DE USUARIO - ESTILO FERREMAS -------------------------------------->
-
-    <div class="container-fluid my-5">
-    <div class="row">
-
-      <div class="col-md-3">
-        <div class="card border-0 shadow-sm" style="border-radius: 12px;">
-          <div class="card-body text-center bg-white" style="border-bottom: 2px solid #feb81f;">
-            <div class="rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 90px; height: 90px; background-color: #d8d2f3; font-size: 1.5rem; color: #041e41;">
-              HC
+  <!----------------------------------------------------------------------- Info Producto----------------------------------------------------------------------->
+  
+    <div class="container my-5">
+      <div class="row align-items-start">
+    
+        <!-- Imagen del producto -->
+        <div class="col-md-6 text-center">
+          <img src="img/producto1.png" alt="Estante Metálico" class="img-fluid rounded shadow-sm" style="max-height: 500px;">
+        </div>
+    
+        <!-- Detalles del producto -->
+        <div class="col-md-6 mt-4 mt-md-0">
+          <small class="text-muted d-block mb-2">SKU: 234660</small>
+          <h3 style="color: #041e41; font-weight: 700;">ESTANTE METÁLICO FORTE 5 REPISAS 100 X 50 X 192 CM NEGRO</h3>
+          <h4 class="mt-3" style="color: #041e41;">$69.990 c/u</h4>
+    
+          <p class="mt-3 text-muted" style="font-size: 0.95rem;">
+            Estante metálico con 5 repisas de melamina, ideal para uso en bodegas, talleres o espacios de almacenamiento. 
+            Soporta hasta 200 kg por repisa y es de fácil armado sin herramientas.
+          </p>
+    
+          <!-- Cantidad + Botón -->
+          <div class="d-flex align-items-center mt-4 mb-3">
+            <div class="input-group" style="width: 130px;">
+              <div class="input-group-prepend">
+                <button class="btn btn-outline-secondary" type="button">-</button>
+              </div>
+              <input type="text" class="form-control text-center" value="1">
+              <div class="input-group-append">
+                <button class="btn btn-outline-secondary" type="button">+</button>
+              </div>
             </div>
-            <h5 class="mb-0" style="color: #041e41;">Hola {{ usuario.usuario }}!</h5>
-            <p class="text-muted small">Tienes <strong>50</strong> Puntos ⭐</p>
+            <button class="btn btn-warning ml-3 px-4" style="color: #041e41; font-weight: bold;">
+              <i class="fas fa-shopping-cart mr-2"></i>Agregar al Carrito
+            </button>
           </div>
-          <ul class="list-group list-group-flush">
-            <li class="list-group-item d-flex align-items-center">
-              <i class="fas fa-box mr-2 text-warning"></i> Mis compras realizadas
-            </li>
-            <li class="list-group-item d-flex align-items-center">
-              <i class="fas fa-headset mr-2 text-warning"></i> Solicitudes de atención
-            </li>
-            <li class="list-group-item d-flex align-items-center">
-              <i class="fas fa-file-alt mr-2 text-warning"></i> Realizar solicitud
-            </li>
-            <li class="list-group-item d-flex align-items-center active" style="background-color: #feb81f; color: #041e41; font-weight: bold;">
-              <i class="fas fa-user mr-2"></i> Mi perfil
-            </li>
-            <li class="list-group-item d-flex align-items-center">
-              <i class="fas fa-lock mr-2 text-warning"></i> Mi contraseña
-              
-            </li>
-            <li class="list-group-item d-flex align-items-center">
-              <i class="fas fa-map-marker-alt mr-2 text-warning"></i> Mis direcciones
-            </li>
-          </ul>
+    
+          <!-- Estado de stock -->
+          <div class="alert alert-light border d-flex flex-column" style="font-size: 0.9rem;">
+            <div class="text-success"><i class="fas fa-check-circle mr-1"></i> 1 en stock para <strong>retiro</strong> tienda <strong>MAIPÚ</strong></div>
+            <div class="text-danger"><i class="fas fa-times-circle mr-1"></i> 0 en stock para <strong>despacho</strong></div>
+          </div>
+    
+          <!-- Consulta de stock en otras tiendas -->
+          <div class="form-group mt-3">
+            <label class="text-muted font-weight-bold">Consulta stock en otras tiendas</label>
+            <div class="d-flex">
+              <select class="form-control w-auto mr-2">
+                <option>ANTOFAGASTA</option>
+                <option>PUENTE ALTO</option>
+                <option>LA SERENA</option>
+              </select>
+              <button class="btn btn-primary">Ver Stock</button>
+            </div>
+          </div>
         </div>
       </div>
+    </div>
   
-      <!-- Contenido Principal -->
-      <div class="col-md-9">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-          <h4 style="color: #041e41; font-weight: bold;">Perfil</h4>
-          <form method="post">
-            {% csrf_token %}
-            <input type="hidden" name="logout" value="1">
-            <button type="submit" class="btn btn-outline-danger btn-sm"><i class="fas fa-sign-out-alt"></i> Cerrar sesión</button>
-          </form>
+  <!-------------------------------------------------------------------- Footer ---------------------------------------------------------------------------------------->
+        
+      <div class="col-auto" style="background-color: #041e41;">
+          <div class="row px-xl-5 pt-5">
+              <div class="col-lg-4 col-md-12 mb-5 pr-3 pr-xl-5 text-center">
+                  <img src="img/logo3.png" alt="Logo Footer" class="img-fluid mb-3" style="max-width: 250px;">
+                  
+                  <div class="d-flex justify-content-center">
+                      <a class="btn btn-primary btn-square mr-2" href="#"><i class="fab fa-twitter"></i></a>
+                      <a class="btn btn-primary btn-square mr-2" href="#"><i class="fab fa-facebook-f"></i></a>
+                      <a class="btn btn-primary btn-square mr-2" href="#"><i class="fab fa-linkedin-in"></i></a>
+                      <a class="btn btn-primary btn-square" href="#"><i class="fab fa-instagram"></i></a>
+                  </div>
+              </div>
+              
+          
+              <div class="col-lg-8 col-md-12">
+                  <div class="row">
+                      <div class="col-md-4 mb-5">
+                          <h5 class="text-secondary text-uppercase mb-4">TÉRMINOS Y CONDICIONES</h5>
+                          <div class="d-flex flex-column justify-content-start">
+                              <a class="text-secondary mb-2" href="nosotros.html"><i class="fa fa-angle-right mr-2"></i>Nuestra Empresa</a>
+                              <a class="text-secondary mb-2" href="Cambios.html"><i class="fa fa-angle-right mr-2"></i>Cambios y Devoluciones</a>
+                              <a class="text-secondary mb-2" href="TerminosyCondiciones.html"><i class="fa fa-angle-right mr-2"></i>Términos y Condiciones</a>
+                          </div>
+                      </div>
+      
+                      <div class="col-md-4 mb-5">
+                          <h5 class="text-secondary text-uppercase mb-4">CONTÁCTANOS</h5>
+                          <div class="d-flex flex-column justify-content-start">
+                              <a class="text-secondary mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>Contáctanos</a>
+                              <a class="text-secondary mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>Ayuda</a>
+                              <a class="text-secondary mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>+56 2 2890 9000</a>
+                          </div>
+                      </div>
+   
+                      <div class="col-md-4 mb-5">
+                          <h5 class="text-secondary text-uppercase mb-4">SUSCRÍBETE A NUESTRO NEWSLETTER</h5>
+                          <form action="">
+                              <div class="input-group">
+                                  <input type="text" class="form-control" placeholder="Tu correo electrónico">
+                                  <div class="input-group-append">
+                                      <button class="btn btn-primary">Suscribirse</button>
+                                  </div>
+                              </div>
+                          </form>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      
+          <div class="row border-top mx-xl-5 py-4" style="border-color: rgba(256, 256, 256, .1) !important;">
+              <div class="col-md-6 px-xl-0">
+                  <p class="mb-md-0 text-center text-md-left text-secondary">
+                      &copy; <a class="text-primary" href="#">Synergia</a>. © Todos los derechos reservados FERREMAS
+                  </p>
+              </div>
+              <div class="col-md-6 px-xl-0 text-center text-md-right">
+                  <img class="img-fluid" src="img/payments.png" alt="">
+              </div>
+          </div>
+      </div>
+
+  <!----------------------------------- Modal Iniciar Sesión  ----------------------------------------------------->
+  
+  <div class="modal fade" id="loginModal" tabindex="-1" role="dialog">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content p-0" style="border-radius: 16px; border: none;">
+          
+          <!-- Fondo superior con color -->
+          <div style="background-color: #041e41; border-top-left-radius: 16px; border-top-right-radius: 16px; padding: 20px;" class="text-center">
+            <img src="img/logo3.png" alt="Logo" style="height: 60px;">
+          </div>
+    
+          <div class="p-4">
+            <div class="text-center">
+              <h5 class="mb-2" style="color: #041e41; font-weight: bold;">Iniciar Sesión</h5>
+              <p class="text-muted small">Ingresa a tu cuenta</p>
+            </div>
+            <form>
+              <div class="form-group">
+                <label>Correo</label>
+                <input type="email" class="form-control" placeholder="Tu correo electrónico">
+              </div>
+              <div class="form-group">
+                <label>Contraseña</label>
+                <input type="password" class="form-control" placeholder="Tu contraseña">
+              </div>
+              <button type="submit" class="btn btn-block mt-3" style="background-color:#feb81f; color:#041e41; font-weight:bold;">Entrar</button>
+            </form>
+            <div class="text-center mt-3">
+              <a href="#" class="small text-muted">¿Olvidaste tu contraseña?</a>
+            </div>
+            <div class="text-center mt-2">
+              <span class="small text-muted">¿No tienes cuenta? <a href="#" data-dismiss="modal" data-toggle="modal" data-target="#registerModal">Regístrate</a></span>
+            </div>
+          </div>
         </div>
-  
-        <div class="card shadow-sm" style="border-radius: 12px;">
-          <div class="card-body">
-            <h5 class="mb-4" style="color: #041e41;">Mis Datos Personales</h5>
-            <form method="post">
-              {% csrf_token %}
-              <div class="form-row">
-                <div class="form-group col-md-6">
-                  <label>Nombre *</label>
-                  <input type="text" class="form-control" name="nombre" value="{{ usuario.nombre }}">
-                </div>
-                <div class="form-group col-md-6">
-                  <label>Apellido *</label>
-                  <input type="text" class="form-control" name="apellido" value="{{ usuario.apellido }}">
-                </div>
+      </div>
+    </div>
+    
+    <!----------------------------------- Modal Registrar Usuarios  ----------------------------------------------------->  
+    
+    <div class="modal fade" id="registerModal" tabindex="-1" role="dialog">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content" style="border-radius: 12px; overflow: hidden;">
+          
+          <!-- Encabezado con color y logo -->
+          <div style="background-color: #041e41; padding: 20px; text-align: center;">
+            <img src="img/logo3.png" alt="FERREMAS Logo" style="max-height: 40px;">
+          </div>
+    
+          <!-- Contenido del formulario -->
+          <div class="modal-body p-4">
+            <h5 class="text-center mb-1" style="color: #041e41; font-weight: 600;">Registrarse</h5>
+            <p class="text-center text-muted mb-4" style="font-size: 14px;">Crea tu cuenta para comenzar</p>
+            <form>
+              <div class="form-group">
+                <label>Nombre</label>
+                <input type="text" class="form-control" placeholder="Tu nombre completo">
               </div>
-              <div class="form-row">
-                <div class="form-group col-md-6">
-                  <label>RUT *</label>
-                  <input type="text" class="form-control" value="{{ usuario.rut }}" disabled>
-                </div>
-                <div class="form-group col-md-6">
-                  <label>Email *</label>
-                  <input type="email" class="form-control" value="{{ usuario.correo }}" disabled>
-                </div>
+              <div class="form-group">
+                <label>Correo</label>
+                <input type="email" class="form-control" placeholder="ejemplo@mail.com">
               </div>
-              <div class="form-row">
-                <div class="form-group col-md-6">
-                  <label>Teléfono *</label>
-                  <input type="text" class="form-control" name="telefono" value="{{ usuario.telefono }}">
-                </div>
-                <div class="form-group col-md-6">
-                  <label>Dirección *</label>
-                  <input type="text" class="form-control" name="direccion" value="{{ usuario.direccion }}">
-                </div>
+              <div class="form-group">
+                <label>Contraseña</label>
+                <input type="password" class="form-control" placeholder="Crear contraseña">
               </div>
-              <button type="submit" class="btn btn-warning text-dark font-weight-bold px-4">Guardar Cambios</button>
+              <button type="submit" class="btn btn-block" style="background-color:#feb81f; color:#041e41; font-weight:bold;">Registrarse</button>
+              <div class="text-center mt-3" style="font-size: 14px;">
+                ¿Ya tienes una cuenta? <a href="#" style="color: #007bff; font-weight: 500;">Inicia sesión</a>
+              </div>
             </form>
           </div>
         </div>
       </div>
     </div>
-  </div>
-
-  {% endblock %}
-
-    <!-------------------------------------------------------------------- Footer ---------------------------------------------------------------------------------------->
-    <div class="col-auto" style="background-color: #041e41;">
-        <div class="row px-xl-5 pt-5">
-            <div class="col-lg-4 col-md-12 mb-5 pr-3 pr-xl-5 text-center">
-                <img src="img/logo3.png" alt="Logo Footer" class="img-fluid mb-3" style="max-width: 250px;">
-                
-                <div class="d-flex justify-content-center">
-                    <a class="btn btn-primary btn-square mr-2" href="#"><i class="fab fa-twitter"></i></a>
-                    <a class="btn btn-primary btn-square mr-2" href="#"><i class="fab fa-facebook-f"></i></a>
-                    <a class="btn btn-primary btn-square mr-2" href="#"><i class="fab fa-linkedin-in"></i></a>
-                    <a class="btn btn-primary btn-square" href="#"><i class="fab fa-instagram"></i></a>
-                </div>
-            </div>
-            
-        
-            <div class="col-lg-8 col-md-12">
-                <div class="row">
-                    <div class="col-md-4 mb-5">
-                        <h5 class="text-secondary text-uppercase mb-4">TÉRMINOS Y CONDICIONES</h5>
-                        <div class="d-flex flex-column justify-content-start">
-                            <a class="text-secondary mb-2" href="nosotros.html"><i class="fa fa-angle-right mr-2"></i>Nuestra Empresa</a>
-                            <a class="text-secondary mb-2" href="Cambios.html"><i class="fa fa-angle-right mr-2"></i>Cambios y Devoluciones</a>
-                            <a class="text-secondary mb-2" href="TerminosyCondiciones.html"><i class="fa fa-angle-right mr-2"></i>Términos y Condiciones</a>
-                        </div>
-                    </div>
     
-                    <div class="col-md-4 mb-5">
-                        <h5 class="text-secondary text-uppercase mb-4">CONTÁCTANOS</h5>
-                        <div class="d-flex flex-column justify-content-start">
-                            <a class="text-secondary mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>Contáctanos</a>
-                            <a class="text-secondary mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>Ayuda</a>
-                            <a class="text-secondary mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>+56 2 2890 9000</a>
-                        </div>
-                    </div>
- 
-                    <div class="col-md-4 mb-5">
-                        <h5 class="text-secondary text-uppercase mb-4">SUSCRÍBETE A NUESTRO NEWSLETTER</h5>
-                        <form action="">
-                            <div class="input-group">
-                                <input type="text" class="form-control" placeholder="Tu correo electrónico">
-                                <div class="input-group-append">
-                                    <button class="btn btn-primary">Suscribirse</button>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-    
-        <div class="row border-top mx-xl-5 py-4" style="border-color: rgba(256, 256, 256, .1) !important;">
-            <div class="col-md-6 px-xl-0">
-                <p class="mb-md-0 text-center text-md-left text-secondary">
-                    &copy; <a class="text-primary" href="#">Synergia</a>. © Todos los derechos reservados FERREMAS
-                </p>
-            </div>
-            <div class="col-md-6 px-xl-0 text-center text-md-right">
-                <img class="img-fluid" src="img/payments.png" alt="">
-            </div>
-        </div>
-    </div>
-    
-    <!-- 2. Mueve los modales AQUÍ (antes del cierre </body>) -->
-<!-- Modal Iniciar Sesión Rediseñado -->
-<div class="modal fade" id="loginModal" tabindex="-1" role="dialog">
-    <div class="modal-dialog modal-dialog-centered" role="document">
-      <div class="modal-content p-0" style="border-radius: 16px; border: none;">
-        
-        <!-- Fondo superior con color -->
-        <div style="background-color: #041e41; border-top-left-radius: 16px; border-top-right-radius: 16px; padding: 20px;" class="text-center">
-          <img src="img/logo3.png" alt="Logo" style="height: 60px;">
-        </div>
-  
-        <!-- Contenido principal del modal -->
-        <div class="p-4">
-          <div class="text-center">
-            <h5 class="mb-2" style="color: #041e41; font-weight: bold;">Iniciar Sesión</h5>
-            <p class="text-muted small">Ingresa a tu cuenta</p>
-          </div>
-          <form>
-            <div class="form-group">
-              <label>Correo</label>
-              <input type="email" class="form-control" placeholder="Tu correo electrónico">
-            </div>
-            <div class="form-group">
-              <label>Contraseña</label>
-              <input type="password" class="form-control" placeholder="Tu contraseña">
-            </div>
-            <button type="submit" class="btn btn-block mt-3" style="background-color:#feb81f; color:#041e41; font-weight:bold;">Entrar</button>
-          </form>
-          <div class="text-center mt-3">
-            <a href="#" class="small text-muted">¿Olvidaste tu contraseña?</a>
-          </div>
-          <div class="text-center mt-2">
-            <span class="small text-muted">¿No tienes cuenta? <a href="#" data-dismiss="modal" data-toggle="modal" data-target="#registerModal">Regístrate</a></span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  
-  
-  
-  <div class="modal fade" id="registerModal" tabindex="-1" role="dialog">
-    <div class="modal-dialog modal-dialog-centered" role="document">
-      <div class="modal-content" style="border-radius: 12px; overflow: hidden;">
-        
-        <!-- Encabezado con color y logo -->
-        <div style="background-color: #041e41; padding: 20px; text-align: center;">
-          <img src="img/logo3.png" alt="FERREMAS Logo" style="max-height: 40px;">
-        </div>
-  
-        <!-- Contenido del formulario -->
-        <div class="modal-body p-4">
-          <h5 class="text-center mb-1" style="color: #041e41; font-weight: 600;">Registrarse</h5>
-          <p class="text-center text-muted mb-4" style="font-size: 14px;">Crea tu cuenta para comenzar</p>
-          <form>
-            <div class="form-group">
-              <label>Nombre</label>
-              <input type="text" class="form-control" placeholder="Tu nombre completo">
-            </div>
-            <div class="form-group">
-              <label>Correo</label>
-              <input type="email" class="form-control" placeholder="ejemplo@mail.com">
-            </div>
-            <div class="form-group">
-              <label>Contraseña</label>
-              <input type="password" class="form-control" placeholder="Crear contraseña">
-            </div>
-            <button type="submit" class="btn btn-block" style="background-color:#feb81f; color:#041e41; font-weight:bold;">Registrarse</button>
-            <div class="text-center mt-3" style="font-size: 14px;">
-              ¿Ya tienes una cuenta? <a href="#" style="color: #007bff; font-weight: 500;">Inicia sesión</a>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
-  </div>
-  
-  <style>
-    .side-cart {
-      position: fixed;
-      top: 0;
-      right: -400px;
-      width: 320px;
-      height: 100%;
-      background: white;
-      box-shadow: -2px 0 5px rgba(0, 0, 0, 0.3);
-      transition: right 0.4s ease;
-      z-index: 2000;
-      display: flex;
-      flex-direction: column;
-    }
-  
-    .side-cart.open {
-      right: 0;
-    }
-  
-    .side-cart-header,
-    .side-cart-footer {
-      padding: 15px;
-      background-color: #f5f5f5;
-      border-bottom: 1px solid #ddd;
-    }
-  
-    .side-cart-body {
-      flex-grow: 1;
-      overflow-y: auto;
-      padding: 15px;
-    }
-  
-    .cart-item {
-      display: flex;
-      align-items: center;
-      margin-bottom: 10px;
-    }
-  
-    .cart-item img {
-      width: 60px;
-      height: 60px;
-      object-fit: cover;
-      margin-right: 10px;
-    }
-  
-    .cart-info {
-      flex-grow: 1;
-    }
-  
-    .remove-btn,
-    .close-btn {
-      background: none;
-      border: none;
-      color: red;
-      font-size: 20px;
-      cursor: pointer;
-    }
-  </style>
-  
-  <!-------------------------------------- Panel lateral del carrito ----------------------------------------------->
-      
-      <div id="sideCart" class="side-cart">
-        <div class="side-cart-header d-flex justify-content-between align-items-center">
-          <h5 class="mb-0">Tu Carrito</h5>
-          <button class="close-btn" onclick="toggleCart()">&times;</button>
-        </div>
-        <div class="side-cart-body">
-          <div class="cart-item">
-            <img src="img/producto1.png" alt="Producto">
-            <div class="cart-info">
-              <strong>Estante Metálico</strong>
-              <p>$29.990</p>
-            </div>
-            <button class="remove-btn">&times;</button>
-          </div>
-        </div>
-        <div class="side-cart-footer">
-          <p>Total: <strong>$29.990</strong></p>
-          <button class="btn btn-warning btn-block">Finalizar Compra</button>
-        </div>
-      </div>
-
-
-  
-    <!-- Back to Top -->
-    <a href="#" class="btn btn-primary back-to-top"><i class="fa fa-angle-double-up"></i></a>
-
-
-    <!------------------------------------------------------------------ Librerias JavaScript ----------------------------------------------------------------------->
-
-    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
-
-    <!-- Otros scripts -->
-    <script src="lib/easing/easing.min.js"></script>
-    <script src="lib/owlcarousel/owl.carousel.min.js"></script>
-    <script src="mail/jqBootstrapValidation.min.js"></script>
-    <script src="mail/contact.js"></script>
-    <script src="js/main.js"></script>
-    <script>
-      function toggleCart() {
-        const cart = document.getElementById("sideCart");
-        if (cart) cart.classList.toggle("open");
+    <style>
+      .side-cart {
+        position: fixed;
+        top: 0;
+        right: -400px;
+        width: 320px;
+        height: 100%;
+        background: white;
+        box-shadow: -2px 0 5px rgba(0, 0, 0, 0.3);
+        transition: right 0.4s ease;
+        z-index: 2000;
+        display: flex;
+        flex-direction: column;
       }
     
-      document.addEventListener("DOMContentLoaded", function () {
-        const toggle = document.getElementById("toggleCart");
-        if (toggle) {
-          toggle.addEventListener("click", function (e) {
-            e.preventDefault();
-            toggleCart();
-          });
+      .side-cart.open {
+        right: 0;
+      }
+    
+      .side-cart-header,
+      .side-cart-footer {
+        padding: 15px;
+        background-color: #f5f5f5;
+        border-bottom: 1px solid #ddd;
+      }
+    
+      .side-cart-body {
+        flex-grow: 1;
+        overflow-y: auto;
+        padding: 15px;
+      }
+    
+      .cart-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 10px;
+      }
+    
+      .cart-item img {
+        width: 60px;
+        height: 60px;
+        object-fit: cover;
+        margin-right: 10px;
+      }
+    
+      .cart-info {
+        flex-grow: 1;
+      }
+    
+      .remove-btn,
+      .close-btn {
+        background: none;
+        border: none;
+        color: red;
+        font-size: 20px;
+        cursor: pointer;
+      }
+    </style>
+    
+    <!-------------------------------------- Panel lateral del carrito ----------------------------------------------->
+        
+        <div id="sideCart" class="side-cart">
+          <div class="side-cart-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Tu Carrito</h5>
+            <button class="close-btn" onclick="toggleCart()">&times;</button>
+          </div>
+          <div class="side-cart-body">
+            <div class="cart-item">
+              <img src="img/producto1.png" alt="Producto">
+              <div class="cart-info">
+                <strong>Estante Metálico</strong>
+                <p>$29.990</p>
+              </div>
+              <button class="remove-btn">&times;</button>
+            </div>
+          </div>
+          <div class="side-cart-footer">
+            <p>Total: <strong>$29.990</strong></p>
+            <button class="btn btn-warning btn-block">Finalizar Compra</button>
+          </div>
+        </div>
+  
+  
+    
+      <!-- Back to Top -->
+      <a href="#" class="btn btn-primary back-to-top"><i class="fa fa-angle-double-up"></i></a>
+  
+  
+      <!------------------------------------------------------------------ Librerias JavaScript ----------------------------------------------------------------------->
+  
+      <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+      <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+  
+      <!-- Otros scripts -->
+      <script src="lib/easing/easing.min.js"></script>
+      <script src="lib/owlcarousel/owl.carousel.min.js"></script>
+      <script src="mail/jqBootstrapValidation.min.js"></script>
+      <script src="mail/contact.js"></script>
+      <script src="js/main.js"></script>
+      <script>
+        function toggleCart() {
+          const cart = document.getElementById("sideCart");
+          if (cart) cart.classList.toggle("open");
         }
-      });
-    </script>
       
-</body>
-
-</html>
+        document.addEventListener("DOMContentLoaded", function () {
+          const toggle = document.getElementById("toggleCart");
+          if (toggle) {
+            toggle.addEventListener("click", function (e) {
+              e.preventDefault();
+              toggleCart();
+            });
+          }
+        });
+      </script>
+        
+  </body>
+  
+  </html>
