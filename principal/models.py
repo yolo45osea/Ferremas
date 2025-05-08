@@ -14,3 +14,89 @@ class Payment(BasePayment):
 
     def get_success_url(self) -> str:
         return reverse('payment_success', kwargs={'pk': self.pk})
+
+class Administrador(models.Model):
+    idadmin = models.AutoField(primary_key=True)
+    nombre = models.CharField(max_length=25)
+    apellido = models.CharField(max_length=25)
+    rut = models.CharField(max_length=12, unique=True)
+    correo = models.EmailField(max_length=50, unique=True)
+    contrasena = models.CharField(max_length=25)
+    telefono = models.CharField(max_length=12)
+
+class Cliente(models.Model):
+    idcliente = models.AutoField(primary_key=True)
+    nombre = models.CharField(max_length=25)
+    apellido = models.CharField(max_length=25)
+    rut = models.CharField(max_length=12, unique=True)
+    correo = models.EmailField(max_length=50, unique=True)
+    contrasena = models.CharField(max_length=25)
+    direccion = models.TextField()
+    telefono = models.CharField(max_length=20)
+    fecha_registro = models.DateField()
+
+class Contador(models.Model):
+    idcontador = models.AutoField(primary_key=True)
+    nombre = models.CharField(max_length=25)
+    apellido = models.CharField(max_length=25)
+    rut = models.CharField(max_length=12)
+    correo = models.EmailField(max_length=50)
+    contrasena = models.CharField(max_length=25)
+    telefono = models.CharField(max_length=12)
+
+class CarritoCompra(models.Model):
+    idcarrito = models.AutoField(primary_key=True)
+    idcliente = models.ForeignKey(Cliente, on_delete=models.CASCADE)
+    fechacreacion = models.DateField()
+
+class Inventario(models.Model):
+    idproducto = models.AutoField(primary_key=True)
+    nombre = models.CharField(max_length=50)
+    descripcion = models.CharField(max_length=255)
+    marca = models.CharField(max_length=50)
+    categoria = models.CharField(max_length=25)
+    precio = models.DecimalField(max_digits=10, decimal_places=2)
+    stock = models.IntegerField()
+    alerta = models.BooleanField()
+    fecha_actualizacion = models.DateField()
+
+class DetalleCarrito(models.Model):
+    idcarritoprod = models.AutoField(primary_key=True)
+    idcarrito = models.ForeignKey(CarritoCompra, on_delete=models.CASCADE)
+    idproducto = models.ForeignKey(Inventario, on_delete=models.CASCADE)
+    cantidad = models.IntegerField()
+
+class Informe(models.Model):
+    idinforme = models.AutoField(primary_key=True)
+    idcontador = models.ForeignKey(Contador, on_delete=models.CASCADE)
+    tipo = models.CharField(max_length=50)
+    fecha_creacion = models.DateField()
+    descripcion = models.CharField(max_length=100)
+
+class Notificacion(models.Model):
+    idnotificacion = models.AutoField(primary_key=True)
+    idcliente = models.ForeignKey(Cliente, on_delete=models.CASCADE)
+    mensaje = models.CharField(max_length=100)
+    fecha_envio = models.DateField()
+    leido = models.BooleanField()
+
+class Pedido(models.Model):
+    idpedido = models.AutoField(primary_key=True)
+    idcliente = models.ForeignKey(Cliente, on_delete=models.CASCADE)
+    idvendedor = models.IntegerField()  # Se puede reemplazar por ForeignKey si se define el modelo Vendedor
+    fecha_pedido = models.DateField()
+    estado = models.CharField(max_length=10)
+    tipo_entrega = models.CharField(max_length=9)
+    direccion_entrega = models.CharField(max_length=50, null=True, blank=True)
+    fecha_estimada = models.DateField()
+
+
+class Vendedor(models.Model):
+    idvendedor = models.AutoField(primary_key=True)
+    nombre = models.CharField(max_length=25)
+    apellido = models.CharField(max_length=25)
+    rut = models.CharField(max_length=12)
+    correo = models.EmailField(max_length=50)
+    contrasena = models.CharField(max_length=25)
+    idadmin = models.ForeignKey(Administrador, on_delete=models.CASCADE)
+    zona = models.CharField(max_length=20)
