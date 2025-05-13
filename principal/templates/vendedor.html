@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Panel del Vendedor - FERREMAS</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet" />
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet" />
+
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      font-family: 'Roboto', sans-serif;
+      background-color: #f8f9fa;
+    }
+
+    .ferremas-header {
+      background-color: #041e41;
+      color: white;
+      padding: 15px 30px;
+    }
+
+    .ferremas-header h4 {
+      margin: 0;
+      font-weight: bold;
+    }
+
+    .main-content {
+      flex: 1;
+    }
+
+    .admin-card {
+      background-color: #e9f7fc;
+      border-left: 5px solid #feb81f;
+      border-radius: 10px;
+      padding: 20px;
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
+      transition: all 0.2s ease-in-out;
+    }
+
+    .admin-card:hover {
+      background-color: #d4f0ff;
+      transform: translateY(-3px);
+    }
+
+    .admin-icon {
+      font-size: 2rem;
+      margin-right: 20px;
+      color: #041e41;
+    }
+
+    .admin-content h5 {
+      margin-bottom: 5px;
+      color: #041e41;
+      font-weight: bold;
+    }
+
+    .admin-content p {
+      margin: 0;
+      color: #333;
+    }
+
+    .logout-btn {
+      background-color: #041e41;
+      color: white;
+      font-weight: bold;
+    }
+
+    .logout-btn:hover {
+      background-color: #03306c;
+    }
+
+    .ferremas-footer {
+      background-color: #041e41;
+      color: white;
+    }
+
+    @media (max-width: 576px) {
+      .admin-icon {
+        font-size: 1.5rem;
+        margin-right: 15px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="ferremas-header d-flex justify-content-between align-items-center">
+    <h4>FERREMAS - Panel del Vendedor</h4>
+    <a href="{% url 'cerrar_sesion' %}" class="btn logout-btn">Cerrar Sesión <i class="fas fa-sign-out-alt"></i></a>
+  </div>
+
+  <div class="container my-5 main-content">
+    <h5 class="text-center text-info mb-4">ACCESOS DIRECTOS</h5>
+    <div class="row">
+
+      <div class="col-sm-12 col-md-6">
+        <div class="admin-card">
+          <i class="fas fa-cash-register admin-icon"></i>
+          <a href="{% url 'gestionVenta' %}">
+            <div class="admin-content">
+              <h5>Gestión de Ventas</h5>
+              <p>Registra y gestiona las ventas realizadas, aplica descuentos y genera comprobantes.</p>
+            </div>
+          </a>
+        </div>
+      </div>
+
+      <div class="col-sm-12 col-md-6">
+        <div class="admin-card">
+          <i class="fas fa-warehouse admin-icon"></i>
+          <a href="{% url 'gestionInventario' %}">
+            <div class="admin-content">
+              <h5>Gestión de Inventario</h5>
+              <p>Revisa el stock disponible, ajusta cantidades y visualiza movimientos de inventario.</p>
+            </div>
+          </a>
+        </div>
+      </div>
+
+      <div class="col-sm-12 col-md-6">
+        <div class="admin-card">
+          <i class="fas fa-truck admin-icon"></i>
+          <a href="{% url 'gestionPedidos' %}">
+            <div class="admin-content">
+              <h5>Gestión de Pedidos</h5>
+              <p>Controla pedidos realizados por clientes, modifica estados y programa entregas.</p>
+            </div>
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="ferremas-footer mt-0">
+    <div class="container-fluid px-xl-5 pt-5">
+      <div class="row">
+        <div class="col-lg-4 col-md-12 mb-4 text-center">
+          <img src="img/logo3.png" alt="Logo Footer" class="img-fluid mb-3" style="max-width: 220px;">
+          <div class="d-flex justify-content-center">
+            <a class="btn btn-primary btn-square mr-2" href="#"><i class="fab fa-twitter"></i></a>
+            <a class="btn btn-primary btn-square mr-2" href="#"><i class="fab fa-facebook-f"></i></a>
+            <a class="btn btn-primary btn-square mr-2" href="#"><i class="fab fa-linkedin-in"></i></a>
+            <a class="btn btn-primary btn-square" href="#"><i class="fab fa-instagram"></i></a>
+          </div>
+        </div>
+
+        <div class="col-lg-8 col-md-12">
+          <div class="row">
+            <div class="col-md-4 mb-4">
+              <h6 class="text-uppercase mb-3">Términos y condiciones</h6>
+              <ul class="list-unstyled">
+                <li><a class="text-light" href="nosotros.html">Nuestra Empresa</a></li>
+                <li><a class="text-light" href="Cambios.html">Cambios y Devoluciones</a></li>
+                <li><a class="text-light" href="TerminosyCondiciones.html">Términos y Condiciones</a></li>
+              </ul>
+            </div>
+
+            <div class="col-md-4 mb-4">
+              <h6 class="text-uppercase mb-3">Contáctanos</h6>
+              <ul class="list-unstyled">
+                <li><a class="text-light" href="#">Contáctanos</a></li>
+                <li><span class="text-light">+56 2 2890 9000</span></li>
+              </ul>
+            </div>
+
+            <div class="col-md-4 mb-4">
+              <h6 class="text-uppercase mb-3">Newsletter</h6>
+              <form>
+                <div class="input-group">
+                  <input type="email" class="form-control" placeholder="Tu correo electrónico">
+                  <div class="input-group-append">
+                    <button class="btn btn-warning text-dark font-weight-bold">Suscribirse</button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row border-top mt-4 pt-3" style="border-color: rgba(255,255,255,0.1);">
+        <div class="col-md-6 text-center text-md-left mb-2 mb-md-0">
+          <p class="mb-0 text-light">&copy; <a class="text-warning" href="#">Synergia</a>. Todos los derechos reservados FERREMAS</p>
+        </div>
+        <div class="col-md-6 text-center text-md-right">
+          <img class="img-fluid" src="img/payments.png" alt="Métodos de pago">
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+<form method="post" action="{{ form.action }}">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Redirigir a Webpay</button>
+</form>
+
+<script>
+    document.forms[0].submit();  // Enviar el formulario automáticamente
+</script>
