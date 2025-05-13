@@ -13,6 +13,19 @@ urlpatterns = [
     path('pago', views.pago, name='pago'),
     path('admininstrador', views.admin, name='admininstrador'),
     path('contador', views.contador, name='contador'),
+    path('vendedor', views.vendedor, name='vendedor'),
+
+    path('cerrar_sesion', views.cerrar_sesion, name='cerrar_sesion'),
+
+    path('gestionCatalogo', views.gestionCatalogo, name='gestionCatalogo'),
+    path('gestionDescuento', views.gestionDescuento, name='gestionDescuento'),
+    path('gestionInventario', views.gestionInventario, name='gestionInventario'),
+    path('gestionPedidos', views.gestionPedidos, name='gestionPedidos'),
+    path('gestionPagos', views.gestionPagos, name='gestionPagos'),
+    path('transferencias', views.transferencias, name='transferencias'),
+    path('reportesFinancieros', views.reportesFinancieros, name='reportesFinancieros'),
+    path('gestionReportesAdmin', views.gestionReportesAdmin, name='gestionReportesAdmin'),
+    path('gestionVenta', views.gestionVenta, name='gestionVenta'),
 
     path('nosotros', views.nosotros, name='nosotros'),
     path('Cambios', views.Cambios, name='Cambios'),
