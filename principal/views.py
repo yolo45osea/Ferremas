@@ -35,6 +35,7 @@ def index(request):
     registro_form = RegistroForm()
     precio = 10000
     tasa_conversion = 0
+    idioma = 'ES'
 
     if request.user.groups.filter(name='vendedores').exists():
         tipo_usuario = 'vendedor'
