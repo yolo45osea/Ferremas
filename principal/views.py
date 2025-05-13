@@ -135,7 +135,7 @@ def index(request):
             return JsonResponse({"error": "Error al consultar la API", "details": response.text}, status=500)
     print(f"tasa: {tasa_conversion}, precio: {precio}")
     return render(request, 'index.html', {'precio': precio * tasa_conversion if tasa_conversion>0 else precio, 'login_form': login_form, 
-                   'registro_form': registro_form, 'tipo_usuario': tipo_usuario, 'idioma': idioma)
+                   'registro_form': registro_form, 'tipo_usuario': tipo_usuario, 'idioma': idioma})
 
 
 
