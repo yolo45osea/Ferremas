@@ -36,6 +36,14 @@ def index(request):
     precio = 10000
     tasa_conversion = 0
 
+    if request.user.groups.filter(name='vendedores').exists():
+        tipo_usuario = 'vendedor'
+    else:
+        tipo_usuario = 'contador'
+
+    print(f"tipo de usuario: {tipo_usuario}")
+
+
     if request.method == "GET":
         if 'traduccion' in request.GET:
             idioma = request.GET.get('traduccion')
@@ -127,7 +135,7 @@ def index(request):
             return JsonResponse({"error": "Error al consultar la API", "details": response.text}, status=500)
     print(f"tasa: {tasa_conversion}, precio: {precio}")
     return render(request, 'index.html', {'precio': precio * tasa_conversion if tasa_conversion>0 else precio, 'login_form': login_form, 
-                   'registro_form': registro_form})
+                   'registro_form': registro_form, 'tipo_usuario': tipo_usuario})
 
 
 
@@ -218,6 +226,13 @@ def cuenta(request):
     usuario = Cliente.objects.filter(correo = correo).first()
     print(f"usuario: {usuario}")
 
+    if request.user.groups.filter(name='vendedores').exists():
+        tipo_usuario = 'vendedor'
+    else:
+        tipo_usuario = 'contador'
+
+    print(f"tipo de usuario: {tipo_usuario}")
+
 
     if request.method == 'POST':
         if 'logout' in request.POST:
@@ -230,7 +245,7 @@ def cuenta(request):
         usuario.save()
         return redirect('cuenta')
     
-    return render(request, 'cuenta.html', {'usuario': usuario})
+    return render(request, 'cuenta.html', {'usuario': usuario, 'tipo_usuario':tipo_usuario})
 
 def carrito(request):
     payment_model = get_payment_model()  # Obtienes el modelo de pago de django-payments
@@ -311,9 +326,16 @@ def pago(request):
             return HttpResponse(f"Hubo un error: {str(e)}")
     return render(request, 'pago.html')
 
+
+@login_required
 def admin(request):
+    if request.method == 'POST':
+        if 'logout' in request.POST:
+            logout(request)
+            return redirect('index')
     return render(request, 'admin.html')
 
+@login_required
 def contador(request):
     return render(request, 'contador.html')
 
@@ -331,3 +353,50 @@ def base(request):
 
 def contacto(request):
     return render(request, 'contacto.html')
+
+@login_required
+def gestionCatalogo(request):
+    productos = Inventario.objects.all()
+    print(productos)
+    return render(request, 'gestionCatalogo.html', {'productos':productos})
+
+@login_required
+def gestionDescuento(request):
+    return render(request, 'gestionDescuento.html')
+
+def cerrar_sesion(request):
+    logout(request)
+    return redirect('index')
+
+@login_required
+def gestionInventario(request):
+    return render(request, 'gestionInventario.html')
+
+@login_required
+def vendedor(request):
+    return render(request, 'vendedor.html')
+
+@login_required
+def gestionPedidos(request):
+    return render(request, 'gestionPedidos.html')
+
+@login_required
+def gestionPagos(request):
+    return render(request, 'gestionPagos.html')
+
+@login_required
+def transferencias(request):
+    return render(request, 'transferencias.html')
+
+@login_required
+def reportesFinancieros(request):
+    return render(request, 'reportesFinancieros.html')
+
+@login_required
+def gestionReportesAdmin(request):
+    return render(request, 'gestionReportesAdmin.html')
+
+
+@login_required
+def gestionVenta(request):
+    return render(request, 'gestionVenta.html')
