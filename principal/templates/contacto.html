@@ -1,0 +1,441 @@
+<<<<<<< HEAD
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contacto - FERREMAS</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet" />
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet" />
+  {% extends 'base.html' %}
+  <style>
+    body {
+      background-color: #f8f9fa;
+      font-family: 'Roboto', sans-serif;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    .ferremas-header {
+      background-color: #041e41;
+      color: white;
+      padding: 15px 30px;
+    }
+
+    .ferremas-header h4 {
+      margin: 0;
+      font-weight: bold;
+    }
+
+    .contact-form {
+      background: white;
+      border-radius: 10px;
+      padding: 30px;
+      border: 1px solid #ddd;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+
+    .form-title {
+      color: #041e41;
+      font-weight: bold;
+      margin-bottom: 20px;
+    }
+
+    .btn-ferremas {
+      background-color: #041e41;
+      color: white;
+      font-weight: bold;
+      border: none;
+    }
+
+    .btn-ferremas:hover {
+      background-color: #03306c;
+    }
+
+    .form-group i {
+      color: #041e41;
+    }
+
+    .ferremas-footer {
+      background-color: #041e41;
+      color: white;
+      margin-top: auto;
+    }
+  </style>
+</head>
+<body>
+
+    <div class="container-fluid">
+        <div class="row py-1 px-xl-5" style="background-color: #041e41; margin-bottom: 0;">
+            <div class="col-lg-6 d-none d-lg-block">
+            </div>
+
+    <!---------------------------------------------------------------- Inicio de Sesión ------------------------------------------------------------------------------->
+
+            <div class="col-lg-6 text-center text-lg-right" style="background-color: #041e41;">
+                <div class="d-inline-flex align-items-center">
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-sm btn-light dropdown-toggle" data-toggle="dropdown" style="background-color: #feb81f;">Mi Cuenta</button>
+                        <div class="dropdown-menu dropdown-menu-right">
+                            <button class="dropdown-item" type="button" data-toggle="modal" data-target="#loginModal">Iniciar Sesión</button>
+                            <button class="dropdown-item" type="button" data-toggle="modal" data-target="#registerModal">Registrarse</button>
+                          </div>   
+                    </div>
+  
+    <!-------------------------------------------------------------------- Idiomas y Dinero ---------------------------------------------------------------------------->
+                    <div class="btn-group mx-2">
+                        <button type="button" class="btn btn-sm btn-light dropdown-toggle" data-toggle="dropdown" style="background-color: #feb81f;">USD</button>
+                        <div class="dropdown-menu dropdown-menu-right">
+                            <button class="dropdown-item" type="button">EUR</button>
+                            <button class="dropdown-item" type="button">GBP</button>
+                            <button class="dropdown-item" type="button">CAD</button>
+                        </div>
+                    </div>
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-sm btn-light dropdown-toggle" data-toggle="dropdown"
+                        style="background-color: #feb81f;">
+                        EN</button>
+
+                        <div class="dropdown-menu dropdown-menu-right">
+                            <button class="dropdown-item" type="button">
+                                FR
+                            </button>
+                            <button class="dropdown-item" type="button">
+                                AR
+                            </button>
+                            <button class="dropdown-item" type="button">
+                                RU
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--------------------------------------------------------------------- Inicio Topbar ------------------------------------------------------------------------------->
+
+    <div class="container-fluid px-4 py-2" style="background-color: #041e41;">
+        <div class="row align-items-center">
+  
+    <!----------------------------------------------------------------------- Logo--------------------------------------------------------------------------------------->
+
+      <div class="col-auto">
+        <a href="index.html">
+          <img src="img/logo3.png" alt="Logo" style="height: 75px;">
+        </a>
+      </div>
+  
+    <!----------------------------------------------------------------------- Buscador ------------------------------------------------------------------------------------>
+
+      <div class="col">
+        <form action="">
+          <div class="input-group">
+            <input type="text" class="form-control" placeholder="¿Qué quieres buscar hoy?">
+            <div class="input-group-append">
+              <button class="btn btn-outline-light bg-white" type="submit">
+                <i class="fa fa-search text-dark"></i>
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+  
+    <!---------------------------------------------------------------------- Carrito ------------------------------------------------------------------------------------>
+    <a href="#" class="btn px-3" id="toggleCart" style="font-size: 1.5rem;">
+      <i class="fas fa-shopping-cart text-warning"></i>
+    </a>
+    
+  
+    </div>
+  </div>
+
+    <!----------------------------------------------------------------------- Mensaje Informativo ------------------------------------------------------------------------>
+    <div class="w-100 text-center py-2" style="background-color: #d6d6d6;">
+        <strong style="color: #041e41; font-weight: bold;">
+            Tus compras en ferremas.cl en hasta <span style="text-transform: uppercase;">3 cuotas sin interés</span>
+        </strong>
+    </div>
+{% block content %}
+  <!-- Header -->
+  <div class="ferremas-header d-flex justify-content-between align-items-center">
+    <h4>FERREMAS - Formulario de Contacto</h4>
+    <a href="index.html" class="btn btn-ferremas">Volver al Inicio</a>
+  </div>
+
+  <!-- Formulario -->
+  <div class="container my-5">
+    <div class="row justify-content-center">
+      <div class="col-md-8">
+        <div class="contact-form">
+          <h5 class="form-title">¿En qué podemos ayudarte?</h5>
+          <form>
+            <div class="form-group">
+              <label><i class="fas fa-envelope mr-2"></i>Email <span class="text-danger">*</span></label>
+              <input type="email" class="form-control" placeholder="correo@ejemplo.com" required />
+            </div>
+
+            <div class="form-group">
+              <label><i class="fas fa-tag mr-2"></i>Asunto <span class="text-danger">*</span></label>
+              <input type="text" class="form-control" placeholder="Ej: Consulta sobre producto" required />
+            </div>
+
+            <div class="form-group">
+              <label><i class="fas fa-comment-dots mr-2"></i>Mensaje</label>
+              <textarea class="form-control" rows="5" placeholder="Escribe tu mensaje aquí..." required></textarea>
+            </div>
+
+            <div class="form-group">
+              <label><i class="fas fa-question-circle mr-2"></i>Motivo del mensaje</label>
+              <select class="form-control">
+                <option value="">Seleccione una opción</option>
+                <option value="cotizacion">Cotizar productos</option>
+                <option value="cliente">Servicio al cliente</option>
+                <option value="seguimiento">Seguimiento de pedidos</option>
+                <option value="otros">Otras consultas</option>
+              </select>
+            </div>
+
+            <button type="submit" class="btn btn-ferremas btn-block">Enviar</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {% endblock %}
+    <!-------------------------------------------------------------------- Footer ---------------------------------------------------------------------------------->
+  <footer class="ferremas-footer py-3 text-center">
+    <div class="container">
+      <small>&copy; <a href="#" class="text-warning">Synergia</a>. Todos los derechos reservados FERREMAS</small>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+</body>
+</html>
+=======
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contacto - FERREMAS</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet" />
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet" />
+  {% extends 'base.html' %}
+  <style>
+    body {
+      background-color: #f8f9fa;
+      font-family: 'Roboto', sans-serif;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    .ferremas-header {
+      background-color: #041e41;
+      color: white;
+      padding: 15px 30px;
+    }
+
+    .ferremas-header h4 {
+      margin: 0;
+      font-weight: bold;
+    }
+
+    .contact-form {
+      background: white;
+      border-radius: 10px;
+      padding: 30px;
+      border: 1px solid #ddd;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+
+    .form-title {
+      color: #041e41;
+      font-weight: bold;
+      margin-bottom: 20px;
+    }
+
+    .btn-ferremas {
+      background-color: #041e41;
+      color: white;
+      font-weight: bold;
+      border: none;
+    }
+
+    .btn-ferremas:hover {
+      background-color: #03306c;
+    }
+
+    .form-group i {
+      color: #041e41;
+    }
+
+    .ferremas-footer {
+      background-color: #041e41;
+      color: white;
+      margin-top: auto;
+    }
+  </style>
+</head>
+<body>
+
+    <div class="container-fluid">
+        <div class="row py-1 px-xl-5" style="background-color: #041e41; margin-bottom: 0;">
+            <div class="col-lg-6 d-none d-lg-block">
+            </div>
+
+    <!---------------------------------------------------------------- Inicio de Sesión ------------------------------------------------------------------------------->
+
+            <div class="col-lg-6 text-center text-lg-right" style="background-color: #041e41;">
+                <div class="d-inline-flex align-items-center">
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-sm btn-light dropdown-toggle" data-toggle="dropdown" style="background-color: #feb81f;">Mi Cuenta</button>
+                        <div class="dropdown-menu dropdown-menu-right">
+                            <button class="dropdown-item" type="button" data-toggle="modal" data-target="#loginModal">Iniciar Sesión</button>
+                            <button class="dropdown-item" type="button" data-toggle="modal" data-target="#registerModal">Registrarse</button>
+                          </div>   
+                    </div>
+  
+    <!-------------------------------------------------------------------- Idiomas y Dinero ---------------------------------------------------------------------------->
+                    <div class="btn-group mx-2">
+                        <button type="button" class="btn btn-sm btn-light dropdown-toggle" data-toggle="dropdown" style="background-color: #feb81f;">USD</button>
+                        <div class="dropdown-menu dropdown-menu-right">
+                            <button class="dropdown-item" type="button">EUR</button>
+                            <button class="dropdown-item" type="button">GBP</button>
+                            <button class="dropdown-item" type="button">CAD</button>
+                        </div>
+                    </div>
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-sm btn-light dropdown-toggle" data-toggle="dropdown"
+                        style="background-color: #feb81f;">
+                        EN</button>
+
+                        <div class="dropdown-menu dropdown-menu-right">
+                            <button class="dropdown-item" type="button">
+                                FR
+                            </button>
+                            <button class="dropdown-item" type="button">
+                                AR
+                            </button>
+                            <button class="dropdown-item" type="button">
+                                RU
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--------------------------------------------------------------------- Inicio Topbar ------------------------------------------------------------------------------->
+
+    <div class="container-fluid px-4 py-2" style="background-color: #041e41;">
+        <div class="row align-items-center">
+  
+    <!----------------------------------------------------------------------- Logo--------------------------------------------------------------------------------------->
+
+      <div class="col-auto">
+        <a href="index.html">
+          <img src="img/logo3.png" alt="Logo" style="height: 75px;">
+        </a>
+      </div>
+  
+    <!----------------------------------------------------------------------- Buscador ------------------------------------------------------------------------------------>
+
+      <div class="col">
+        <form action="">
+          <div class="input-group">
+            <input type="text" class="form-control" placeholder="¿Qué quieres buscar hoy?">
+            <div class="input-group-append">
+              <button class="btn btn-outline-light bg-white" type="submit">
+                <i class="fa fa-search text-dark"></i>
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+  
+    <!---------------------------------------------------------------------- Carrito ------------------------------------------------------------------------------------>
+    <a href="#" class="btn px-3" id="toggleCart" style="font-size: 1.5rem;">
+      <i class="fas fa-shopping-cart text-warning"></i>
+    </a>
+    
+  
+    </div>
+  </div>
+
+    <!----------------------------------------------------------------------- Mensaje Informativo ------------------------------------------------------------------------>
+    <div class="w-100 text-center py-2" style="background-color: #d6d6d6;">
+        <strong style="color: #041e41; font-weight: bold;">
+            Tus compras en ferremas.cl en hasta <span style="text-transform: uppercase;">3 cuotas sin interés</span>
+        </strong>
+    </div>
+{% block content %}
+  <!-- Header -->
+  <div class="ferremas-header d-flex justify-content-between align-items-center">
+    <h4>FERREMAS - Formulario de Contacto</h4>
+    <a href="index.html" class="btn btn-ferremas">Volver al Inicio</a>
+  </div>
+
+  <!-- Formulario -->
+  <div class="container my-5">
+    <div class="row justify-content-center">
+      <div class="col-md-8">
+        <div class="contact-form">
+          <h5 class="form-title">¿En qué podemos ayudarte?</h5>
+          <form>
+            <div class="form-group">
+              <label><i class="fas fa-envelope mr-2"></i>Email <span class="text-danger">*</span></label>
+              <input type="email" class="form-control" placeholder="correo@ejemplo.com" required />
+            </div>
+
+            <div class="form-group">
+              <label><i class="fas fa-tag mr-2"></i>Asunto <span class="text-danger">*</span></label>
+              <input type="text" class="form-control" placeholder="Ej: Consulta sobre producto" required />
+            </div>
+
+            <div class="form-group">
+              <label><i class="fas fa-comment-dots mr-2"></i>Mensaje</label>
+              <textarea class="form-control" rows="5" placeholder="Escribe tu mensaje aquí..." required></textarea>
+            </div>
+
+            <div class="form-group">
+              <label><i class="fas fa-question-circle mr-2"></i>Motivo del mensaje</label>
+              <select class="form-control">
+                <option value="">Seleccione una opción</option>
+                <option value="cotizacion">Cotizar productos</option>
+                <option value="cliente">Servicio al cliente</option>
+                <option value="seguimiento">Seguimiento de pedidos</option>
+                <option value="otros">Otras consultas</option>
+              </select>
+            </div>
+
+            <button type="submit" class="btn btn-ferremas btn-block">Enviar</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {% endblock %}
+    <!-------------------------------------------------------------------- Footer ---------------------------------------------------------------------------------->
+  <footer class="ferremas-footer py-3 text-center">
+    <div class="container">
+      <small>&copy; <a href="#" class="text-warning">Synergia</a>. Todos los derechos reservados FERREMAS</small>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+</body>
+</html>
+>>>>>>> ab67632 (mejoras)

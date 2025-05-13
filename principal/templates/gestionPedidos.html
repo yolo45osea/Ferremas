@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestión de Pedidos - FERREMAS</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+      background-color: #f8f9fa;
+    }
+
+    .ferremas-header {
+      background-color: #041e41;
+      color: white;
+      padding: 15px 30px;
+    }
+
+    .ferremas-header h4 {
+      margin: 0;
+      font-weight: bold;
+    }
+
+    .form-section, .table-section {
+      background-color: #fff;
+      padding: 25px;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      margin-bottom: 30px;
+    }
+
+    .btn-ferremas {
+      background-color: #041e41;
+      color: white;
+      font-weight: bold;
+    }
+
+    .btn-ferremas:hover {
+      background-color: #03306c;
+    }
+
+    label {
+      font-weight: 500;
+      color: #041e41;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <div class="ferremas-header d-flex justify-content-between align-items-center flex-wrap text-center text-md-left">
+    <h4>FERREMAS - Gestión de Pedidos</h4>
+    <a href="{% url 'vendedor' %}" class="btn btn-ferremas mt-2 mt-md-0">Volver al Panel</a>
+  </div>
+
+  <div class="container my-4">
+
+    <!-- Filtro de búsqueda -->
+    <div class="form-section">
+      <h5 class="mb-3" style="color: #041e41;">Buscar Pedidos</h5>
+      <form class="row">
+        <div class="form-group col-md-6">
+          <label>Cliente</label>
+          <input type="text" class="form-control" placeholder="Nombre o RUT del cliente">
+        </div>
+        <div class="form-group col-md-6">
+          <label>Estado del Pedido</label>
+          <select class="form-control">
+            <option>Todos</option>
+            <option>Pendiente</option>
+            <option>En reparto</option>
+            <option>Entregado</option>
+            <option>Cancelado</option>
+          </select>
+        </div>
+        <div class="col-12 text-center mt-3">
+          <button class="btn btn-warning font-weight-bold text-dark">Filtrar</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Tabla de pedidos -->
+    <div class="table-section">
+      <h5 class="mb-3" style="color: #041e41;">Listado de Pedidos</h5>
+      <div class="table-responsive">
+        <table class="table table-bordered table-striped">
+          <thead class="thead-dark">
+            <tr>
+              <th># Pedido</th>
+              <th>Cliente</th>
+              <th>Fecha</th>
+              <th>Total</th>
+              <th>Estado</th>
+              <th>Entrega</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>#10245</td>
+              <td>Juan Pérez</td>
+              <td>2025-05-12</td>
+              <td>$95.000</td>
+              <td><span class="badge badge-warning text-dark">Pendiente</span></td>
+              <td>Sin fecha</td>
+              <td>
+                <button class="btn btn-sm btn-success mb-1">Marcar Entregado</button>
+                <button class="btn btn-sm btn-primary">Programar</button>
+              </td>
+            </tr>
+            <tr>
+              <td>#10232</td>
+              <td>Ana Martínez</td>
+              <td>2025-05-10</td>
+              <td>$125.000</td>
+              <td><span class="badge badge-success">Entregado</span></td>
+              <td>2025-05-11</td>
+              <td>
+                <button class="btn btn-sm btn-secondary" disabled>Completado</button>
+              </td>
+            </tr>
+            <!-- Más pedidos -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+</body>
+</html>
