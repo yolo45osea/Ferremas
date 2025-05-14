@@ -36,10 +36,16 @@ def index(request):
     precio = 10000
     tasa_conversion = 0
     idioma = 'ES'
-    carrito = DetalleCarrito.objects.all()
+    cliente = Cliente.objects.filter(usuario=request.user.username).first()
+    carrito = CarritoCompra.objects.filter(idcliente=cliente).first()
+    detalle = DetalleCarrito.objects.filter(idcarrito = carrito)
     total = 0
 
-    for i in carrito:
+    print(f"cliente: {cliente}")
+    print(f"carrito: {carrito}")
+    print(f"detalle: {detalle}")
+
+    for i in detalle:
         total+= i.idproducto.precio * i.cantidad
     print(total)
 
@@ -152,7 +158,7 @@ def index(request):
             return JsonResponse({"error": "Error al consultar la API", "details": response.text}, status=500)
     print(f"tasa: {tasa_conversion}, precio: {precio}")
     return render(request, 'index.html', {'precio': precio * tasa_conversion if tasa_conversion>0 else precio, 'login_form': login_form, 
-                   'registro_form': registro_form, 'tipo_usuario': tipo_usuario, 'idioma': idioma, 'carrito':carrito, 'total':total})
+                   'registro_form': registro_form, 'tipo_usuario': tipo_usuario, 'idioma': idioma, 'carrito':detalle, 'total':total})
 
 
 
