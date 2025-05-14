@@ -17,7 +17,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from principal.forms import RegistroForm
-from principal.models import Cliente, Inventario
+from principal.models import CarritoCompra, Cliente, DetalleCarrito, Inventario
 from .utilities import traducir_html
 from django.template.loader import render_to_string
 
@@ -36,11 +36,21 @@ def index(request):
     precio = 10000
     tasa_conversion = 0
     idioma = 'ES'
+    carrito = DetalleCarrito.objects.all()
+    total = 0
+
+    for i in carrito:
+        total+= i.idproducto.precio * i.cantidad
+    print(total)
 
     if request.user.groups.filter(name='vendedores').exists():
         tipo_usuario = 'vendedor'
-    else:
+    elif request.user.groups.filter(name='contadores').exists():
         tipo_usuario = 'contador'
+    elif request.user.groups.filter(name='bodegueros').exists():
+        tipo_usuario = 'bodeguero'
+    else:
+        tipo_usuario = 'admin'
 
     print(f"tipo de usuario: {tipo_usuario}")
 
@@ -54,6 +64,12 @@ def index(request):
             return HttpResponse(html_traducido)
 
     if request.method == "POST":
+
+        if 'borrar' in request.POST:
+            producto = request.POST.get('producto')
+            Borrar_producto = DetalleCarrito.objects.filter(idproducto=producto)
+            Borrar_producto.delete()
+
         # FORMULARIO LOGIN
         if 'login_form' in request.POST:
             login_form = AuthenticationForm(request, data=request.POST)
@@ -136,14 +152,23 @@ def index(request):
             return JsonResponse({"error": "Error al consultar la API", "details": response.text}, status=500)
     print(f"tasa: {tasa_conversion}, precio: {precio}")
     return render(request, 'index.html', {'precio': precio * tasa_conversion if tasa_conversion>0 else precio, 'login_form': login_form, 
-                   'registro_form': registro_form, 'tipo_usuario': tipo_usuario, 'idioma': idioma})
+                   'registro_form': registro_form, 'tipo_usuario': tipo_usuario, 'idioma': idioma, 'carrito':carrito, 'total':total})
 
 
 
 def productos(request, categoria):
+    carrito = DetalleCarrito.objects.all()
     moneda = ""
     productos = Inventario.objects.filter(categoria=categoria)
+    if productos == None:
+        productos = Inventario.objects.filter(categoria_basica=categoria)
     tasa_conversion = 1  # Por defecto
+    carrito = DetalleCarrito.objects.all()
+    total = 0
+
+    for i in carrito:
+        total+= i.idproducto.precio * i.cantidad
+    print(total)
 
     # ----- TRADUCCIÓN -----
     if 'traduccion' in request.GET:
@@ -154,12 +179,20 @@ def productos(request, categoria):
 
     # ----- MONEDA Y FORMULARIOS -----
     if request.method == "POST":
+
+        if 'borrar' in request.POST:
+            producto = request.POST.get('producto')
+            Borrar_producto = DetalleCarrito.objects.filter(idproducto=producto)
+            Borrar_producto.delete()
         # Traducción por POST (por compatibilidad)
         if 'traduccion' in request.POST:
             idioma = request.POST.get('traduccion', 'FR')
             html_original = render_to_string("productos.html", {"productos": productos})
             html_traducido = traducir_html(html_original, idioma)
             return HttpResponse(html_traducido)
+        
+        if 'addtocart' in request.POST:
+            print(f"cantidad: {request.POST.get('product-quantity')}")
 
         # LOGIN
         if 'login_form' in request.POST:
@@ -214,7 +247,10 @@ def productos(request, categoria):
     return render(request, 'productos.html', {
         'productos': productos_actualizados,
         'tasa': tasa_conversion,
-        'moneda': moneda if moneda != "" else "CLP"
+        'moneda': moneda if moneda != "" else "CLP",
+        'categoria':categoria,
+        'carrito':carrito, 
+        'total':total
 
     })
 
@@ -249,6 +285,7 @@ def cuenta(request):
     return render(request, 'cuenta.html', {'usuario': usuario, 'tipo_usuario':tipo_usuario})
 
 def carrito(request):
+    carrito = DetalleCarrito.objects.all()
     payment_model = get_payment_model()  # Obtienes el modelo de pago de django-payments
 
     if request.method == 'POST':
@@ -294,9 +331,25 @@ def webpay_cancel(request):
 
 
 def resumen(request):
-    return render(request, 'resumen.html')
+    carrito = DetalleCarrito.objects.all()
+    total = 0
+
+    for i in carrito:
+        total+= i.idproducto.precio * i.cantidad
+    print(total)
+    return render(request, 'resumen.html', {
+        'carrito': carrito,
+        'total': total
+        })
 
 def pago(request):
+
+    carrito = DetalleCarrito.objects.all()
+    total = 0
+
+    for i in carrito:
+        total+= i.idproducto.precio * i.cantidad
+    print(total)
     payment_model = get_payment_model()  # Obtienes el modelo de pago de django-payments
 
     if request.method == 'POST':
@@ -325,7 +378,8 @@ def pago(request):
         except Exception as e:
             logger.error(f"Error al crear pago: {str(e)}")
             return HttpResponse(f"Hubo un error: {str(e)}")
-    return render(request, 'pago.html')
+    return render(request, 'pago.html', {'carrito': carrito,
+        'total': total})
 
 
 @login_required
@@ -350,7 +404,9 @@ def Cambios(request):
     return render(request, 'Cambios.html')
 
 def base(request):
-    return render(request, 'base.html')
+    carrito = DetalleCarrito.objects.all()
+    print(carrito)
+    return render(request, 'base.html', {'carrito':carrito})
 
 def contacto(request):
     return render(request, 'contacto.html')
@@ -401,3 +457,85 @@ def gestionReportesAdmin(request):
 @login_required
 def gestionVenta(request):
     return render(request, 'gestionVenta.html')
+
+@login_required
+def bodeguero(request):
+    return render(request, 'bodeguero.html')
+
+@login_required
+def entregaPedidos(request):
+    return render(request, 'entregaPedidos.html')
+
+@login_required
+def preparacionDespacho(request):
+    return render(request, 'preparacionDespacho.html')
+
+@login_required
+def verOrdenes(request):
+    return render(request, 'verOrdenes.html')
+
+
+
+def agregarCarrito(request):
+    if request.method == 'POST':
+        usuario = Cliente.objects.filter(usuario=request.user.username).first()
+        if request.POST.get('submit') == "addtocart":
+            carrito, creado = CarritoCompra.objects.get_or_create(
+                idcliente=usuario,
+                estado= 1,  # Asegúrate que este campo existe
+                defaults={'fechacreacion': date.today()}
+            )
+
+            id_producto = request.POST.get('id_producto')
+            cantidad = int(request.POST.get('product-quantity'))
+
+            detalle = DetalleCarrito.objects.filter(idcarrito=carrito.idcarrito, idproducto=id_producto).first()
+            producto = Inventario.objects.filter(idproducto=id_producto).first()
+
+            if detalle:
+                detalle.cantidad += cantidad
+                detalle.save()
+            else:
+                DetalleCarrito.objects.create(
+                    idcarrito=carrito,
+                    idproducto=producto,
+                    cantidad=cantidad,
+                )
+
+            return redirect('productos/'+ request.POST.get('categoria'))
+
+    return render(request, 'productos.html')
+
+
+def actualizarCarrito(request):
+    
+    if request.method == 'POST':
+        id_producto = request.POST.get('producto')
+        categoria = request.POST.get('categoria')
+        operacion = request.POST.get('operacion')
+        cliente = Cliente.objects.filter(usuario=request.user.username).first()
+        carrito = CarritoCompra.objects.filter(idcliente=cliente.idcliente).first()
+        detalle = DetalleCarrito.objects.filter(idcarrito=carrito, idproducto=id_producto).first()
+        producto = Inventario.objects.filter(idproducto = id_producto).first()
+        print(f"carrito: {carrito}")
+        print(f"detalle: {detalle}")
+        print(f"operacion: {operacion}")
+        if detalle:
+            if operacion == "menos":
+                if detalle.cantidad > 1:
+                    detalle.cantidad -= 1
+                else:
+                    detalle.delete()
+                    messages.info(request, 'Producto eliminado del carrito.')
+                    return redirect('resumen')
+            elif operacion == "mas":
+                detalle.cantidad += 1
+                if detalle.cantidad > producto.stock:
+                    messages.warning(request, 'Usted ha alcanzado el límite de productos disponibles.')
+                    detalle.cantidad -= 1
+                    return redirect('resumen')
+            detalle.save()
+
+            return redirect('resumen') 
+    return redirect('resumen')
+

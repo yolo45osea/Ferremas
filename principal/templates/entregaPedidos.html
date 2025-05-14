@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Entrega de Pedidos Presenciales - FERREMAS</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+      background-color: #f8f9fa;
+    }
+
+    .ferremas-header {
+      background-color: #041e41;
+      color: white;
+      padding: 15px 30px;
+    }
+
+    .ferremas-header h4 {
+      margin: 0;
+      font-weight: bold;
+    }
+
+    .btn-ferremas {
+      background-color: #041e41;
+      color: white;
+      font-weight: bold;
+    }
+
+    .btn-ferremas:hover {
+      background-color: #03306c;
+    }
+
+    .section-container {
+      background-color: #fff;
+      padding: 25px;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      margin-top: 30px;
+    }
+
+    h5 {
+      color: #041e41;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="ferremas-header d-flex justify-content-between align-items-center">
+    <h4>FERREMAS - Entrega de Pedidos Presenciales</h4>
+    <a href="{% url 'bodeguero' %}" class="btn btn-ferremas">Volver al Panel</a>
+  </div>
+
+  <div class="container section-container">
+    <h5 class="mb-4">Pedidos para Retiro en Tienda</h5>
+
+    <div class="table-responsive">
+      <table class="table table-bordered">
+        <thead class="thead-dark">
+          <tr>
+            <th>Fecha</th>
+            <th>Cliente</th>
+            <th>Producto</th>
+            <th>Código</th>
+            <th>Cantidad</th>
+            <th>Vendedor</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>2025-05-14</td>
+            <td>Camila Díaz</td>
+            <td>Cemento 25kg</td>
+            <td>CM-25</td>
+            <td>2</td>
+            <td>Juan Pérez</td>
+            <td><span class="badge badge-warning">Listo para entrega</span></td>
+            <td>
+              <button class="btn btn-sm btn-success">Entregado</button>
+            </td>
+          </tr>
+          <tr>
+            <td>2025-05-13</td>
+            <td>Pedro Torres</td>
+            <td>Pintura Blanca 4L</td>
+            <td>PB-04</td>
+            <td>1</td>
+            <td>Ana López</td>
+            <td><span class="badge badge-warning">Listo para entrega</span></td>
+            <td>
+              <button class="btn btn-sm btn-success">Entregado</button>
+            </td>
+          </tr>
+          <!-- Más registros -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+</body>
+</html>

@@ -8,7 +8,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
   <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
-  {% extends 'base.html' %}
+  
   {% load static %}
 
   <style>
@@ -50,7 +50,7 @@
 </head>
 
 <body>
-  
+  {% block content %}
   <!-- Header -->
     <div class="container-fluid ferremas-header py-2">
       <div class="d-flex justify-content-between align-items-center">
@@ -62,7 +62,7 @@
         </div>
       </div>
     </div>
-{% block content %}
+
     <!-- Main content -->
     <main>
       <div class="container my-5">
@@ -70,20 +70,30 @@
           <!-- Lista de productos -->
           <div class="col-md-8">
             <h5 class="mb-4" style="color: #041e41; font-weight: bold;">Resumen de tu compra</h5>
-            <div class="d-flex border rounded shadow-sm p-3 mb-3 align-items-center">
-              <img src="{% static 'img/producto1.png' %}" alt="Producto" style="width: 80px; height: 80px; object-fit: cover; border: 1px solid #ddd; margin-right: 15px;">
-              <div class="flex-grow-1">
-                <h6 class="mb-1" style="color: #041e41;">Estante Metálico Forte 5 Repisas</h6>
-                <small class="text-muted">SKU: 234660</small>
+            {% for producto in carrito %}
+              <div class="d-flex border rounded shadow-sm p-3 mb-3 align-items-center">
+                <img src="data:image/jpeg;base64,{{ producto.idproducto.imagen_base64 }}" alt="Producto" style="width: 80px; height: 80px; object-fit: cover; border: 1px solid #ddd; margin-right: 15px;">
+                <div class="flex-grow-1">
+                  <h6 class="mb-1" style="color: #041e41;">{{ producto.idproducto.nombre }}</h6>
+                  <small class="text-muted">SKU: {{ producto.idproducto.idproducto }}</small>
+                </div>
+                <div class="d-flex align-items-center">
+                  <form action="{% url 'actualizarCarrito' %}" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="producto" value="{{ producto.idproducto.idproducto }}">
+                    <button type="submit" name="operacion" value="menos" class="btn btn-outline-secondary btn-sm mr-2">-</button>
+                  </form>  
+                    <span>{{ producto.cantidad }}</span>
+                  <form action="{% url 'actualizarCarrito' %}" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="producto" value="{{ producto.idproducto.idproducto }}">  
+                    <button type="submit" name="operacion" id="operacion" value="mas" class="btn btn-outline-secondary btn-sm ml-2">+</button>
+                  </form>
+                </div>
+                <div class="ml-4 font-weight-bold" style="color: #041e41;">${{ producto.total }}</div>
+                <button class="btn btn-link text-danger ml-3">&times;</button>
               </div>
-              <div class="d-flex align-items-center">
-                <button class="btn btn-outline-secondary btn-sm mr-2">-</button>
-                <span>1</span>
-                <button class="btn btn-outline-secondary btn-sm ml-2">+</button>
-              </div>
-              <div class="ml-4 font-weight-bold" style="color: #041e41;">$69.990</div>
-              <button class="btn btn-link text-danger ml-3">&times;</button>
-            </div>
+            {% endfor %}
           </div>
 
           <!-- Resumen de pago -->
@@ -103,7 +113,7 @@
                 <hr>
                 <div class="d-flex justify-content-between">
                   <span>Subtotal</span>
-                  <strong>$69.990</strong>
+                  <strong>${{ total }}</strong>
                 </div>
                 <div class="d-flex justify-content-between">
                   <span>Descuento</span>
@@ -112,7 +122,7 @@
                 <hr>
                 <div class="d-flex justify-content-between mb-3">
                   <span style="font-weight: bold; color: #041e41;">Total</span>
-                  <strong style="font-size: 1.2rem; color: #041e41;">$69.990</strong>
+                  <strong style="font-size: 1.2rem; color: #041e41;">${{ total }}</strong>
                 </div>
                 <div class="form-check mb-3">
                   <input type="checkbox" class="form-check-input" id="condiciones">

@@ -151,7 +151,7 @@
           <h5 class="mb-3 step-title">Resumen de la compra</h5>
           <div class="d-flex justify-content-between">
             <span>Subtotal</span>
-            <strong>$69.990</strong>
+            <strong>${{ total }}</strong>
           </div>
           <div class="d-flex justify-content-between">
             <span>Gastos de envío</span>
@@ -160,12 +160,12 @@
           <hr>
           <div class="d-flex justify-content-between mb-3">
             <span>Total</span>
-            <strong>$69.990</strong>
+            <strong>${{ total }}</strong>
           </div>
         </div>
         <form method="post">
           {% csrf_token %}
-          <input type="hidden" name="valor" id="valor" value="69990">
+          <input type="hidden" name="valor" id="valor" value="{{ total }}">
           <button type="submit" class="btn btn-ferremas btn-block mt-3">Pagar</button>
         </form>
       </div>

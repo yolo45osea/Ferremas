@@ -14,6 +14,7 @@ urlpatterns = [
     path('admininstrador', views.admin, name='admininstrador'),
     path('contador', views.contador, name='contador'),
     path('vendedor', views.vendedor, name='vendedor'),
+    path('bodeguero', views.bodeguero, name='bodeguero'),
 
     path('cerrar_sesion', views.cerrar_sesion, name='cerrar_sesion'),
 
@@ -26,6 +27,9 @@ urlpatterns = [
     path('reportesFinancieros', views.reportesFinancieros, name='reportesFinancieros'),
     path('gestionReportesAdmin', views.gestionReportesAdmin, name='gestionReportesAdmin'),
     path('gestionVenta', views.gestionVenta, name='gestionVenta'),
+    path('entregaPedidos', views.entregaPedidos, name='entregaPedidos'),
+    path('preparacionDespacho', views.preparacionDespacho, name='preparacionDespacho'),
+    path('verOrdenes', views.verOrdenes, name='verOrdenes'),
 
     path('nosotros', views.nosotros, name='nosotros'),
     path('Cambios', views.Cambios, name='Cambios'),
@@ -33,4 +37,7 @@ urlpatterns = [
     path('base', views.base, name='base'),
     path('contacto', views.contacto, name='contacto'),
     path('pagos/cancel/', views.webpay_cancel, name='webpay_cancel'),
+
+    path('agregar', views.agregarCarrito, name="agregar"),
+    path('carrito/actualizar', views.actualizarCarrito, name='actualizarCarrito'),
 ]

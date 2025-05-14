@@ -52,6 +52,7 @@ class CarritoCompra(models.Model):
     idcarrito = models.AutoField(primary_key=True)
     idcliente = models.ForeignKey(Cliente, on_delete=models.CASCADE)
     fechacreacion = models.DateField()
+    estado = models.BooleanField()
 
 class Inventario(models.Model):
     idproducto = models.AutoField(primary_key=True)
@@ -70,6 +71,9 @@ class DetalleCarrito(models.Model):
     idcarrito = models.ForeignKey(CarritoCompra, on_delete=models.CASCADE)
     idproducto = models.ForeignKey(Inventario, on_delete=models.CASCADE)
     cantidad = models.IntegerField()
+
+    def total(self):
+        return self.idproducto.precio * self.cantidad
 
 class Informe(models.Model):
     idinforme = models.AutoField(primary_key=True)

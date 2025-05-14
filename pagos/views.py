@@ -58,7 +58,7 @@ def process_data(request, token, provider=None):
     if 'TBK_TOKEN' in request.GET and 'token_ws' not in request.GET:
         payment.status = 'rejected'  # o 'cancelled'
         payment.save()
-        return render(request, 'cart.html', {"payment": payment})
+        return render(request, 'index.html', {"payment": payment})
         
     if not provider:
         try:
