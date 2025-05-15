@@ -9,6 +9,8 @@ from pagos.models import Payment
 from django_payments_chile import WebpayProvider
 from django.views.decorators.csrf import csrf_exempt
 
+from principal.models import CarritoCompra, Cliente, DetalleCarrito, Inventario, Pago
+
 logger = logging.getLogger(__name__)
 
 def crear_pago(request):
@@ -92,6 +94,34 @@ def process_data(request, token, provider=None):
 
 
 def payment_success(request, pk):
+    if request.method == "POST":
+        print('peo')
+        if 'submit' in request.POST:
+            print('peoo')
+            idPago = request.POST.get('pago')
+            pago = Payment.objects.filter(payment_id = idPago).first()
+            pago.status = 'approved'
+            pago.save()
+            cliente = Cliente.objects.filter(usuario = request.user.username).first()
+            carrito = CarritoCompra.objects.filter(idcliente = cliente, estado = 1).first()
+            detalle = DetalleCarrito.objects.filter(idcarrito = carrito)
+
+            Pago.objects.create(
+                idPagoAPI = pago,
+                rut = cliente.rut
+            )
+
+            for productos in detalle:
+                producto = Inventario.objects.filter(idproducto = productos.idproducto.idproducto).first()
+                producto.stock = producto.stock - productos.cantidad
+                producto.save()
+
+
+
+            carrito.estado = 0
+            carrito.save()
+
+            return redirect('index')
     return render(request, 'success.html', {'payment_id': pk})
 
 def payment_pending(request):

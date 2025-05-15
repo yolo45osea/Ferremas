@@ -1,11 +1,140 @@
 <!-- templates/payment_success.html -->
+{% load static %}
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
-    <title>Pago Exitoso</title>
+    <meta charset="UTF-8">
+    <title>Pago Exitoso | FERREMAS</title>
+    <link href="{% static 'img/favicon.png' %}" rel="icon">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet">
+    
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Roboto', sans-serif;
+        }
+        .ferremas-header,
+        .ferremas-footer {
+            background-color: #041e41;
+            color: white;
+        }
+        .card-success {
+            background: white;
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            margin-top: 60px;
+        }
+        .card-success i {
+            font-size: 50px;
+            color: #28a745;
+            margin-bottom: 20px;
+        }
+        .card-success h1 {
+            font-size: 28px;
+            font-weight: bold;
+            color: #041e41;
+        }
+        .card-success p {
+            font-size: 18px;
+            color: #333;
+        }
+        .btn-ferremas {
+            background-color: #041e41;
+            color: white;
+            font-weight: bold;
+            margin-top: 25px;
+        }
+        .btn-ferremas:hover {
+            background-color: #03306c;
+        }
+    </style>
 </head>
 <body>
-    <h1>¡Gracias por tu pago!</h1>
-    <p>Tu ID de pago es: {{ payment_id }}</p>
+
+    <!-- Encabezado -->
+    <div class="container-fluid ferremas-header py-2">
+        <div class="d-flex justify-content-between align-items-center">
+            <a href="{% url 'index' %}" class="ml-3">
+                <img src="{% static 'img/logo3.png' %}" alt="Logo" style="height: 60px;">
+            </a>
+            <div class="flex-grow-1 text-center pr-5">
+                <h5 class="mb-0 text-white font-weight-bold">Pago Aceptado</h5>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contenido principal -->
+    <main class="container">
+        <form method="post">
+            {% csrf_token %}
+            <div class="card-success mx-auto" style="max-width: 600px; min-height: 500px;">
+            <i class="fas fa-check-circle"></i>
+            <h1>¡Gracias por tu compra!</h1>
+            <p>Tu pago fue procesado exitosamente.</p>
+            <p><strong>ID de pago:</strong> {{ payment_id }}</p>
+            <input type="hidden" name="pago" id="pago" value="{{ payment_id }}">
+            <button  name="submit" id="submit" class="btn btn-ferremas">Volver al inicio</button>
+        </div>
+        </form>
+    </main>
+
+    <!-- Footer -->
+    <div class="ferremas-footer mt-5 pt-5 pb-3 px-xl-5">
+        <div class="row">
+            <div class="col-lg-4 text-center mb-4">
+                <img src="{% static 'img/logo3.png' %}" alt="Logo Footer" class="img-fluid mb-3" style="max-width: 200px;">
+                <div class="d-flex justify-content-center">
+                    <a class="btn btn-primary btn-square mr-2" href="#"><i class="fab fa-twitter"></i></a>
+                    <a class="btn btn-primary btn-square mr-2" href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a class="btn btn-primary btn-square mr-2" href="#"><i class="fab fa-linkedin-in"></i></a>
+                    <a class="btn btn-primary btn-square" href="#"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+
+            <div class="col-lg-8">
+                <div class="row">
+                    <div class="col-md-4 mb-4">
+                        <h5 class="text-white text-uppercase">Términos y condiciones</h5>
+                        <a class="text-light d-block mb-2" href="nosotros.html"><i class="fa fa-angle-right mr-2"></i>Nuestra Empresa</a>
+                        <a class="text-light d-block mb-2" href="Cambios.html"><i class="fa fa-angle-right mr-2"></i>Cambios y Devoluciones</a>
+                        <a class="text-light d-block" href="TerminosyCondiciones.html"><i class="fa fa-angle-right mr-2"></i>Términos y Condiciones</a>
+                    </div>
+
+                    <div class="col-md-4 mb-4">
+                        <h5 class="text-white text-uppercase">Contáctanos</h5>
+                        <a class="text-light d-block mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>Contáctanos</a>
+                        <a class="text-light d-block mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>Ayuda</a>
+                        <span class="text-light d-block"><i class="fa fa-angle-right mr-2"></i>+56 2 2890 9000</span>
+                    </div>
+
+                    <div class="col-md-4 mb-4">
+                        <h5 class="text-white text-uppercase">Newsletter</h5>
+                        <form>
+                            <div class="input-group">
+                                <input type="email" class="form-control" placeholder="Tu correo electrónico">
+                                <div class="input-group-append">
+                                    <button class="btn btn-primary">Suscribirse</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row border-top mt-4 pt-3">
+            <div class="col-md-6 text-center text-md-left">
+                <p class="mb-0 text-light">&copy; Synergia - FERREMAS. Todos los derechos reservados.</p>
+            </div>
+            <div class="col-md-6 text-center text-md-right">
+                <img class="img-fluid" src="{% static 'img/payments.png' %}" alt="Métodos de pago" style="max-height: 30px;">
+            </div>
+        </div>
+    </div>
+
 </body>
 </html>

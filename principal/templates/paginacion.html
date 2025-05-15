@@ -1,0 +1,38 @@
+<div class="row">
+    <ul class="pagination pagination-lg justify-content-end">
+        {% if page_obj.has_previous %}
+            <li class="page-item">
+                <a class="page-link rounded-0 mr-3 shadow-sm border-top-0 border-left-0 text-dark" href="?categoria={{ categoria }}&page=1">&laquo; Primera</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link rounded-0 mr-3 shadow-sm border-top-0 border-left-0 text-dark" href="?categoria={{ categoria }}&page={{ page_obj.previous_page_number }}">Anterior</a>
+            </li>
+        {% endif %}
+
+<!--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
+        {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number == num %}
+                <li class="page-item active">
+                    <a class="page-link rounded-0 mr-3 shadow-sm border-top-0 border-left-0 text-dark btn btn-success" href="?categoria={{ categoria }}&page={{ num }}">{{ num }}</a>
+                </li>
+            {% else %}
+                <li class="page-item">
+                    <a class="page-link rounded-0 mr-3 shadow-sm border-top-0 border-left-0 text-dark" href="?categoria={{ categoria }}&page={{ num }}">{{ num }}</a>
+                </li>
+            {% endif %}
+        {% endfor %}
+
+<!--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
+
+        {% if page_obj.has_next %}
+            <li class="page-item">
+                <a class="page-link rounded-0 mr-3 shadow-sm border-top-0 border-left-0 text-dark" href="?categoria={{ categoria }}&page={{ page_obj.next_page_number }}">Siguiente</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link rounded-0 mr-3 shadow-sm border-top-0 border-left-0 text-dark" href="?categoria={{ categoria }}&page={{ page_obj.paginator.num_pages }}">Última &raquo;</a>
+            </li>
+        {% endif %}
+    </ul>
+</div>
+
+<!--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------->

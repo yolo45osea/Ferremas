@@ -54,7 +54,7 @@
   <!-- Header -->
     <div class="container-fluid ferremas-header py-2">
       <div class="d-flex justify-content-between align-items-center">
-        <a href="index.html" class="ml-3">
+        <a href="{% url 'index' %}" class="ml-3">
           <img src="{% static 'img/logo3.png' %}" alt="Logo" style="height: 60px;">
         </a>
         <div class="flex-grow-1 text-center pr-5">
@@ -91,7 +91,11 @@
                   </form>
                 </div>
                 <div class="ml-4 font-weight-bold" style="color: #041e41;">${{ producto.total }}</div>
-                <button class="btn btn-link text-danger ml-3">&times;</button>
+                <form method="post">
+                  {% csrf_token %}
+                  <input type="hidden" name="producto_borrado" value="{{ producto.idproducto.idproducto }}">
+                  <button type="submit" name="borrar" id="borrar" class="btn btn-link text-danger ml-3">&times;</button>
+                </form>
               </div>
             {% endfor %}
           </div>

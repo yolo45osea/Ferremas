@@ -550,16 +550,19 @@
     <div class="col-lg-9">
       <div class="row">
         <!-- Repite esto para cada producto (máximo 12 por página) -->
-        {% for producto in productos %}
+        {% for producto in page_obj %}
           <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-4 d-flex justify-content-center">
             <div class="product-card product" data-precio="{{ producto.precio }}">
-              <img src="data:image/jpeg;base64,{{ producto.imagen_base64 }}" alt="Producto 1">
+              <a href="{% url 'unitario' producto.idproducto  %}">
+                <img src="data:image/jpeg;base64,{{ producto.imagen_base64 }}" alt="Producto 1">
+              </a>
               <div class="card-body">
                 <h5 class="card-title">{{ producto.nombre }}</h5>
-                <p class="card-text">{{ producto.descripcion }}</p>
+                <p >Cantidad: {{ producto.stock }} </p>
               </div>
               <div class="product-price">${{ producto.precio }} C/U</div>
               <div class="product-price product-precio-convertido" >${{ producto.precio }} {{ moneda }} C/U</div>
+              
               <form action="{% url 'agregar' %}" method="post">
                 {% csrf_token %}
                 <input type="hidden" name="id_producto" value="{{ producto.idproducto }}">
@@ -570,11 +573,15 @@
                       <input type="hidden" name="product-quantity" class="product-quantity" value="1">
                     </li>
                     <li class="list-inline-item"><span class="btn btn-warning btn-minus">-</span></li>
-                    <li class="list-inline-item"><span class="badge bg-secondary var-value">1</span></li>
+                    <li class="list-inline-item"><span class="badge bg-secondary var-value" data-max="{{ producto.stock }}">1</span></li>
                     <li class="list-inline-item"><span class="btn btn-warning btn-plus">+</span></li>
                   </ul>
                 </div>
-                <button type="submit" class="btn-agregar" name="submit" value="addtocart">AGREGAR</button>
+                {% if producto.stock == 0 %}
+                  <button type="submit" class="btn-agregar" name="submit" value="addtocart" disabled>AGREGAR</button>
+                {% else %}
+                  <button type="submit" class="btn-agregar" name="submit" value="addtocart">AGREGAR</button>
+                {% endif %}
               </form>
             </div>
           </div>
@@ -583,6 +590,8 @@
         
         <!-- Copia este bloque 11 veces más para tener 12 productos -->
       </div>
+
+      {% include 'paginacion.html' %}
 
 
       <!-- Paginación -->

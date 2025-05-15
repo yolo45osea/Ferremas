@@ -6,12 +6,12 @@ urlpatterns = [
     #path('crear_pago', view.crear_pago, name='crear_pago'),
     path('', views.index, name='index'),
     path('productos/<str:categoria>', views.productos, name='productos'),
-    path('detail', views.detail, name='detail'),
+    path('unitario/<int:productoID>', views.unitario, name='unitario'),
     path('carrito', views.carrito, name='carrito'),
     path('cuenta', views.cuenta, name='cuenta'),
     path('resumen', views.resumen, name='resumen'),
     path('pago', views.pago, name='pago'),
-    path('admininstrador', views.admin, name='admininstrador'),
+    path('administrador', views.admin, name='administrador'),
     path('contador', views.contador, name='contador'),
     path('vendedor', views.vendedor, name='vendedor'),
     path('bodeguero', views.bodeguero, name='bodeguero'),
@@ -30,6 +30,7 @@ urlpatterns = [
     path('entregaPedidos', views.entregaPedidos, name='entregaPedidos'),
     path('preparacionDespacho', views.preparacionDespacho, name='preparacionDespacho'),
     path('verOrdenes', views.verOrdenes, name='verOrdenes'),
+    path('entregasContador', views.entregasContador, name='entregasContador'),
 
     path('nosotros', views.nosotros, name='nosotros'),
     path('Cambios', views.Cambios, name='Cambios'),
@@ -40,4 +41,7 @@ urlpatterns = [
 
     path('agregar', views.agregarCarrito, name="agregar"),
     path('carrito/actualizar', views.actualizarCarrito, name='actualizarCarrito'),
+    path('borrar/<int:productoID>', views.borrar, name='borrar'),
+    path('comprobante/<uuid:pago_id>/', views.generar_comprobante_pdf, name='comprobante'),
+    path('comprobante/', views.generar_comprobante, name='generar_comprobante'),
 ]

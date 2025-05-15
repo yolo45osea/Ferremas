@@ -101,28 +101,23 @@
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td>Juan Pérez</td>
-              <td>2025-05-10</td>
-              <td>$75.000</td>
-              <td>Transferencia</td>
-              <td><span class="badge badge-success">Pagado</span></td>
+            {% for pago in pagos %}
+              <tr>
+              <td>{{ pago.idcliente.nombre }} {{ pago.idcliente.apellido }}</td>
+              <td>{{ pago.idPagoAPI.modified }}</td>
+              <td>${{ pago.idPagoAPI.total }}</td>
+              <td>{{ pago.idPagoAPI.extra_data.commit_response.payment_type_code_str }}</td>
+              {% if pago.idPagoAPI.status == 'Aprobado' %}
+                <td><span class="badge badge-success">{{ pago.idPagoAPI.status }}</span></td>
+              {% elif pago.idPagoAPI.status == 'rechazado' %}
+                <td><span class="badge badge-danger">{{ pago.idPagoAPI.status }}</span></td>
+              {% endif %}
               <td>
                 <button class="btn btn-sm btn-primary">Ver</button>
-                <button class="btn btn-sm btn-dark">PDF</button>
+                <a href="{% url 'comprobante' pago.idPagoAPI.payment_id %}" class="btn btn-sm btn-dark">PDF</a>
               </td>
             </tr>
-            <tr>
-              <td>Ana Martínez</td>
-              <td>2025-05-08</td>
-              <td>$55.000</td>
-              <td>Tarjeta</td>
-              <td><span class="badge badge-warning text-dark">Pendiente</span></td>
-              <td>
-                <button class="btn btn-sm btn-primary" disabled>Ver</button>
-                <button class="btn btn-sm btn-dark" disabled>PDF</button>
-              </td>
-            </tr>
+            {% endfor %}
           </tbody>
         </table>
       </div>

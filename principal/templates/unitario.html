@@ -7,11 +7,15 @@
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <meta content="Free HTML Templates" name="keywords">
     <meta content="Free HTML Templates" name="description">
+    {% extends 'base.html' %}
+    {% load static %}
+    
 
     <!---------------------------------------------------------------------- Favicon ------------------------------------------------------------------------------->
-    <link href="img/favicon.png" rel="icon">
+    <link href="{% static 'img/favicon.png' %}" rel="icon">
 
     <!---------------------------------------------------------------- Fuentes y Librerias ------------------------------------------------------------------------->
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">  
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
@@ -302,76 +306,142 @@
     </div>
 
     <!------------------------------------------------------------- Banner Informativo Horizontal -------------------------------------------------------------------------->
-
+    {% block content %}
     <div class="w-100">
-      <img src="img/banner.png" alt="Banner Informativo" class="img-fluid" style="width: 100%; max-height: 150px; object-fit: cover;">
+      <img src="{% static 'img/banner.png' %}" alt="Banner Informativo" class="img-fluid" style="width: 100%; max-height: 150px; object-fit: cover;">
   </div>
 
   <!----------------------------------------------------------------------- Info Producto----------------------------------------------------------------------->
   
-    <div class="container my-5">
-      <div class="row align-items-start">
-    
-        <!-- Imagen del producto -->
-        <div class="col-md-6 text-center">
-          <img src="img/producto1.png" alt="Estante Metálico" class="img-fluid rounded shadow-sm" style="max-height: 500px;">
-        </div>
-    
-        <!-- Detalles del producto -->
-        <div class="col-md-6 mt-4 mt-md-0">
-          <small class="text-muted d-block mb-2">SKU: 234660</small>
-          <h3 style="color: #041e41; font-weight: 700;">ESTANTE METÁLICO FORTE 5 REPISAS 100 X 50 X 192 CM NEGRO</h3>
-          <h4 class="mt-3" style="color: #041e41;">$69.990 c/u</h4>
-    
-          <p class="mt-3 text-muted" style="font-size: 0.95rem;">
-            Estante metálico con 5 repisas de melamina, ideal para uso en bodegas, talleres o espacios de almacenamiento. 
-            Soporta hasta 200 kg por repisa y es de fácil armado sin herramientas.
-          </p>
-    
-          <!-- Cantidad + Botón -->
-          <div class="d-flex align-items-center mt-4 mb-3">
-            <div class="input-group" style="width: 130px;">
-              <div class="input-group-prepend">
-                <button class="btn btn-outline-secondary" type="button">-</button>
-              </div>
-              <input type="text" class="form-control text-center" value="1">
-              <div class="input-group-append">
-                <button class="btn btn-outline-secondary" type="button">+</button>
-              </div>
-            </div>
-            <button class="btn btn-warning ml-3 px-4" style="color: #041e41; font-weight: bold;">
-              <i class="fas fa-shopping-cart mr-2"></i>Agregar al Carrito
-            </button>
+    <form action="">
+      <div class="container my-5">
+        <div class="row align-items-start">
+      
+          <!-- Imagen del producto -->
+          <div class="col-md-6 text-center">
+            <img src="data:image/jpeg;base64,{{ producto.imagen_base64 }}" alt="Estante Metálico" class="img-fluid rounded shadow-sm" style="max-height: 500px;">
           </div>
-    
-          <!-- Estado de stock -->
-          <div class="alert alert-light border d-flex flex-column" style="font-size: 0.9rem;">
-            <div class="text-success"><i class="fas fa-check-circle mr-1"></i> 1 en stock para <strong>retiro</strong> tienda <strong>MAIPÚ</strong></div>
-            <div class="text-danger"><i class="fas fa-times-circle mr-1"></i> 0 en stock para <strong>despacho</strong></div>
+      
+          <!-- Detalles del producto -->
+          <div class="col-md-6 mt-4 mt-md-0">
+            <small class="text-muted d-block mb-2">SKU: {{ producto.idproducto }}</small>
+            <h3 style="color: #041e41; font-weight: 700;">{{ producto.nombre }}</h3>
+            <h4 class="mt-3" style="color: #041e41;">${{ producto.precio }} c/u</h4>
+      
+            <p class="mt-3 text-muted" style="font-size: 0.95rem;">
+              Descripción: {{ producto.descripcion }}
+            </p>
+      
+            <!-- Cantidad + Botón -->
+            <div class="product-card col-auto">
+              <ul class="list-inline pb-3">
+                  <li class="list-inline-item text-right">
+                      Cantidad
+                      <input type="hidden" name="product-quanity" class="product-quantity" value="1">
+                  </li>
+                  <li class="list-inline-item">
+                      <span class="btn btn-warning btn-minus">-</span>
+                  </li>
+                  <li class="list-inline-item">
+                      <span class="badge bg-secondary var-value" data-max="{{ producto.stock }}">1</span>
+                  </li>
+                  <li class="list-inline-item">
+                      <span class="btn btn-warning btn-plus">+</span>
+                  </li>
+              </ul>
           </div>
-    
-          <!-- Consulta de stock en otras tiendas -->
-          <div class="form-group mt-3">
-            <label class="text-muted font-weight-bold">Consulta stock en otras tiendas</label>
-            <div class="d-flex">
-              <select class="form-control w-auto mr-2">
-                <option>ANTOFAGASTA</option>
-                <option>PUENTE ALTO</option>
-                <option>LA SERENA</option>
-              </select>
-              <button class="btn btn-primary">Ver Stock</button>
+      
+            {% if user.is_authenticated %}
+                                        {% if not user.is_staff %}
+                                            {% if producto.stock == 0 %}
+                                                <div class="row pb-3">
+                                                    <div class="col d-grid">
+                                                        <button type="submit" class="btn btn-warning btn-lg" name="submit" value="Comprar" disabled>Comprar</button>
+                                                    </div>
+                                                    <div class="col d-grid">
+                                                        <input type="hidden" name="user">
+                                                        <button type="submit" class="btn btn-warning btn-lg" name="submit" value="addtocard" disabled>Agregar al Carrito</button>
+                                                    </div>
+                                                </div>
+                                                <p>Producto no disponible</p>
+                                            {% else %}
+                                                <div class="row pb-3">
+                                                    <div class="col d-grid">
+                                                        <button type="submit" class="btn btn-warning btn-lg" name="submit" value="Comprar">Comprar</button>
+                                                    </div>
+                                                    <div class="col d-grid">
+                                                        <button type="submit" class="btn btn-warning btn-lg" name="submit" value="addtocard">Agregar al Carrito</button>
+                                                    </div>
+                                                </div>
+                                            {% endif %}
+                                        {% else %}
+                                            <div class="row pb-3">
+                                                <div class="col d-grid">
+                                                    <button type="submit" class="btn btn-warning btn-lg" name="submit" value="Comprar" disabled>Comprar</button>
+                                                </div>
+                                                <div class="col d-grid">
+                                                    <input type="hidden" name="user">
+                                                    <button type="submit" class="btn btn-warning btn-lg" name="submit" value="addtocard" disabled>Agregar al Carrito</button>
+                                                </div>
+                                            </div>
+                                            <p><b>No</b> puede comprar como <b>Administrador</b></p>
+                                        {% endif %}
+                                    {% else %}
+                                        {% if producto.stock == 0 %}
+                                                <div class="row pb-3">
+                                                    <div class="col d-grid">
+                                                        <button type="submit" class="btn btn-warning btn-lg" name="submit" value="Comprar" disabled>Comprar</button>
+                                                    </div>
+                                                    <div class="col d-grid">
+                                                        <input type="hidden" name="user">
+                                                        <button type="submit" class="btn btn-warning btn-lg" name="submit" value="addtocard" disabled>Agregar al Carrito</button>
+                                                    </div>
+                                                </div>
+                                                <p>Producto no disponible</p>
+                                            {% else %}
+                                                <div class="row pb-3">
+                                                    <div class="col d-grid">
+                                                        <button type="submit" class="btn btn-warning btn-lg" name="submit" value="Comprar">Comprar</button>
+                                                    </div>
+                                                    <div class="col d-grid">
+                                                        <button type="submit" class="btn btn-warning btn-lg" name="submit" value="addtocard">Agregar al Carrito</button>
+                                                    </div>
+                                                </div>
+                                            {% endif %}
+                                    {% endif %}
+
+            <!-- Estado de stock -->
+            <div class="alert alert-light border d-flex flex-column" style="font-size: 0.9rem;">
+              {% if producto.stock > 0 %}
+                <div class="text-success"><i class="fas fa-check-circle mr-1 stock"></i> {{ producto.stock }} en stock </div>
+              {% else %}
+                <div class="text-danger"><i class="fas fa-times-circle mr-1"></i> 0 en stock</div>
+              {% endif %}
             </div>
+      
+            <!-- Consulta de stock en otras tiendas 
+            <div class="form-group mt-3">
+              <label class="text-muted font-weight-bold">Consulta stock en otras tiendas</label>
+              <div class="d-flex">
+                <select class="form-control w-auto mr-2">
+                  <option>ANTOFAGASTA</option>
+                  <option>PUENTE ALTO</option>
+                  <option>LA SERENA</option>
+                </select>
+                <button class="btn btn-primary">Ver Stock</button>
+              </div>
+            </div>-->
           </div>
         </div>
       </div>
-    </div>
+    </form>
   
   <!-------------------------------------------------------------------- Footer ---------------------------------------------------------------------------------------->
-        
+    {% endblock %}
       <div class="col-auto" style="background-color: #041e41;">
           <div class="row px-xl-5 pt-5">
               <div class="col-lg-4 col-md-12 mb-5 pr-3 pr-xl-5 text-center">
-                  <img src="img/logo3.png" alt="Logo Footer" class="img-fluid mb-3" style="max-width: 250px;">
+                  <img src="{% static 'img/logo3.png' %}" alt="Logo Footer" class="img-fluid mb-3" style="max-width: 250px;">
                   
                   <div class="d-flex justify-content-center">
                       <a class="btn btn-primary btn-square mr-2" href="#"><i class="fab fa-twitter"></i></a>
@@ -596,6 +666,7 @@
       <!------------------------------------------------------------------ Librerias JavaScript ----------------------------------------------------------------------->
   
       <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+      <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
       <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
       <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
   
@@ -621,6 +692,39 @@
           }
         });
       </script>
+
+      <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        // Para cada formulario de producto individual
+        document.querySelectorAll('.product-card').forEach(function (card) {
+          const minusBtn = card.querySelector('.btn-minus');
+          const plusBtn = card.querySelector('.btn-plus');
+          const varValue = card.querySelector('.var-value');
+          const quantityInput = card.querySelector('.product-quantity');
+
+          // Si todos los elementos existen dentro de esta tarjeta
+          if (minusBtn && plusBtn && varValue && quantityInput) {
+            minusBtn.addEventListener('click', function (e) {
+              e.preventDefault(); // evita el submit si es accidental
+              let currentValue = parseInt(varValue.textContent);
+              if (currentValue > 1) {
+                let newValue = currentValue - 1;
+                varValue.textContent = newValue;
+                quantityInput.value = newValue;
+              }
+            });
+
+            plusBtn.addEventListener('click', function (e) {
+              e.preventDefault();
+              let currentValue = parseInt(varValue.textContent);
+              let newValue = currentValue + 1;
+              varValue.textContent = newValue;
+              quantityInput.value = newValue;
+            });
+          }
+        });
+      });
+    </script>
         
   </body>
   

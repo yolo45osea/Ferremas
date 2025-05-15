@@ -131,7 +131,9 @@
           <p class="mb-1">Subtotal: <strong>$21.600</strong></p>
           <p class="mb-1">Descuentos: <strong>$2.400</strong></p>
           <p class="mb-1">Total a Pagar: <strong>$19.200</strong></p>
-          <button class="btn btn-ferremas mt-2"><i class="fas fa-receipt"></i> Generar Comprobante con QR</button>
+          <a href="{% url 'generar_comprobante' %}" class="btn btn-ferremas mt-2" target="_blank">
+            <i class="fas fa-receipt"></i> Generar Comprobante con QR
+          </a>
         </div>
       </div>
     </div>

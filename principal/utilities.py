@@ -17,6 +17,6 @@ def traducir_html(html_str, idioma_destino='ES'):
     response = requests.post(url, headers=headers, data=data)
     
     if response.status_code == 200:
-        return response.json()["translations"][0]["text"]
+        return response.json()["translations"][0]["text"], idioma_destino
     else:
         return f"<p>Error: {response.status_code} - {response.text}</p>"

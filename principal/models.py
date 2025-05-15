@@ -3,6 +3,7 @@ import uuid
 from django.urls import reverse
 from payments import PurchasedItem
 from payments.models import BasePayment
+from pagos.models import Payment as Pagos
 from django.db import models
 
 class Payment(BasePayment):
@@ -109,3 +110,9 @@ class Vendedor(models.Model):
     contrasena = models.CharField(max_length=25)
     idadmin = models.ForeignKey(Administrador, on_delete=models.CASCADE)
     zona = models.CharField(max_length=20)
+
+
+class Pago(models.Model):
+    idPagoAPI = models.ForeignKey(Pagos, on_delete=models.CASCADE, primary_key=True)
+    idcliente = models.ForeignKey(Cliente, on_delete=models.CASCADE)
+    

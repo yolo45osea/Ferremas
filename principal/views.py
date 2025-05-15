@@ -1,6 +1,11 @@
 from datetime import date
-from django.http import JsonResponse
+import io
+import json
+import subprocess
+from uuid import UUID
+from django.http import FileResponse, JsonResponse
 from django.shortcuts import render
+import qrcode
 import requests
 from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
@@ -17,12 +22,36 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from principal.forms import RegistroForm
-from principal.models import CarritoCompra, Cliente, DetalleCarrito, Inventario
+from principal.models import CarritoCompra, Cliente, DetalleCarrito, Inventario, Pago
 from .utilities import traducir_html
 from django.template.loader import render_to_string
+from django.core.paginator import Paginator
+from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import A4
+from datetime import datetime
+from PIL import Image
 
 
 logger = logging.getLogger(__name__)
+
+def git_commit(commit_message):
+
+  # Agregar todos los cambios
+
+  subprocess.run(["git", "add", "."])
+
+
+
+  # Hacer el commit
+
+  subprocess.run(["git", "commit", "-m", commit_message])
+
+
+
+  # Hacer push a la rama principal (main)
+
+  subprocess.run(["git", "push", "origin", "main"])
+
 
 def traducir_template(request):
     html_original = render_to_string("cuenta.html", {"usuario": request.user})
@@ -36,6 +65,7 @@ def index(request):
     precio = 10000
     tasa_conversion = 0
     idioma = 'ES'
+    moneda = 'CLP'
     cliente = Cliente.objects.filter(usuario=request.user.username).first()
     carrito = CarritoCompra.objects.filter(idcliente=cliente).first()
     detalle = DetalleCarrito.objects.filter(idcarrito = carrito)
@@ -75,6 +105,7 @@ def index(request):
             producto = request.POST.get('producto')
             Borrar_producto = DetalleCarrito.objects.filter(idproducto=producto)
             Borrar_producto.delete()
+            return redirect('index')
 
         # FORMULARIO LOGIN
         if 'login_form' in request.POST:
@@ -103,7 +134,7 @@ def index(request):
                     usuario = request.POST.get('username'),
                     nombre = "",
                     apellido = "",
-                    rut = "",
+                    rut = request.POST.get('rut'),
                     correo = request.POST.get('email'),
                     contrasena = request.POST.get('password1'),
                     direccion = "",
@@ -111,6 +142,7 @@ def index(request):
                     fecha_registro = date.today()
                 )
                 login(request, user)
+                git_commit("registro usuario")
                 return redirect('index')
             else:
                 messages.error(request, "Error al registrar el usuario.")
@@ -158,12 +190,12 @@ def index(request):
             return JsonResponse({"error": "Error al consultar la API", "details": response.text}, status=500)
     print(f"tasa: {tasa_conversion}, precio: {precio}")
     return render(request, 'index.html', {'precio': precio * tasa_conversion if tasa_conversion>0 else precio, 'login_form': login_form, 
-                   'registro_form': registro_form, 'tipo_usuario': tipo_usuario, 'idioma': idioma, 'carrito':detalle, 'total':total})
+                   'registro_form': registro_form, 'tipo_usuario': tipo_usuario, 'idioma': idioma, 'moneda':moneda if moneda !=None else 'CLP'})
 
 
 
 def productos(request, categoria):
-    carrito = DetalleCarrito.objects.all()
+    
     moneda = ""
     productos = Inventario.objects.filter(categoria=categoria)
     if productos == None:
@@ -224,6 +256,7 @@ def productos(request, categoria):
                     fecha_registro=date.today()
                 )
                 login(request, user)
+                git_commit("registro usuario")
                 return redirect('index')
             else:
                 messages.error(request, "Error al registrar el usuario.")
@@ -248,6 +281,9 @@ def productos(request, categoria):
         p.precio_convertido = p.precio * tasa_conversion
         productos_actualizados.append(p)
 
+    paginator = Paginator(productos, 12)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
 
     print(f"tasa:{tasa_conversion}, ")
     return render(request, 'productos.html', {
@@ -255,13 +291,15 @@ def productos(request, categoria):
         'tasa': tasa_conversion,
         'moneda': moneda if moneda != "" else "CLP",
         'categoria':categoria,
-        'carrito':carrito, 
-        'total':total
+        'total':total,
+        'page_obj': page_obj,
 
     })
 
-def detail(request):
-    return render(request, 'detail.html')
+def unitario(request, productoID):
+    print(productoID)
+    producto = Inventario.objects.filter(idproducto = productoID).first()
+    return render(request, 'unitario.html', {'producto':producto})
 
 @login_required
 def cuenta(request):
@@ -286,6 +324,7 @@ def cuenta(request):
         usuario.telefono = request.POST.get('telefono', usuario.telefono)
         usuario.direccion = request.POST.get('direccion', usuario.direccion)
         usuario.save()
+        git_commit("actualizacion perfil")
         return redirect('cuenta')
     
     return render(request, 'cuenta.html', {'usuario': usuario, 'tipo_usuario':tipo_usuario})
@@ -343,9 +382,22 @@ def resumen(request):
     for i in carrito:
         total+= i.idproducto.precio * i.cantidad
     print(total)
+
+    if request.method == 'POST':
+        if 'borrar' in request.POST:
+            print("peo")
+            producto = request.POST.get('producto_borrado')
+            Borrar_producto = DetalleCarrito.objects.filter(idproducto=producto)
+            Borrar_producto.delete()
+            usuario = Cliente.objects.filter(usuario=request.user.username).first()
+            carro = CarritoCompra.objects.filter(idcliente=usuario).first()
+            validar_carrito = DetalleCarrito.objects.filter(idcarrito=carro)
+            if validar_carrito:
+                return redirect('resumen')
+            else:
+                return redirect('index')
+            
     return render(request, 'resumen.html', {
-        'carrito': carrito,
-        'total': total
         })
 
 def pago(request):
@@ -385,7 +437,7 @@ def pago(request):
             logger.error(f"Error al crear pago: {str(e)}")
             return HttpResponse(f"Hubo un error: {str(e)}")
     return render(request, 'pago.html', {'carrito': carrito,
-        'total': total})
+        })
 
 
 @login_required
@@ -421,6 +473,32 @@ def contacto(request):
 def gestionCatalogo(request):
     productos = Inventario.objects.all()
     print(productos)
+
+    if request.method == "POST":
+        nombre = request.POST.get('nombre') 
+        descripcion = request.POST.get('descripcion')
+        precio = request.POST.get('precio')
+        stock = request.POST.get('stock')
+        imagen = request.POST.get('imageBase64')
+        marca = request.POST.get('marca')
+        categoria = request.POST.get('categoria')
+
+        Inventario.objects.create(
+            nombre = nombre if nombre else "",
+            descripcion = descripcion if descripcion else "",
+            marca = marca if marca else "",
+            categoria = categoria if categoria else "",
+            stock = stock if stock else "",
+            alerta = 0,
+            fecha_actualizacion = date.today(),
+            imagen_base64 = imagen if imagen else "",
+            precio = precio if precio else ""
+        )
+        git_commit("creacion producto")
+        return redirect('gestionCatalogo')
+
+
+
     return render(request, 'gestionCatalogo.html', {'productos':productos})
 
 @login_required
@@ -445,7 +523,17 @@ def gestionPedidos(request):
 
 @login_required
 def gestionPagos(request):
-    return render(request, 'gestionPagos.html')
+    pagos = Pago.objects.all()
+    for pago in pagos:
+        if isinstance(pago.idPagoAPI.extra_data, str):
+            try:
+                pago.idPagoAPI.extra_data = json.loads(pago.idPagoAPI.extra_data)
+            except json.JSONDecodeError:
+                pago.idPagoAPI.extra_data = {}
+        if pago.idPagoAPI.status == 'approved':
+            pago.idPagoAPI.status = 'Aprobado'
+            pago.save()
+    return render(request, 'gestionPagos.html', {'pagos':pagos})
 
 @login_required
 def transferencias(request):
@@ -480,6 +568,10 @@ def preparacionDespacho(request):
 def verOrdenes(request):
     return render(request, 'verOrdenes.html')
 
+@login_required
+def entregasContador(request):
+    return render(request, 'entregasContador.html')
+
 
 
 def agregarCarrito(request):
@@ -507,6 +599,8 @@ def agregarCarrito(request):
                     idproducto=producto,
                     cantidad=cantidad,
                 )
+
+            git_commit("creacion carrito")
 
             return redirect('productos/'+ request.POST.get('categoria'))
 
@@ -545,3 +639,114 @@ def actualizarCarrito(request):
             return redirect('resumen') 
     return redirect('resumen')
 
+def borrar(request, productoID):
+    producto = Inventario.objects.filter(idproducto = productoID).first()
+    producto.delete()
+    return redirect('gestionCatalogo')
+
+
+
+def generar_comprobante_pdf(request, pago_id: UUID):
+    from .models import Pago  # importa tu modelo real
+    pago = Pago.objects.get(idPagoAPI=pago_id)
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename=comprobante_{pago_id}.pdf'
+
+    p = canvas.Canvas(response, pagesize=A4)
+    width, height = A4
+
+    # Título
+    p.setFont("Helvetica-Bold", 16)
+    p.drawCentredString(width / 2, height - 50, "Comprobante de Pago")
+
+    # Fecha
+    p.setFont("Helvetica", 10)
+    p.drawString(50, height - 80, f"Fecha: {datetime.now().strftime('%d-%m-%Y %H:%M:%S')}")
+
+    # Datos del pago
+    p.setFont("Helvetica", 12)
+    y = height - 120
+
+    if isinstance(pago.idPagoAPI.extra_data, str):
+        try:
+            pago.idPagoAPI.extra_data = json.loads(pago.idPagoAPI.extra_data)
+        except json.JSONDecodeError:
+            pago.idPagoAPI.extra_data = {}
+    if pago.idPagoAPI.status == 'approved':
+        pago.idPagoAPI.status = 'Aprobado'
+        pago.save()
+
+    datos = {
+        "ID Pago": pago.idPagoAPI.payment_id,
+        "Estado": pago.idPagoAPI.status,
+        "Monto": pago.idPagoAPI.total,
+        "Tipo de pago": pago.idPagoAPI.extra_data.get('commit_response', {}).get('payment_type_code_str', 'N/A'),
+        "Código autorización": pago.idPagoAPI.extra_data.get('commit_response', {}).get('authorization_code', 'N/A'),
+        "Fecha transacción": pago.idPagoAPI.extra_data.get('commit_response', {}).get('transaction_date', 'N/A'),
+    }
+
+    for key, value in datos.items():
+        p.drawString(50, y, f"{key}: {value}")
+        y -= 20
+
+    p.showPage()
+    p.save()
+
+    return response
+
+
+def generar_comprobante(request):
+    buffer = io.BytesIO()
+    pdf = canvas.Canvas(buffer, pagesize=A4)
+    width, height = A4
+
+    # Datos de ejemplo
+    empresa = "FERREMAS"
+    producto = "Cemento 25kg"
+    codigo = "CM-25"
+    cantidad = 2
+    precio_unitario = 12000
+    descuento = 10  # %
+    subtotal = cantidad * precio_unitario
+    total = subtotal * (1 - descuento / 100)
+    fecha = datetime.now().strftime('%d/%m/%Y %H:%M')
+
+    # Título
+    pdf.setFont("Helvetica-Bold", 16)
+    pdf.drawCentredString(width / 2, height - 40, f"COMPROBANTE DE VENTA - {empresa}")
+
+    # Fecha
+    pdf.setFont("Helvetica", 10)
+    pdf.drawRightString(width - 40, height - 60, f"Fecha: {fecha}")
+
+    # Detalles de producto
+    pdf.setFont("Helvetica-Bold", 12)
+    pdf.drawString(40, height - 100, "Producto:")
+    pdf.setFont("Helvetica", 11)
+    pdf.drawString(120, height - 100, producto)
+    pdf.drawString(40, height - 120, f"Código: {codigo}")
+    pdf.drawString(40, height - 140, f"Cantidad: {cantidad}")
+    pdf.drawString(40, height - 160, f"Precio Unitario: ${precio_unitario:,}")
+    pdf.drawString(40, height - 180, f"Descuento: {descuento}%")
+    pdf.drawString(40, height - 200, f"Subtotal: ${subtotal:,}")
+    pdf.setFont("Helvetica-Bold", 12)
+    pdf.drawString(40, height - 220, f"Total a Pagar: ${int(total):,}")
+
+    # QR con info de venta
+    qr_data = f"{empresa} - Producto: {producto}, Total: ${int(total):,}, Fecha: {fecha}"
+    qr_img = qrcode.make(qr_data)
+
+    # Convertimos a formato compatible
+    qr_pil = qr_img.convert("RGB")
+    qr_io = io.BytesIO()
+    qr_pil.save(qr_io, format="PNG")
+    qr_io.seek(0)
+
+    # Insertar imagen en el PDF
+    pdf.drawInlineImage(Image.open(qr_io), width - 140, height - 260, 100, 100)
+
+    pdf.showPage()
+    pdf.save()
+    buffer.seek(0)
+
+    return FileResponse(buffer, as_attachment=True, filename='comprobante_ferremas.pdf')

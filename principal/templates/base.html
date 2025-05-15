@@ -38,7 +38,7 @@
                       <div class="btn-group">
                         <button type="button" class="btn btn-sm btn-light dropdown-toggle" data-toggle="dropdown" style="background-color: #feb81f;">Mi Cuenta</button>
                         <div class="dropdown-menu dropdown-menu-right">
-                            <a class="dropdown-item" href="{% url 'admininstrador' %}">Administrar</a>
+                            <a class="dropdown-item" href="{% url 'administrador' %}">Administrar</a>
                             
                         </div>   
                       </div>
@@ -87,7 +87,7 @@
 
                     <!-- Idiomas y Moneda -->
                     <div class="btn-group mx-2" id="moneda">
-                        <button type="button" class="btn btn-sm btn-light dropdown-toggle" data-toggle="dropdown" style="background-color: #feb81f;">CLP</button>
+                        <button type="button" class="btn btn-sm btn-light dropdown-toggle" data-toggle="dropdown" style="background-color: #feb81f;">{{ moneda|default:"CLP" }}</button>
                         <div class="dropdown-menu dropdown-menu-right">
                             <form method="post">
                                 {% csrf_token %}
@@ -98,7 +98,7 @@
                         </div>
                     </div>
                     <div class="btn-group">
-                        <button type="button" class="btn btn-sm btn-light dropdown-toggle" data-toggle="dropdown" style="background-color: #feb81f;">{{ idioma }}</button>
+                        <button type="button" class="btn btn-sm btn-light dropdown-toggle" data-toggle="dropdown" style="background-color: #feb81f;">{{ idioma|default:"ES" }}</button>
                         <div class="dropdown-menu dropdown-menu-right">
                             <form method="get">
                               
@@ -335,7 +335,7 @@
         <div class="col-auto" style="background-color: #041e41;">
             <div class="row px-xl-5 pt-5">
                 <div class="col-lg-4 col-md-12 mb-5 pr-3 pr-xl-5 text-center">
-                    <img src="static/img/logo3.png" alt="Logo Footer" class="img-fluid mb-3" style="max-width: 250px;">
+                    <img src="{% static 'img/logo3.png' %}" alt="Logo Footer" class="img-fluid mb-3" style="max-width: 250px;">
                     
                     <div class="d-flex justify-content-center">
                         <a class="btn btn-primary btn-square mr-2" href="#"><i class="fab fa-twitter"></i></a>
@@ -362,7 +362,6 @@
                             <h5 class="text-secondary text-uppercase mb-4">CONTÁCTANOS</h5>
                             <div class="d-flex flex-column justify-content-start">
                                 <a class="text-secondary mb-2" href="{% url 'contacto' %}"><i class="fa fa-angle-right mr-2"></i>Contáctanos</a>
-                                <a class="text-secondary mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>Ayuda</a>
                                 <a class="text-secondary mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>600 370 6111</a>
                             </div>
                         </div>
@@ -389,7 +388,7 @@
                     </p>
                 </div>
                 <div class="col-md-6 px-xl-0 text-center text-md-right">
-                    <img class="img-fluid" src="static/img/payments.png" alt="">
+                    <img class="img-fluid" src="{% static 'static/img/payments.png' %}" alt="">
                 </div>
             </div>
         </div>
@@ -455,6 +454,10 @@
                   <div class="form-group">
                     <label>Nombre</label>
                     <input type="text" class="form-control" name="username" id="username" placeholder="Tu nombre completo">
+                  </div>
+                  <div class="form-group">
+                    <label>RUT</label>
+                    <input type="text" class="form-control" name="rut" id="rut" placeholder="Tu rut">
                   </div>
                   <div class="form-group">
                     <label>Correo</label>
@@ -552,6 +555,7 @@
                     <div class="cart-info">
                       <strong>{{ producto.idproducto.nombre }}</strong>
                       <p>${{ producto.idproducto.precio }}</p>
+                      <p>cantidad: {{ producto.cantidad }}</p>
                     </div>
                     <form method="post">
                       {% csrf_token %}
@@ -573,8 +577,9 @@
         <!-- Back to Top -->
         <a href="#" class="btn btn-primary back-to-top"><i class="fa fa-angle-double-up"></i></a>
         <!-- Scripts desde CDNs (se dejan igual) -->
+         <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
-        <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+        
         <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
 
         <script src="{% static 'lib/easing/easing.min.js' %}"></script>
@@ -635,37 +640,48 @@
         </script>
 
         <script>
-      document.addEventListener('DOMContentLoaded', function () {
-        // Para cada formulario de producto individual
-        document.querySelectorAll('.product-card').forEach(function (card) {
-          const minusBtn = card.querySelector('.btn-minus');
-          const plusBtn = card.querySelector('.btn-plus');
-          const varValue = card.querySelector('.var-value');
-          const quantityInput = card.querySelector('.product-quantity');
+  document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('.product-card').forEach(function (card) {
+      const minusBtn = card.querySelector('.btn-minus');
+      const plusBtn = card.querySelector('.btn-plus');
+      const varValue = card.querySelector('.var-value');
+      const quantityInput = card.querySelector('.product-quantity');
 
-          // Si todos los elementos existen dentro de esta tarjeta
-          if (minusBtn && plusBtn && varValue && quantityInput) {
-            minusBtn.addEventListener('click', function (e) {
-              e.preventDefault(); // evita el submit si es accidental
-              let currentValue = parseInt(varValue.textContent);
-              if (currentValue > 1) {
-                let newValue = currentValue - 1;
-                varValue.textContent = newValue;
-                quantityInput.value = newValue;
-              }
-            });
+      if (minusBtn && plusBtn && varValue && quantityInput) {
+        let maxValue = parseInt(varValue.dataset.max) || 10; // Puedes poner un valor general
 
-            plusBtn.addEventListener('click', function (e) {
-              e.preventDefault();
-              let currentValue = parseInt(varValue.textContent);
-              let newValue = currentValue + 1;
-              varValue.textContent = newValue;
-              quantityInput.value = newValue;
-            });
+        function updateButtons(value) {
+          plusBtn.disabled = value >= maxValue;
+          minusBtn.disabled = value <= 1;
+        }
+
+        updateButtons(parseInt(varValue.textContent));
+
+        minusBtn.addEventListener('click', function (e) {
+          e.preventDefault();
+          let currentValue = parseInt(varValue.textContent);
+          if (currentValue > 1) {
+            let newValue = currentValue - 1;
+            varValue.textContent = newValue;
+            quantityInput.value = newValue;
+            updateButtons(newValue);
           }
         });
-      });
-    </script>
+
+        plusBtn.addEventListener('click', function (e) {
+          e.preventDefault();
+          let currentValue = parseInt(varValue.textContent);
+          if (currentValue < maxValue) {
+            let newValue = currentValue + 1;
+            varValue.textContent = newValue;
+            quantityInput.value = newValue;
+            updateButtons(newValue);
+          }
+        });
+      }
+    });
+  });
+</script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
     
 </body>

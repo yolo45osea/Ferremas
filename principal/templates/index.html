@@ -56,7 +56,7 @@
     <!-------------------------------------------------------------------- Idiomas y Dinero ---------------------------------------------------------------------------->
                     <div class="btn-group mx-2" id="moneda">
                         <button type="button" class="btn btn-sm btn-light dropdown-toggle" data-toggle="dropdown" style="background-color: #feb81f;">
-                            CLP
+                            {{ moneda|default:"CLP" }}
                         </button>
                         <div class="dropdown-menu dropdown-menu-right">
                             <form method="post">
