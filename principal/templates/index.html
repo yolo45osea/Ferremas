@@ -9,6 +9,8 @@
     <meta content="Free HTML Templates" name="description">
     {% extends 'base.html' %}
     {% load static %}
+    {% load formatos %}
+
 
     <!---------------------------------------------------------------------- Favicon ------------------------------------------------------------------------------->
     <link href="static/img/favicon.png" rel="icon">
@@ -339,7 +341,7 @@
     <!------------------------------------------------------------- Banner Informativo Horizontal -------------------------------------------------------------------------->
 
     <div class="w-100">
-        <img src="static/img/banner.png" alt="Banner Informativo" class="img-fluid" style="width: 100%; max-height: 150px; object-fit: cover;">
+        <img src="{% static 'img/despacho.png' %}" alt="Banner Informativo" class="img-fluid" style="width: 100%; max-height: 150px; object-fit: cover;">
     </div>
 
 
@@ -518,19 +520,19 @@
             <div class="col-md-3 col-sm-6 mb-4">
                 <div class="card border-0 shadow-sm" style="border-radius: 16px; overflow: hidden;">
                     <div class="bg-warning d-flex align-items-center px-3 py-2"
-                        style="border-top-left-radius: 16px; border-top-right-radius: 16px; font-size: 1.2rem; font-weight: 700; color: #041e41;">
+                        style="border-top-left-radius: 16px; border-top-right-radius: 16px; font-size: 1.0rem; font-weight: 700; color: #041e41;">
             <div class="d-flex align-items-center justify-content-center rounded-circle mr-2"
                 style="width: 32px; height: 32px; background-color: #041e41;">
-                <img src="static/img/organizacion.png" alt="Icono Organización" style="width: 18px;">
+                <img src="static/img/herramienta.png" alt="Icono Organización" style="width: 18px;">
                 </div>
-                ORGANIZACIÓN</div>
-                    <a href="producto1.html">
-                        <img src="static/img/producto1.png" class="card-img-top" alt="Producto 1">
+                {{ producto1.categoria }}</div>
+                    <a href="{% url 'unitario' producto1.idproducto  %}">
+                        <img src="data:image/jpeg;base64,{{ producto1.imagen_base64 }}" class="card-img-top" alt="Producto 1">
                     </a>
                     <div class="card-body p-3 bg-white" style="border-top: 4px solid #041e41;">
-                        <small class="text-muted">SKU: 228173</small>
-                        <p class="mb-2" style="font-size: 0.9rem;">Estante metálico 5 repisas</p>
-                        <h5 class="text-right font-weight-bold" style="color: #041e41;">{{ precio }}</h5>
+                        <small class="text-muted">SKU: {{ producto1.idproducto }}</small>
+                        <p class="mb-2" style="font-size: 0.9rem;">{{ producto1.nombre }}</p>
+                        <h5 class="text-right font-weight-bold" style="color: #041e41;">${{ producto1.precio|formatear_pesos }}</h5>
                     </div>
                 </div>
             </div>
@@ -539,19 +541,19 @@
             <div class="col-md-3 col-sm-6 mb-4">
                 <div class="card border-0 shadow-sm" style="border-radius: 16px; overflow: hidden;">
                     <div class="bg-warning d-flex align-items-center px-3 py-2"
-                    style="border-top-left-radius: 16px; border-top-right-radius: 16px; font-size: 1.2rem; font-weight: 700; color: #041e41;">
+                    style="border-top-left-radius: 16px; border-top-right-radius: 16px; font-size: 1.0rem; font-weight: 700; color: #041e41;">
             <div class="d-flex align-items-center justify-content-center rounded-circle mr-2"
                 style="width: 32px; height: 32px; background-color: #041e41;">
-                <img src="static/img/gasfiteria.png" alt="Icono Organización" style="width: 18px;">
+                <img src="static/img/herramienta.png" alt="Icono Organización" style="width: 18px;">
             </div>
-            GASFITERÍA</div>
-                    <a href="producto2.html">
-                        <img src="static/img/producto2.png" class="card-img-top" alt="Producto 2">
+            {{ producto2.categoria }}</div>
+                    <a href="{% url 'unitario' producto2.idproducto  %}">
+                        <img src="data:image/jpeg;base64,{{ producto2.imagen_base64 }}" class="card-img-top" alt="Producto 2">
                     </a>
                     <div class="card-body p-3 bg-white" style="border-top: 4px solid #041e41;">
-                        <small class="text-muted">SKU: PK187</small>
-                        <p class="mb-2" style="font-size: 0.9rem;">Combo calefont master 7 L gas + bomba recirculadora 120W</p>
-                        <h5 class="text-right font-weight-bold" style="color: #041e41;">$174.990</h5>
+                        <small class="text-muted">SKU: {{ producto2.idproducto }}</small>
+                        <p class="mb-2" style="font-size: 0.9rem;">{{ producto2.nombre }}</p>
+                        <h5 class="text-right font-weight-bold" style="color: #041e41;">${{ producto2.precio|formatear_pesos }}</h5>
                     </div>
                 </div>
             </div>
@@ -560,19 +562,19 @@
             <div class="col-md-3 col-sm-6 mb-4">
                 <div class="card border-0 shadow-sm" style="border-radius: 16px; overflow: hidden;">
                     <div class="bg-warning d-flex align-items-center px-3 py-2"
-                    style="border-top-left-radius: 16px; border-top-right-radius: 16px; font-size: 1.2rem; font-weight: 700; color: #041e41;">
+                    style="border-top-left-radius: 16px; border-top-right-radius: 16px; font-size: 1.0rem; font-weight: 700; color: #041e41;">
             <div class="d-flex align-items-center justify-content-center rounded-circle mr-2"
                 style="width: 32px; height: 32px; background-color: #041e41;">
-                <img src="static/img/ventilacion.png" alt="Icono Organización" style="width: 18px;">
+                <img src="static/img/madera.png" alt="I#" style="width: 18px;">
             </div>
-            CALEFACCIÓN</div>
-                    <a href="producto3.html">
-                        <img src="static/img/producto3.png" class="card-img-top" alt="Producto 3">
+            {{ producto3.categoria }}</div>
+                    <a href="{% url 'unitario' producto3.idproducto  %}">
+                        <img src="data:image/jpeg;base64,{{ producto3.imagen_base64 }}" class="card-img-top" alt="Producto 3">
                     </a>
                     <div class="card-body p-3 bg-white" style="border-top: 4px solid #041e41;">
-                        <small class="text-muted">SKU: PK186</small>
-                        <p class="mb-2" style="font-size: 0.9rem;">Calefactor a leña rojo + kit instalación leña plus 6”</p>
-                        <h5 class="text-right font-weight-bold" style="color: #041e41;">$669.990</h5>
+                        <small class="text-muted">SKU: {{ producto3.idproducto }}</small>
+                        <p class="mb-2" style="font-size: 0.9rem;">{{ producto3.nombre }}</p>
+                        <h5 class="text-right font-weight-bold" style="color: #041e41;">${{ producto3.precio|formatear_pesos }}</h5>
                     </div>
                 </div>
             </div>
@@ -581,20 +583,20 @@
             <div class="col-md-3 col-sm-6 mb-4">
                 <div class="card border-0 shadow-sm" style="border-radius: 16px; overflow: hidden;">
                     <div class="bg-warning d-flex align-items-center px-3 py-2"
-                    style="border-top-left-radius: 16px; border-top-right-radius: 16px; font-size: 1.2rem; font-weight: 700; color: #041e41;">
+                    style="border-top-left-radius: 16px; border-top-right-radius: 16px; font-size: 1.0rem; font-weight: 700; color: #041e41;">
                     <div class="d-flex align-items-center justify-content-center rounded-circle mr-2"
                         style="width: 32px; height: 32px; background-color: #041e41;">
-                        <img src="static/img/iluminacion.png" alt="Icono Organización" style="width: 18px;">
+                        <img src="static/img/organizacion.png" alt="Icono Organización" style="width: 18px;">
                     </div>
-                    ILUMINACIÓN</div>
+                    {{ producto4.categoria }}</div>
 
-                    <a href="producto4.html">
-                        <img src="static/img/producto4.png" class="card-img-top" alt="Producto 4">
+                    <a href="{% url 'unitario' producto4.idproducto  %}">
+                        <img src="data:image/jpeg;base64,{{ producto4.imagen_base64 }}" class="card-img-top" alt="Producto 4">
                     </a>
                     <div class="card-body p-3 bg-white" style="border-top: 4px solid #041e41;">
-                        <small class="text-muted">SKU: 251834</small>
-                        <p class="mb-2" style="font-size: 0.9rem;">Pack 2 Paneles Led Sobrepuesto Redondo 18 W Luz Fría</p>
-                        <h5 class="text-right font-weight-bold" style="color: #041e41;">$7.990</h5>
+                        <small class="text-muted">SKU: {{ producto4.idproducto }}</small>
+                        <p class="mb-2" style="font-size: 0.9rem;">{{ producto4.nombre }}</p>
+                        <h5 class="text-right font-weight-bold" style="color: #041e41;">${{ producto4.precio|formatear_pesos }}</h5>
                     </div>
                 </div>
             </div>

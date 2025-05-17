@@ -62,6 +62,7 @@ class Inventario(models.Model):
     marca = models.CharField(max_length=50)
     categoria = models.CharField(max_length=25)
     precio = models.IntegerField()
+    precio_convertido = models.IntegerField()
     imagen_base64 = models.TextField(blank=True, null=True)
     stock = models.IntegerField()
     alerta = models.BooleanField()

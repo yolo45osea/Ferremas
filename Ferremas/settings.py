@@ -33,6 +33,8 @@ DEBUG = True
 ALLOWED_HOSTS = ['*']
 
 
+
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -45,7 +47,9 @@ INSTALLED_APPS = [
     'principal',
     "payments",
     "pagos",
-    'django_payments_chile'
+    'django_payments_chile',
+    'django.contrib.humanize',
+
 ]
 
 MIDDLEWARE = [
@@ -132,7 +136,8 @@ LOGGING = {
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+USE_L10N = True
+LANGUAGE_CODE = 'es-cl'  # o 'es-es', según el país
 
 TIME_ZONE = 'UTC'
 

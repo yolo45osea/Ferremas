@@ -119,3 +119,43 @@
   });
 
   
+  document.addEventListener("DOMContentLoaded", function () {
+    const cart = document.getElementById("sideCart");
+    const toggleBtn = document.getElementById("toggleCart");
+    const closeBtn = cart.querySelector(".close-btn");
+
+    // Abre y cierra el carrito
+    function toggleCart(forceClose = false) {
+      if (forceClose) {
+        cart.classList.remove("open");
+      } else {
+        cart.classList.toggle("open");
+      }
+    }
+
+    // Clic en el botón del carrito (ícono)
+    if (toggleBtn) {
+      toggleBtn.addEventListener("click", function (e) {
+        e.preventDefault();
+        toggleCart();
+      });
+    }
+
+    // Clic en la "X" de cerrar
+    if (closeBtn) {
+      closeBtn.addEventListener("click", function () {
+        toggleCart(true);
+      });
+    }
+
+    // Clic fuera del carrito = cerrar
+    document.addEventListener("click", function (event) {
+      const isCartOpen = cart.classList.contains("open");
+      const clickedInsideCart = cart.contains(event.target);
+      const clickedToggle = toggleBtn.contains(event.target);
+
+      if (isCartOpen && !clickedInsideCart && !clickedToggle) {
+        toggleCart(true);
+      }
+    });
+  });

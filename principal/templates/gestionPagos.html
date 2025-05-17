@@ -113,7 +113,6 @@
                 <td><span class="badge badge-danger">{{ pago.idPagoAPI.status }}</span></td>
               {% endif %}
               <td>
-                <button class="btn btn-sm btn-primary">Ver</button>
                 <a href="{% url 'comprobante' pago.idPagoAPI.payment_id %}" class="btn btn-sm btn-dark">PDF</a>
               </td>
             </tr>

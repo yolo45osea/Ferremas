@@ -8,3 +8,6 @@ whitenoise
 psycopg2-binary
 qrcode
 reportlab
+pandas 
+openpyxl
+

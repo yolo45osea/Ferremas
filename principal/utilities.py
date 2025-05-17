@@ -1,7 +1,7 @@
 import requests
 from django.template.loader import render_to_string
 
-DEEPL_API_KEY = "bb400e70-8b7b-4bc2-83a3-2cf75e653687:fx"
+DEEPL_API_KEY = "b74a768a-ebeb-4ab3-b9ac-df4f4a886118:fx"
 
 def traducir_html(html_str, idioma_destino='ES'):
     url = "https://api-free.deepl.com/v2/translate"

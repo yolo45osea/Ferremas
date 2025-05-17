@@ -44,4 +44,6 @@ urlpatterns = [
     path('borrar/<int:productoID>', views.borrar, name='borrar'),
     path('comprobante/<uuid:pago_id>/', views.generar_comprobante_pdf, name='comprobante'),
     path('comprobante/', views.generar_comprobante, name='generar_comprobante'),
+    path('subir_excel/', views.subir_excel, name='subir_excel'),
+    
 ]

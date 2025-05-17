@@ -8,6 +8,8 @@
     <meta content="Free HTML Templates" name="keywords">
     <meta content="Free HTML Templates" name="description">
     {% extends 'base.html' %}
+    {% load humanize %}
+    {% load formatos %}
 
     <!---------------------------------------------------------------------- Favicon ------------------------------------------------------------------------------->
     <link href="img/favicon.png" rel="icon">
@@ -560,8 +562,11 @@
                 <h5 class="card-title">{{ producto.nombre }}</h5>
                 <p >Cantidad: {{ producto.stock }} </p>
               </div>
-              <div class="product-price">${{ producto.precio }} C/U</div>
-              <div class="product-price product-precio-convertido" >${{ producto.precio }} {{ moneda }} C/U</div>
+              
+              <div class="product-price">${{ producto.precio|formatear_pesos }} C/U</div>
+              {% if moneda != 'CLP' %}
+                <div class="product-price product-precio-convertido" >${{ producto.precio_convertido|floatformat:2|intcomma }} {{ moneda }} C/U</div>
+              {% endif %}
               
               <form action="{% url 'agregar' %}" method="post">
                 {% csrf_token %}
@@ -578,7 +583,7 @@
                   </ul>
                 </div>
                 {% if producto.stock == 0 %}
-                  <button type="submit" class="btn-agregar" name="submit" value="addtocart" disabled>AGREGAR</button>
+                  <button type="submit" class="btn-agregar btn-danger" name="submit" value="addtocart" disabled>Sin stock</button>
                 {% else %}
                   <button type="submit" class="btn-agregar" name="submit" value="addtocart">AGREGAR</button>
                 {% endif %}
@@ -595,7 +600,7 @@
 
 
       <!-- Paginación -->
-      <nav class="mt-4">
+      <!--<nav class="mt-4">
         <ul class="pagination justify-content-center">
           <li class="page-item disabled">
             <a class="page-link" href="#">Anterior</a>
@@ -607,7 +612,7 @@
             <a class="page-link" href="#">Siguiente</a>
           </li>
         </ul>
-      </nav>
+      </nav>-->
     </div>
 
 

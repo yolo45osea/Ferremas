@@ -59,7 +59,7 @@
 
     <!-- Formulario de Producto -->
     <div class="form-section">
-      <h5 class="mb-3" style="color: #041e41;">Añadir Producto?</h5>
+      <h5 class="mb-3" style="color: #041e41;">¿Añadir Producto?</h5>
       <form method="post">
         {% csrf_token %}
         <div class="form-row">
@@ -144,8 +144,10 @@
             <input type="hidden" id="imageBase64" name="imageBase64">
           </div>
         </div>
-        <button type="submit" class="btn btn-ferremas mt-3">Guardar Producto</button>
+        <button type="submit" class="btn btn-ferremas mt-3" id="crear" name="crear">Guardar Producto</button>
+        <button type="button" class="btn btn-ferremas mt-3 btn-editar-producto" data-toggle="modal" data-target="#modalExcel"> Editar</button>
       </form>
+      
     </div>
 
     <!-- Tabla de Productos -->
@@ -171,7 +173,19 @@
               <td>${{ producto.precio }}</td>
               <td>{{ producto.stock }}</td>
               <td>
-                <button class="btn btn-sm btn-warning">Editar</button>
+                <button 
+                  class="btn btn-sm btn-warning btn-editar-producto"
+                  data-toggle="modal" 
+                  data-target="#modalEditarProducto"
+                  data-nombre="{{ producto.nombre }}"
+                  data-codigo="{{ producto.idproducto }}"
+                  data-descripcion="{{ producto.descripcion }}"
+                  data-precio="{{ producto.precio }}"
+                  data-stock="{{ producto.stock }}"
+                  data-marca="{{ producto.marca }}"
+                >
+                  Editar
+                </button>
                 <a href="{% url 'borrar' producto.idproducto %}" class="btn btn-sm btn-danger">Eliminar</a>
               </td>
             </tr>
@@ -182,8 +196,152 @@
     </div>
   </div>
 
+  <div class="modal fade" id="modalEditarProducto" tabindex="-1" role="dialog" aria-labelledby="modalEditarLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header" style="background-color: #041e41;">
+        <h5 class="modal-title text-white" id="modalEditarLabel">Editar Producto</h5>
+        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Cerrar">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form method="post">
+          {% csrf_token %}
+          <div class="form-row">
+            <div class="form-group col-md-4">
+              <label>Nombre del Producto</label>
+              <input type="text" class="form-control" id="editarNombre" name="editarNombre">
+              <input type="hidden" id="editarCodigo" name="editarCodigo">
+            </div>
+            <div class="form-group col-md-4">
+              <label>Categoria</label>
+              <select class="form-control" name="editarCategoria" id="editarCategoria">
+                <option value="Seleccione una categoria" disabled selected>Seleccione una categoria</option>
+                <option value="Molduras">Molduras</option>
+                <option value="Puertas para Exterior">Puertas para Exterior</option>
+                <option value="Puertas para Interior">Puertas para Interior</option>
+                <option value="Ventanas">Ventanas</option>
+                <option value="Herramientas Electricas">Herramientas Electricas</option>
+                <option value="Maquinarias">Maquinarias</option>
+                <option value="Herramientas Manuales">Herramientas Manuales</option>
+                <option value="Herramientas y Maquinarias de Construccion">Herramientas y Maquinarias de Construccion</option>
+                <option value="Acabado para Superficies">Acabado para Superficies</option>
+                <option value="Adhesivos, Selladores y Siliconas">Adhesivos, Selladores y Siliconas</option>
+                <option value="Herramientas y Accesorios para Pintar">Herramientas y Accesorios para Pintar</option>
+                <option value="Tratamiento de Superficies">Tratamiento de Superficies</option>
+                <option value="Sanitarios y Accesorios">Sanitarios y Accesorios</option>
+                <option value="Cabinas y Duchas">Cabinas y Duchas</option>
+                <option value="Griferia">Griferia</option>
+                <option value="Muebles Vanitorios y Lavamanos">Muebles Vanitorios y Lavamanos</option>
+                <option value="Muebles de Cocina">Muebles de Cocina</option>
+                <option value="Griferia de Cocina">Griferia de Cocina</option>
+                <option value="Lavaplatos y Lavaderos">Lavaplatos y Lavaderos</option>
+                <option value="Canerias, Tubos y Fitting">Canerias, Tubos y Fitting</option>
+                <option value="Calefont y Termos">Calefont y Termos</option>
+                <option value="Bombas, Motobombas y Accesorios">Bombas, Motobombas y Accesorios</option>
+                <option value="Llaves y Válvulas">Llaves y Válvulas</option>
+                <option value="Fijaciones">Fijaciones</option>
+                <option value="Cerraduras">Cerraduras</option>
+                <option value="Elementos de Protección">Elementos de Protección</option>
+                <option value="Maquinarias de Jardin">Maquinarias de Jardin</option>
+                <option value="Riego">Riego</option>
+                <option value="Piscina">Piscina</option>
+                <option value="Canalizacion">Canalizacion</option>
+                <option value="Interruptores Electricos">Interruptores Electricos</option>
+                <option value="Complementos Electricos">Complementos Electricos</option>
+                <option value="Ampolletas y Tubos">Ampolletas y Tubos</option>
+                <option value="Iluminacion Comercial">Iluminacion Comercial</option>
+                <option value="Iluminacion Interior">Iluminacion Interior</option>
+                <option value="Iluminacion Exterior">Iluminacion Exterior</option>
+                <option value="Madera">Madera</option>
+                <option value="Tableros Construccion">Tableros Construccion</option>
+                <option value="Tableros Muebleria">Tableros Muebleria</option>
+                <option value="Tableros Revestimiento">Tableros Revestimiento</option>
+                <option value="Ceramica Piso">Ceramica Piso</option>
+                <option value="Ceramica Muro">Ceramica Muro</option>
+                <option value="Pisos Flotantes">Pisos Flotantes</option>
+                <option value="Tabiqueria y Aislación">Tabiqueria y Aislación</option>
+                <option value="Techumbre y Complementos">Techumbre y Complementos</option>
+                <option value="Perfiles de Acero">Perfiles de Acero</option>
+              </select>
+            </div>
+            <div class="form-group col-md-4">
+              <label>Marca del Producto</label>
+              <input type="text" class="form-control" id="editarMarca" name="editarMarca">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Descripción</label>
+            <textarea class="form-control" id="editarDescripcion" name="editarDescripcion" rows="2"></textarea>
+          </div>
+          <div class="form-row">
+            <div class="form-group col-md-4">
+              <label>Precio</label>
+              <input type="number" class="form-control" id="editarPrecio" name="editarPrecio">
+            </div>
+            <div class="form-group col-md-4">
+              <label>Stock</label>
+              <input type="number" class="form-control" id="editarStock" name="editarStock">
+            </div>
+            <div class="form-group col-md-4">
+              <label>Imagen</label>
+              <input type="file" class="form-control-file" id="editarImagen" name="editarImagen">
+              <input type="hidden" id="imageBase64Editada" name="imageBase64Editada">
+            </div>
+          </div>
+          <button type="submit" id="editar" name="editar" class="btn btn-ferremas">Guardar Cambios</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="modalExcel" tabindex="-1" role="dialog" aria-labelledby="modalEditarLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header" style="background-color: #041e41;">
+        <h5 class="modal-title text-white" id="modalEditarLabel">Editar Producto</h5>
+        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Cerrar">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form method="post" enctype="multipart/form-data">
+          {% csrf_token %}
+          <div class="form-group col-md-4">
+              <label>Subir Archivo</label>
+              <input type="file" name="archivo_excel" id="archivo_excel" accept=".xlsx">
+              
+            </div>
+          <button type="submit" class="btn btn-ferremas">Guardar Cambios</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
   <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+
+  <script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const botonesEditar = document.querySelectorAll('.btn-editar-producto');
+
+    botonesEditar.forEach(boton => {
+      boton.addEventListener('click', function () {
+        document.getElementById('editarNombre').value = this.getAttribute('data-nombre');
+        document.getElementById('editarCodigo').value = this.getAttribute('data-codigo');
+        document.getElementById('editarDescripcion').value = this.getAttribute('data-descripcion');
+        document.getElementById('editarPrecio').value = this.getAttribute('data-precio');
+        document.getElementById('editarStock').value = this.getAttribute('data-stock');
+        document.getElementById('editarMarca').value = this.getAttribute('data-marca');
+        // La imagen no se puede llenar automáticamente en un <input type="file">
+      });
+    });
+  });
+</script>
+
 
   <script>
   document.getElementById('imageInput').addEventListener('change', function () {
@@ -198,6 +356,28 @@
 
         // Guardar en el input oculto
         document.getElementById('imageBase64').value = base64Clean;
+
+        console.log("Base64:", base64String); // Imagen en base64
+      };
+
+      reader.readAsDataURL(file); // Convierte el archivo a base64
+    }
+  });
+</script>
+
+<script>
+  document.getElementById('editarImagen').addEventListener('change', function () {
+    const file = this.files[0];
+    
+    if (file) {
+      const reader = new FileReader();
+
+      reader.onload = function (e) {
+        const base64String = e.target.result;
+        const base64Clean = base64String.split(',')[1];
+
+        // Guardar en el input oculto
+        document.getElementById('imageBase64Editada').value = base64Clean;
 
         console.log("Base64:", base64String); // Imagen en base64
       };

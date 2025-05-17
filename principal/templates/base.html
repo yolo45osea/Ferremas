@@ -94,6 +94,7 @@
                                 <button class="dropdown-item" type="submit" name="moneda" value="EUR">EUR</button>
                                 <button class="dropdown-item" type="submit" name="moneda" value="USD">USD</button>
                                 <button class="dropdown-item" type="submit" name="moneda" value="CAD">CAD</button>
+                                <button class="dropdown-item" type="submit" name="moneda" value="CLP">CLP</button>
                             </form>
                         </div>
                     </div>
@@ -148,7 +149,7 @@
                 <a href="#" class="dropdown-item">Molduras</a>
                 <a href="#" class="dropdown-item">Puertas para Exterior</a>
                 <a href="#" class="dropdown-item">Puertas para Interior</a>
-                <a href="#" class="dropdown-item">Ventanas</a>
+                <a href="{% url 'productos' 'Ventanas' %}" class="dropdown-item">Ventanas</a>
               </div>
             </div>
 
@@ -160,7 +161,7 @@
                   <a href="{% url 'productos' 'Herramientas Electricas' %}" class="dropdown-item">Herramientas Electricas</a>
                   <a href="#" class="dropdown-item">Maquinarias</a>
                   <a href="#" class="dropdown-item">Herramientas Manuales</a>
-                  <a href="#" class="dropdown-item">Herramientas y Maquinarias de Construccion</a>
+                  <a href="{% url 'productos' 'Herramientas y Maquinarias de Construccion' %}" class="dropdown-item">Herramientas y Maquinarias de Construccion</a>
                 </div>
               </div>
 
@@ -261,7 +262,7 @@
                     Maderas y Tableros<i class="fa fa-angle-right float-right mt-1"></i>
                 </a>
                 <div class="dropdown-menu position-absolute rounded-0 border-0 m-0">
-                  <a href="#" class="dropdown-item">Madera</a>
+                  <a href="{% url 'productos' 'Madera' %}" class="dropdown-item">Madera</a>
                   <a href="#" class="dropdown-item">Tableros Construccion</a>
                   <a href="#" class="dropdown-item">Tableros Muebleria</a>
                   <a href="#" class="dropdown-item">Tableros Revestimiento</a>
@@ -354,7 +355,6 @@
                                 <a class="text-secondary mb-2" href="{% url 'nosotros' %}"><i class="fa fa-angle-right mr-2"></i>Nuestra Empresa</a>
                                 <a class="text-secondary mb-2" href="{% url 'Cambios' %}"><i class="fa fa-angle-right mr-2"></i>Cambios y Devoluciones</a>
                                 <a class="text-secondary mb-2" href="{% url 'TerminosyCondiciones' %}"><i class="fa fa-angle-right mr-2"></i>Términos y Condiciones</a>
-                                <a class="text-secondary mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>Bases Legales</a>
                             </div>
                         </div>
         
@@ -588,20 +588,37 @@
         <script src="{% static 'mail/contact.js' %}"></script>
         <script src="{% static 'js/main.js' %}"></script>
         <script>
-          function toggleCart() {
-            const cart = document.getElementById("sideCart");
-            if (cart) cart.classList.toggle("open");
-          }
+          function toggleEnvio(type) {
+            const envioDireccion = document.getElementById('envio-direccion');
+            const envioRetiro = document.getElementById('envio-retiro');
+            const btnDireccion = document.getElementById('btnDireccion');
+            const btnRetiro = document.getElementById('btnRetiro');
         
-          document.addEventListener("DOMContentLoaded", function () {
-            const toggle = document.getElementById("toggleCart");
-            if (toggle) {
-              toggle.addEventListener("click", function (e) {
-                e.preventDefault();
-                toggleCart();
-              });
+            if (type === 'direccion') {
+              envioDireccion.classList.remove('d-none');
+              envioRetiro.classList.add('d-none');
+        
+              // Activar botón "Enviar a la dirección"
+              btnDireccion.classList.add('btn-warning', 'active');
+              btnDireccion.classList.remove('btn-outline-warning');
+        
+              // Desactivar botón "Retirar en tienda"
+              btnRetiro.classList.add('btn-outline-warning');
+              btnRetiro.classList.remove('btn-warning', 'active');
+        
+            } else {
+              envioDireccion.classList.add('d-none');
+              envioRetiro.classList.remove('d-none');
+        
+              // Activar botón "Retirar en tienda"
+              btnRetiro.classList.add('btn-warning', 'active');
+              btnRetiro.classList.remove('btn-outline-warning');
+        
+              // Desactivar botón "Enviar a la dirección"
+              btnDireccion.classList.add('btn-outline-warning');
+              btnDireccion.classList.remove('btn-warning', 'active');
             }
-          });
+          }
         </script>
         {% if registro_form.errors %}
         <script>

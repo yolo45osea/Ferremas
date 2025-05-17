@@ -30,6 +30,8 @@ from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import A4
 from datetime import datetime
 from PIL import Image
+import pandas as pd
+from .models import Inventario
 
 
 logger = logging.getLogger(__name__)
@@ -64,12 +66,19 @@ def index(request):
     registro_form = RegistroForm()
     precio = 10000
     tasa_conversion = 0
-    idioma = 'ES'
+    idioma = request.GET.get('traduccion')
     moneda = 'CLP'
     cliente = Cliente.objects.filter(usuario=request.user.username).first()
     carrito = CarritoCompra.objects.filter(idcliente=cliente).first()
     detalle = DetalleCarrito.objects.filter(idcarrito = carrito)
     total = 0
+
+    producto1 = Inventario.objects.filter(categoria = 'Herramientas Electricas').first()
+    producto2 = Inventario.objects.filter(categoria = 'Herramientas y Maquinarias de Construccion').first()
+    producto3 = Inventario.objects.filter(categoria = 'Madera').first()
+    producto4 = Inventario.objects.filter(categoria = 'Ventanas').first()
+
+    print(f'producto 1: {producto1.idproducto}')
 
     print(f"cliente: {cliente}")
     print(f"carrito: {carrito}")
@@ -189,8 +198,18 @@ def index(request):
         else:
             return JsonResponse({"error": "Error al consultar la API", "details": response.text}, status=500)
     print(f"tasa: {tasa_conversion}, precio: {precio}")
-    return render(request, 'index.html', {'precio': precio * tasa_conversion if tasa_conversion>0 else precio, 'login_form': login_form, 
-                   'registro_form': registro_form, 'tipo_usuario': tipo_usuario, 'idioma': idioma, 'moneda':moneda if moneda !=None else 'CLP'})
+    return render(request, 'index.html', {
+        'precio': precio * tasa_conversion if tasa_conversion>0 else precio, 
+        'login_form': login_form, 
+        'registro_form': registro_form, 
+        'tipo_usuario': tipo_usuario, 
+        'idioma': idioma if idioma != None else 'ES', 
+        'moneda':moneda if moneda !=None else 'CLP',
+        'producto1':producto1,
+        'producto2':producto2,
+        'producto3':producto3,
+        'producto4':producto4,
+    })
 
 
 
@@ -281,7 +300,7 @@ def productos(request, categoria):
         p.precio_convertido = p.precio * tasa_conversion
         productos_actualizados.append(p)
 
-    paginator = Paginator(productos, 12)
+    paginator = Paginator(productos_actualizados, 12)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
@@ -390,9 +409,10 @@ def resumen(request):
             Borrar_producto = DetalleCarrito.objects.filter(idproducto=producto)
             Borrar_producto.delete()
             usuario = Cliente.objects.filter(usuario=request.user.username).first()
-            carro = CarritoCompra.objects.filter(idcliente=usuario).first()
-            validar_carrito = DetalleCarrito.objects.filter(idcarrito=carro)
-            if validar_carrito:
+            carro = CarritoCompra.objects.filter(idcliente=usuario, estado = 1).first()
+            validar_carrito = DetalleCarrito.objects.filter(idcarrito=carro).first()
+            print(f"carrito: {validar_carrito}")
+            if validar_carrito != None:
                 return redirect('resumen')
             else:
                 return redirect('index')
@@ -472,34 +492,105 @@ def contacto(request):
 @login_required
 def gestionCatalogo(request):
     productos = Inventario.objects.all()
-    print(productos)
 
     if request.method == "POST":
-        nombre = request.POST.get('nombre') 
-        descripcion = request.POST.get('descripcion')
-        precio = request.POST.get('precio')
-        stock = request.POST.get('stock')
-        imagen = request.POST.get('imageBase64')
-        marca = request.POST.get('marca')
-        categoria = request.POST.get('categoria')
+        # ✅ SUBIDA DE EXCEL
+        if request.FILES.get('archivo_excel'):
+            archivo_excel = request.FILES['archivo_excel']
+            try:
+                df = pd.read_excel(archivo_excel)
 
-        Inventario.objects.create(
-            nombre = nombre if nombre else "",
-            descripcion = descripcion if descripcion else "",
-            marca = marca if marca else "",
-            categoria = categoria if categoria else "",
-            stock = stock if stock else "",
-            alerta = 0,
-            fecha_actualizacion = date.today(),
-            imagen_base64 = imagen if imagen else "",
-            precio = precio if precio else ""
-        )
-        git_commit("creacion producto")
-        return redirect('gestionCatalogo')
+                for index, row in df.iterrows():
+                    idproducto = str(row.get('idproducto')).strip() if pd.notna(row.get('idproducto')) else None
+                    nombre = str(row.get('nombre')).strip() if pd.notna(row.get('nombre')) else ''
+                    descripcion = str(row.get('descripcion')).strip() if pd.notna(row.get('descripcion')) else ''
+                    stock = int(row.get('stock')) if pd.notna(row.get('stock')) else 0
+                    precio = int(row.get('precio')) if pd.notna(row.get('precio')) else 0
+                    categoria_nombre = str(row.get('categoria')).strip() if pd.notna(row.get('categoria')) else ''
 
+                    if not idproducto or not nombre:
+                        continue  # Saltar fila incompleta
 
+                    producto, creado = Inventario.objects.get_or_create(
+                        idproducto=idproducto,
+                        defaults={
+                            'nombre': nombre,
+                            'descripcion': descripcion,
+                            'stock': stock,
+                            'precio': precio,
+                            'categoria': categoria_nombre,
+                            'alerta': False,
+                            'fecha_actualizacion': date.today(),
+                            'imagen_base64': '',
+                            'precio_convertido': 0,
+                            'marca': '',
+                        }
+                    )
 
-    return render(request, 'gestionCatalogo.html', {'productos':productos})
+                    if not creado:
+                        producto.nombre = nombre
+                        producto.descripcion = descripcion
+                        producto.stock = stock
+                        producto.precio = precio
+                        producto.categoria = categoria_nombre
+                        producto.fecha_actualizacion = date.today()
+                        producto.save()
+
+                messages.success(request, "Archivo procesado correctamente.")
+                git_commit("Subida de productos por Excel")
+            except Exception as e:
+                messages.error(request, f"Error al procesar el archivo: {str(e)}")
+
+            return redirect('gestionCatalogo')
+
+        # ✅ CREAR PRODUCTO
+        if 'crear' in request.POST:
+            nombre = request.POST.get('nombre') 
+            descripcion = request.POST.get('descripcion')
+            precio = request.POST.get('precio')
+            stock = request.POST.get('stock')
+            imagen = request.POST.get('imageBase64')
+            marca = request.POST.get('marca')
+            categoria = request.POST.get('categoria')
+
+            Inventario.objects.create(
+                nombre=nombre or "",
+                descripcion=descripcion or "",
+                marca=marca or "",
+                categoria=categoria or "",
+                stock=int(stock) if stock else 0,
+                alerta=False,
+                fecha_actualizacion=date.today(),
+                imagen_base64=imagen or "",
+                precio=int(precio) if precio else 0,
+                precio_convertido=0
+            )
+            git_commit("creación producto")
+            return redirect('gestionCatalogo')
+
+        # ✅ EDITAR PRODUCTO
+        if 'editar' in request.POST:
+            editarCodigo = request.POST.get('editarCodigo')
+            producto_editado = Inventario.objects.filter(idproducto=editarCodigo).first()
+
+            if producto_editado:
+                producto_editado.nombre = request.POST.get('editarNombre') or ""
+                producto_editado.descripcion = request.POST.get('editarDescripcion') or ""
+                producto_editado.marca = request.POST.get('editarMarca') or ""
+                producto_editado.categoria = request.POST.get('editarCategoria') or producto_editado.categoria
+                producto_editado.stock = int(request.POST.get('editarStock') or 0)
+                producto_editado.alerta = False
+                producto_editado.fecha_actualizacion = date.today()
+                producto_editado.precio = int(request.POST.get('editarPrecio') or 0)
+                producto_editado.imagen_base64 = request.POST.get('imageBase64Editada') or ""
+                producto_editado.precio_convertido = 0
+
+                producto_editado.save()
+                git_commit("edición producto")
+            return redirect('gestionCatalogo')
+
+    return render(request, 'gestionCatalogo.html', {'productos': productos})
+
 
 @login_required
 def gestionDescuento(request):
@@ -750,3 +841,32 @@ def generar_comprobante(request):
     buffer.seek(0)
 
     return FileResponse(buffer, as_attachment=True, filename='comprobante_ferremas.pdf')
+
+
+
+def subir_excel(request):
+    if request.method == 'POST' and request.FILES.get('archivo_excel'):
+        archivo = request.FILES['archivo_excel']
+        df = pd.read_excel(archivo)
+        print('peo')
+
+        for _, row in df.iterrows():
+            idproducto = row.get('idproducto')
+
+            if not idproducto:
+                continue  # Salta si no hay ID de producto
+
+            producto, creado = Inventario.objects.get_or_create(idproducto=idproducto)
+
+            # Actualiza los campos (tanto si es nuevo como existente)
+            producto.nombre = row.get('nombre', producto.nombre)
+            producto.descripcion = row.get('descripcion', producto.descripcion)
+            producto.precio = row.get('precio', producto.precio)
+            producto.stock = row.get('stock', producto.stock)
+            producto.marca = row.get('marca', producto.marca)
+            producto.categoria = row.get('categoria', producto.categoria)
+
+            producto.save()
+
+        return redirect('gestionCatalogo')
+    return render(request, 'gestionCatalogo.html')

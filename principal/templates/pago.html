@@ -71,6 +71,9 @@
           <div class="flex-grow-1 text-center pr-5">
             <h5 class="mb-0 text-white font-weight-bold">FERREMAS - PROCESO DE PAGO</h5>
           </div>
+          <a href="{% url 'resumen' %}" class="btn btn-warning font-weight-bold " id="btn-volver">
+            <i class="fas fa-arrow-left mr-1"></i> Volver
+          </a>
         </div>
       </div>
       
@@ -118,33 +121,48 @@
         </div>
         <div class="section-box" id="step-envio">
           <h5><span class="step-number">2</span> ENVÍO</h5>
-          <div class="btn-group btn-group-toggle mb-3" data-toggle="buttons">
-            <label class="btn btn-outline-warning active">
-              <input type="radio" name="envioOption" autocomplete="off" checked onclick="toggleEnvio('direccion')"> Enviar a la dirección
-            </label>
-            <label class="btn btn-outline-warning">
-              <input type="radio" name="envioOption" autocomplete="off" onclick="toggleEnvio('retiro')"> Retirar en tienda
-            </label>
-          </div>
-          <div id="envio-direccion">
-            <input type="text" class="form-control mb-3" placeholder="Dirección de envío">
-          </div>
-          <div id="envio-retiro" class="hidden">
-            <p>Seleccione tienda con stock:</p>
-            <select class="form-control mb-2">
-              <option value="1">Sucursal Santiago Centro</option>
-              <option value="2">Sucursal Maipú</option>
-            </select>
-            <input type="text" class="form-control" placeholder="¿Quién retira?">
-          </div>
+            <div class="btn-group w-100 mb-3" role="group">
+              <button type="button" class="btn btn-warning font-weight-bold w-50 active" id="btnDireccion" onclick="toggleEnvio('direccion')">
+                Enviar a la dirección
+              </button>
+              <button type="button" class="btn btn-outline-warning font-weight-bold w-50" id="btnRetiro" onclick="toggleEnvio('retiro')">
+                Retirar en tienda
+              </button>
+            </div>
+
+                      <div id="envio-direccion">
+              <input type="text" class="form-control mb-3" placeholder="Dirección de envío">
+            </div>
+            <div id="envio-retiro" class="d-none">
+              <p>Seleccione tienda con stock:</p>
+              <select class="form-control mb-2">
+                <option value="1">Sucursal Santiago Centro</option>
+                <option value="2">Sucursal Maipú</option>
+              </select>
+              <input type="text" class="form-control" placeholder="¿Quién retira?">
+            </div>
         </div>
-        <div class="section-box" id="step-pago">
-          <h5><span class="step-number">3</span> PAGO</h5>
-          <div class="custom-control custom-radio">
-            <input type="radio" id="pagoWebpay" name="metodoPago" class="custom-control-input" checked>
-            <label class="custom-control-label" for="pagoWebpay">Webpay - Pago al contado $69.990</label>
-          </div>
+
+
+      <div class="section-box" id="step-pago">
+        <h5><span class="step-number">3</span> PAGO</h5>
+
+        <div class="custom-control custom-radio mb-2">
+          <input type="radio" id="pagoWebpay" name="metodoPago" class="custom-control-input" checked>
+          <label class="custom-control-label" for="pagoWebpay">Webpay - Pago al contado </label>
         </div>
+
+        <div class="custom-control custom-radio mb-2">
+          <input type="radio" id="pagoTransferencia" name="metodoPago" class="custom-control-input">
+          <label class="custom-control-label" for="pagoTransferencia">Transferencia Bancaria - Instrucciones al finalizar</label>
+        </div>
+
+        <div class="custom-control custom-radio">
+          <input type="radio" id="pagoPaypal" name="metodoPago" class="custom-control-input">
+          <label class="custom-control-label" for="pagoPaypal">PayPal - Pago internacional</label>
+        </div>
+      </div>
+
       </div>
       <div class="col-md-4">
         <div class="resumen-box">
@@ -236,17 +254,50 @@
     </div>
 
 
-
-  <script>
-    function toggleEnvio(type) {
-      if (type === 'direccion') {
-        document.getElementById('envio-direccion').classList.remove('hidden');
-        document.getElementById('envio-retiro').classList.add('hidden');
-      } else {
-        document.getElementById('envio-direccion').classList.add('hidden');
-        document.getElementById('envio-retiro').classList.remove('hidden');
+    <script>
+      function toggleEnvio(type) {
+        if (type === 'direccion') {
+          document.getElementById('envio-direccion').classList.remove('hidden');
+          document.getElementById('envio-retiro').classList.add('hidden');
+        } else {
+          document.getElementById('envio-direccion').classList.add('hidden');
+          document.getElementById('envio-retiro').classList.remove('hidden');
+        }
       }
-    }
-  </script>
+    </script>
+    <script>
+      function toggleEnvio(type) {
+        const envioDireccion = document.getElementById('envio-direccion');
+        const envioRetiro = document.getElementById('envio-retiro');
+        const btnDireccion = document.getElementById('btnDireccion');
+        const btnRetiro = document.getElementById('btnRetiro');
+    
+        if (type === 'direccion') {
+          envioDireccion.classList.remove('d-none');
+          envioRetiro.classList.add('d-none');
+    
+          // Activar botón "Enviar a la dirección"
+          btnDireccion.classList.add('btn-warning', 'active');
+          btnDireccion.classList.remove('btn-outline-warning');
+    
+          // Desactivar botón "Retirar en tienda"
+          btnRetiro.classList.add('btn-outline-warning');
+          btnRetiro.classList.remove('btn-warning', 'active');
+    
+        } else {
+          envioDireccion.classList.add('d-none');
+          envioRetiro.classList.remove('d-none');
+    
+          // Activar botón "Retirar en tienda"
+          btnRetiro.classList.add('btn-warning', 'active');
+          btnRetiro.classList.remove('btn-outline-warning');
+    
+          // Desactivar botón "Enviar a la dirección"
+          btnDireccion.classList.add('btn-outline-warning');
+          btnDireccion.classList.remove('btn-warning', 'active');
+        }
+      }
+    </script>
+  
 </body>
 </html>

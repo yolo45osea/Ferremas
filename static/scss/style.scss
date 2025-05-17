@@ -312,3 +312,14 @@ $input-placeholder-color: #999999;
     height: 40px;
 }
 
+
+.side-cart {
+    right: -400px;
+    transition: right 0.4s ease;
+  }
+  
+  
+  .side-cart.open {
+    right: 0;
+  }
+  

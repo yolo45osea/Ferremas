@@ -108,7 +108,7 @@ def payment_success(request, pk):
 
             Pago.objects.create(
                 idPagoAPI = pago,
-                rut = cliente.rut
+                idcliente = cliente
             )
 
             for productos in detalle:
