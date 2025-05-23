@@ -484,17 +484,22 @@ def webpay_cancel(request):
 
 
 def resumen(request):
-    carrito = DetalleCarrito.objects.all()
+    session_key = request.session.session_key
+    cliente = Cliente.objects.filter(usuario = request.user.username)
+    carrito = CarritoCompra.objects.filter(
+        Q(session_key=session_key) | Q(idcliente=cliente)
+    ).first()
+    detalle = DetalleCarrito.objects.filter(idcarrito = carrito)
     total = 0
     subtotal = 0
     totalPago = 0
 
-    print(f'carrito: {carrito}')
+    print(f'carrito: {detalle}')
 
-    if not carrito.exists():
+    if not detalle.exists():
         return redirect('index')
 
-    for i in carrito:
+    for i in detalle:
         total+= i.idproducto.precio * i.cantidad
         totalPago = total
     print(total)
