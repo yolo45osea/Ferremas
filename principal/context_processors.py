@@ -7,12 +7,12 @@ def carrito_context(request):
     if request.user.is_authenticated:
         cliente = Cliente.objects.filter(usuario=request.user.username).first()
         carrito = CarritoCompra.objects.filter(idcliente=cliente, estado = 1).first()
-        detalle = DetalleCarrito.objects.filter(idcarrito=carrito) if carrito else []
+        detalle = DetalleCarrito.objects.filter(idcarrito=carrito)
         total = sum([item.idproducto.precio * item.cantidad for item in detalle])
     else:
         session_key = request.session.session_key
         carrito = CarritoCompra.objects.filter(session_key=session_key, estado = 1).first()
-        detalle = DetalleCarrito.objects.filter(idcarrito=carrito) if carrito else []
+        detalle = DetalleCarrito.objects.filter(idcarrito=carrito)
         total = sum([item.idproducto.precio * item.cantidad for item in detalle])
 
         tasa_conversion = 0
