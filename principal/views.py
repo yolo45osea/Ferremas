@@ -485,7 +485,7 @@ def webpay_cancel(request):
 
 def resumen(request):
     session_key = request.session.session_key
-    cliente = Cliente.objects.filter(usuario = request.user.username)
+    cliente = Cliente.objects.filter(usuario = request.user.username).first()
     carrito = CarritoCompra.objects.filter(
         Q(session_key=session_key) | Q(idcliente=cliente)
     ).first()
