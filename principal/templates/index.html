@@ -559,8 +559,8 @@
                 <img src="static/img/herramienta.png" alt="Icono Organización" style="width: 18px;">
             </div>
             {{ producto2.categoria }}</div>
-                    {% if producto1.idproducto %}
-    <a href="{% url 'unitario' producto1.idproducto %}">
+                    {% if producto2.idproducto %}
+    <a href="{% url 'unitario' producto2.idproducto %}">
         {% if producto2.imagen_base64 %}
           <img src="data:image/jpeg;base64,{{ producto2.imagen_base64 }}" class="card-img-top" alt="Producto 1">
         {% else %}
