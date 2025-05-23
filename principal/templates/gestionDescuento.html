@@ -79,27 +79,28 @@
   <div class="container my-5">
     <h5 class="text-center text-info mb-4">Crear Nueva Promoción</h5>
     <div class="form-section">
-      <form>
+      <form method="post">
+        {% csrf_token %}
         <div class="form-group">
           <label>Nombre de la promoción</label>
-          <input type="text" class="form-control" placeholder="Ej: Oferta Primavera">
+          <input type="text" class="form-control" name="nombre" placeholder="Ej: Oferta Primavera">
         </div>
         <div class="form-group">
-          <label>Producto o Categoría</label>
-          <input type="text" class="form-control" placeholder="Ej: Cemento, Herramientas Eléctricas">
+          <label>Codigo Descuento</label>
+          <input type="text" class="form-control" name="codigo" placeholder="Ej: Cemento, Herramientas Eléctricas">
         </div>
         <div class="form-row">
           <div class="form-group col-md-4 col-sm-12 mb-3">
             <label>Descuento (%)</label>
-            <input type="number" class="form-control" placeholder="Ej: 15">
+            <input type="number" class="form-control" name="descuento" min="1" placeholder="Ej: 15">
           </div>
           <div class="form-group col-md-4 col-sm-6 mb-3">
             <label>Fecha Inicio</label>
-            <input type="date" class="form-control">
+            <input type="date" name="inicio" class="form-control">
           </div>
           <div class="form-group col-md-4 col-sm-6 mb-3">
             <label>Fecha Término</label>
-            <input type="date" class="form-control">
+            <input type="date" name="termino" id="fechaTermino" class="form-control">
           </div>
         </div>
         <div class="text-center">
@@ -116,7 +117,7 @@
           <thead>
             <tr>
               <th>Promoción</th>
-              <th>Producto/Categoría</th>
+              <th>Codigo</th>
               <th>Descuento</th>
               <th>Inicio</th>
               <th>Término</th>
@@ -125,30 +126,24 @@
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td>Oferta Invierno</td>
-              <td>Calefacción</td>
-              <td>20%</td>
-              <td>2025-05-01</td>
-              <td>2025-05-15</td>
-              <td><span class="badge badge-success">Activa</span></td>
-              <td>
-                <button class="btn btn-sm btn-primary mb-1">Editar</button>
-                <button class="btn btn-sm btn-danger">Eliminar</button>
-              </td>
-            </tr>
-            <tr>
-              <td>Descuento Flash</td>
-              <td>Pinturas</td>
-              <td>10%</td>
-              <td>2025-04-15</td>
-              <td>2025-04-20</td>
-              <td><span class="badge badge-secondary">Expirada</span></td>
-              <td>
-                <button class="btn btn-sm btn-primary mb-1">Editar</button>
-                <button class="btn btn-sm btn-danger">Eliminar</button>
-              </td>
-            </tr>
+            {% for descuento in descuentos %}
+              <tr>
+                <td>{{ descuento.nombreDescuento }}</td>
+                <td>{{ descuento.codigo }}</td>
+                <td>{{ descuento.descuento }}%</td>
+                <td>{{ descuento.fechaInicio }}</td>
+                <td>{{ descuento.fechaTermino }}</td>
+                {% if descuento.estado %}
+                  <td><span class="badge badge-success">{{ descuento.estado }}</span></td>
+                {% else %}
+                  <td><span class="badge badge-secondary">{{ descuento.estado }}</span></td>
+                {% endif %}
+                <td>
+                  <button class="btn btn-sm btn-primary mb-1">Editar</button>
+                  <a href="{% url 'borrar' descuento.codigo 'gestionDescuento' %}" class="btn btn-sm btn-danger">Eliminar</a>
+                </td>
+              </tr>
+            {% endfor %}
           </tbody>
         </table>
       </div>
@@ -156,58 +151,76 @@
   </div>
 
 
-<!-- Footer -->
-<footer class="ferremas-footer mt-0">
-  <div class="container-fluid px-xl-5 pt-5">
-    <div class="row text-center text-md-left">
-      <div class="col-lg-4 col-md-12 mb-4">
-        <img src="img/logo3.png" alt="Logo Footer" class="img-fluid mb-3" style="max-width: 220px;">
-        <div class="d-flex justify-content-center justify-content-md-start flex-wrap gap-2">
-          <a class="btn btn-primary btn-square me-2 mb-2" href="#"><i class="fab fa-twitter"></i></a>
-          <a class="btn btn-primary btn-square me-2 mb-2" href="#"><i class="fab fa-facebook-f"></i></a>
-          <a class="btn btn-primary btn-square me-2 mb-2" href="#"><i class="fab fa-linkedin-in"></i></a>
-          <a class="btn btn-primary btn-square mb-2" href="#"><i class="fab fa-instagram"></i></a>
+  <!-- Footer -->
+  <footer class="ferremas-footer mt-0">
+    <div class="container-fluid px-xl-5 pt-5">
+      <div class="row text-center text-md-left">
+        <div class="col-lg-4 col-md-12 mb-4">
+          <img src="{% static 'img/logo3.png' %}" alt="Logo Footer" class="img-fluid mb-3" style="max-width: 220px;">
+          <div class="d-flex justify-content-center justify-content-md-start flex-wrap gap-2">
+            <a class="btn btn-primary btn-square me-2 mb-2" href="#"><i class="fab fa-twitter"></i></a>
+            <a class="btn btn-primary btn-square me-2 mb-2" href="#"><i class="fab fa-facebook-f"></i></a>
+            <a class="btn btn-primary btn-square me-2 mb-2" href="#"><i class="fab fa-linkedin-in"></i></a>
+            <a class="btn btn-primary btn-square mb-2" href="#"><i class="fab fa-instagram"></i></a>
+          </div>
         </div>
-      </div>
-      <div class="col-lg-8 col-md-12">
-        <div class="row">
-          <div class="col-md-4 col-12 mb-4">
-            <h6 class="text-uppercase mb-3">Términos y condiciones</h6>
-            <ul class="list-unstyled">
-              <li><a class="text-light" href="nosotros.html">Nuestra Empresa</a></li>
-              <li><a class="text-light" href="Cambios.html">Cambios y Devoluciones</a></li>
-              <li><a class="text-light" href="TerminosyCondiciones.html">Términos y Condiciones</a></li>
-            </ul>
-          </div>
-          <div class="col-md-4 col-12 mb-4">
-            <h6 class="text-uppercase mb-3">Contáctanos</h6>
-            <ul class="list-unstyled">
-              <li><a class="text-light" href="#">Contáctanos</a></li>
-              <li><a class="text-light" href="#">Ayuda</a></li>
-              <li><span class="text-light">+56 2 2890 9000</span></li>
-            </ul>
-          </div>
-          <div class="col-md-4 col-12 mb-4">
-            <h6 class="text-uppercase mb-3">Newsletter</h6>
-            <form>
-              <div class="input-group">
-                <input type="email" class="form-control" placeholder="Tu correo electrónico">
-                <div class="input-group-append">
-                  <button class="btn btn-warning text-dark font-weight-bold">Suscribirse</button>
+        <div class="col-lg-8 col-md-12">
+          <div class="row">
+            <div class="col-md-4 col-12 mb-4">
+              <h6 class="text-uppercase mb-3">Términos y condiciones</h6>
+              <ul class="list-unstyled">
+                <li><a class="text-light" href="nosotros.html">Nuestra Empresa</a></li>
+                <li><a class="text-light" href="Cambios.html">Cambios y Devoluciones</a></li>
+                <li><a class="text-light" href="TerminosyCondiciones.html">Términos y Condiciones</a></li>
+              </ul>
+            </div>
+            <div class="col-md-4 col-12 mb-4">
+              <h6 class="text-uppercase mb-3">Contáctanos</h6>
+              <ul class="list-unstyled">
+                <li><a class="text-light" href="#">Contáctanos</a></li>
+                <li><a class="text-light" href="#">Ayuda</a></li>
+                <li><span class="text-light">+56 2 2890 9000</span></li>
+              </ul>
+            </div>
+            <div class="col-md-4 col-12 mb-4">
+              <h6 class="text-uppercase mb-3">Newsletter</h6>
+              <form>
+                <div class="input-group">
+                  <input type="email" class="form-control" placeholder="Tu correo electrónico">
+                  <div class="input-group-append">
+                    <button class="btn btn-warning text-dark font-weight-bold">Suscribirse</button>
+                  </div>
                 </div>
-              </div>
-            </form>
+              </form>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-    <div class="row border-top mt-4 pt-3 text-center text-md-left" style="border-color: rgba(255,255,255,0.1);">
-      <div class="col-md-6 mb-2 mb-md-0">
-        <p class="mb-0 text-light">&copy; <a class="text-warning" href="#">Synergia</a>. Todos los derechos reservados FERREMAS</p>
+      <div class="row border-top mt-4 pt-3 text-center text-md-left" style="border-color: rgba(255,255,255,0.1);">
+        <div class="col-md-6 mb-2 mb-md-0">
+          <p class="mb-0 text-light">&copy; <a class="text-warning" href="#">Synergia</a>. Todos los derechos reservados FERREMAS</p>
+        </div>
+        <div class="col-md-6 text-md-right">
+          <img class="img-fluid" src="img/payments.png" alt="Métodos de pago" style="max-width: 100%;">
+        </div>
       </div>
-      <div class="col-md-6 text-md-right">
-        <img class="img-fluid" src="img/payments.png" alt="Métodos de pago" style="max-width: 100%;">
-      </div>
     </div>
-  </div>
-</footer>
+  </footer>
+
+
+  <script>
+    window.addEventListener('DOMContentLoaded', function () {
+      const inputFecha = document.getElementById('fechaTermino');
+      const mañana = new Date();
+      mañana.setDate(mañana.getDate() + 1); // sumamos 1 día
+
+      // Formato YYYY-MM-DD
+      const yyyy = mañana.getFullYear();
+      const mm = String(mañana.getMonth() + 1).padStart(2, '0'); // los meses van de 0 a 11
+      const dd = String(mañana.getDate()).padStart(2, '0');
+
+      const fechaMin = `${yyyy}-${mm}-${dd}`;
+      inputFecha.min = fechaMin;
+    });
+  </script>
+</body>

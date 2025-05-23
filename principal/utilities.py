@@ -19,4 +19,5 @@ def traducir_html(html_str, idioma_destino='ES'):
     if response.status_code == 200:
         return response.json()["translations"][0]["text"], idioma_destino
     else:
-        return f"<p>Error: {response.status_code} - {response.text}</p>"
+        error_msg = f"<p>Error: {response.status_code} - {response.text}</p>"
+        return error_msg, idioma_destino  # <--- Siempre dos valores

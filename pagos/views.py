@@ -3,15 +3,55 @@ from django.shortcuts import get_object_or_404, redirect, render
 from payments import get_payment_model, RedirectNeeded
 from payments.core import provider_factory
 from django.db.transaction import atomic
-
+from django.core.mail import send_mail
 import logging
 from pagos.models import Payment
 from django_payments_chile import WebpayProvider
 from django.views.decorators.csrf import csrf_exempt
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
+from io import BytesIO
+from django.http import HttpResponse
+from django.utils import timezone
+from django.core.mail import EmailMessage
 
 from principal.models import CarritoCompra, Cliente, DetalleCarrito, Inventario, Pago
 
 logger = logging.getLogger(__name__)
+
+def generar_documento_pdf(pago, cliente, detalle_productos, tipo_documento):
+    buffer = BytesIO()
+    c = canvas.Canvas(buffer, pagesize=letter)
+    width, height = letter
+
+    c.setFont("Helvetica-Bold", 16)
+    c.drawString(50, height - 50, f"{tipo_documento.upper()}")
+
+    c.setFont("Helvetica", 12)
+    c.drawString(50, height - 80, f"Cliente: {cliente.usuario}")
+    c.drawString(50, height - 100, f"Email: {cliente.email if hasattr(cliente, 'email') else 'N/A'}")
+    c.drawString(50, height - 120, f"Fecha: {timezone.now().strftime('%d/%m/%Y %H:%M')}")
+
+    c.drawString(50, height - 150, "Productos:")
+
+    y = height - 170
+    for producto in detalle_productos:
+        nombre = producto.idproducto.nombre if hasattr(producto.idproducto, 'nombre') else "Producto"
+        cantidad = producto.cantidad
+        precio = producto.idproducto.precio if hasattr(producto.idproducto, 'precio') else 0
+        total_producto = cantidad * precio
+        c.drawString(60, y, f"- {nombre}: {cantidad} x ${precio} = ${total_producto}")
+        y -= 20
+
+    # Total
+    total = sum([p.cantidad * (p.idproducto.precio if hasattr(p.idproducto, 'precio') else 0) for p in detalle_productos])
+    c.drawString(50, y - 10, f"Total: ${total}")
+
+    c.showPage()
+    c.save()
+    pdf = buffer.getvalue()
+    buffer.close()
+    return pdf
 
 def crear_pago(request):
     payment_model = get_payment_model()  # Obtienes el modelo de pago de django-payments
@@ -95,20 +135,19 @@ def process_data(request, token, provider=None):
 
 def payment_success(request, pk):
     if request.method == "POST":
-        print('peo')
         if 'submit' in request.POST:
-            print('peoo')
             idPago = request.POST.get('pago')
-            pago = Payment.objects.filter(payment_id = idPago).first()
+            pago = Payment.objects.filter(id = idPago).first()
             pago.status = 'approved'
             pago.save()
+
             cliente = Cliente.objects.filter(usuario = request.user.username).first()
             carrito = CarritoCompra.objects.filter(idcliente = cliente, estado = 1).first()
             detalle = DetalleCarrito.objects.filter(idcarrito = carrito)
 
             Pago.objects.create(
                 idPagoAPI = pago,
-                idcliente = cliente
+                idcliente = cliente or Cliente.objects.filter(idcliente=1).first()
             )
 
             for productos in detalle:
@@ -121,8 +160,29 @@ def payment_success(request, pk):
             carrito.estado = 0
             carrito.save()
 
+            tipo_documento = pago.tipo_documento  # Asume que message contiene "boleta" o "factura"
+            pdf = generar_documento_pdf(pago, cliente or Cliente.objects.filter(idcliente=1).first(), detalle, tipo_documento)
+
+            detalle.delete()
+
+            # Enviar correo con PDF adjunto
+            asunto = 'Tu Compra en FERREMAS'
+            mensaje = 'Hola, su pago ha sido aprobado.'
+            if hasattr(pago, 'billing_address_1') and pago.billing_address_1:
+                mensaje += f' El producto será enviado a {pago.billing_address_1}.'
+            elif hasattr(pago, 'billing_address_2') and pago.billing_address_2:
+                mensaje += f' El producto se podrá retirar en {pago.billing_address_2}.'
+
+            remitente = 'ferremas69@gmail.com'
+            destinatarios = [pago.billing_email]
+
+            email = EmailMessage(asunto, mensaje, remitente, destinatarios)
+            email.attach(f"{tipo_documento}_{pago.id}.pdf", pdf, "application/pdf")
+            email.send()
+
             return redirect('index')
     return render(request, 'success.html', {'payment_id': pk})
+
 
 def payment_pending(request):
     return render(request, 'pagos/pending.html')

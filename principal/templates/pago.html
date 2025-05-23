@@ -58,6 +58,52 @@
       border: 1px solid #e0e0e0;
     }
   </style>
+  <style>
+  .dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #fff;
+    min-width: 100%;
+    border: 1px solid #ccc;
+    max-height: 300px;
+    overflow-y: auto;
+    z-index: 10;
+  }
+
+  .dropdown-content div {
+    padding: 8px 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+  }
+
+  .dropdown-content div:hover {
+    background-color: #f0f0f0;
+  }
+
+  .dropdown-content div img {
+    width: 20px;
+    margin-right: 8px;
+  }
+
+  .selected {
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+  }
+
+  .selected img {
+    width: 20px;
+    margin-right: 8px;
+  }
+
+  .form-group.dropdown {
+    position: relative;
+  }
+</style>
 </head>
 
 <body>
@@ -71,6 +117,18 @@
           <div class="flex-grow-1 text-center pr-5">
             <h5 class="mb-0 text-white font-weight-bold">FERREMAS - PROCESO DE PAGO</h5>
           </div>
+
+          <button type="button" class="btn btn-sm btn-light dropdown-toggle" data-toggle="dropdown" style="background-color: #feb81f;">{{ moneda|default:"CLP" }}</button>
+                        <div class="dropdown-menu dropdown-menu-right">
+                            <form method="post">
+                                {% csrf_token %}
+                                <button class="dropdown-item" type="submit" name="moneda" value="EUR">EUR</button>
+                                <button class="dropdown-item" type="submit" name="moneda" value="USD">USD</button>
+                                <button class="dropdown-item" type="submit" name="moneda" value="CAD">CAD</button>
+                                <button class="dropdown-item" type="submit" name="moneda" value="CLP">CLP</button>
+                            </form>
+                        </div>
+
           <a href="{% url 'resumen' %}" class="btn btn-warning font-weight-bold " id="btn-volver">
             <i class="fas fa-arrow-left mr-1"></i> Volver
           </a>
@@ -81,87 +139,168 @@
   <main class="container my-4">
     <div class="row">
       <div class="col-md-8">
-        <div class="section-box" id="step-identificacion">
-          <h5><span class="step-number">1</span> IDENTIFICACIÓN</h5>
-          <div class="form-group">
-            <label>Correo</label>
-            <input type="email" class="form-control" required>
-          </div>
-          <div class="form-row">
-            <div class="form-group col-md-6">
-              <label>Nombre</label>
-              <input type="text" class="form-control">
-            </div>
-            <div class="form-group col-md-6">
-              <label>Apellidos</label>
-              <input type="text" class="form-control">
-            </div>
-          </div>
-          <div class="form-row">
-            <div class="form-group col-md-6">
-              <label>RUT</label>
-              <input type="text" class="form-control">
-            </div>
-            <div class="form-group col-md-6">
-              <label>Teléfono</label>
-              <input type="text" class="form-control">
-            </div>
-          </div>
-          <div class="form-group">
-            <label>Tipo de documento</label><br>
-            <div class="form-check form-check-inline">
-              <input class="form-check-input" type="radio" name="tipoDoc" checked>
-              <label class="form-check-label">Boleta</label>
-            </div>
-            <div class="form-check form-check-inline">
-              <input class="form-check-input" type="radio" name="tipoDoc">
-              <label class="form-check-label">Factura</label>
-            </div>
-          </div>
+        <form id="form-checkout" method="post">
+  {% csrf_token %}
+
+  <!-- IDENTIFICACIÓN -->
+  {% if user.is_authenticated %}
+    <div class="section-box" id="step-identificacion">
+      <h5><span class="step-number">1</span> IDENTIFICACIÓN</h5>
+
+      <div class="form-group">
+        <label>Correo</label>
+        <input type="email" name="correo" class="form-control" required value="{{cliente.correo}}">
+      </div>
+
+      <div class="form-row">
+        <div class="form-group col-md-6">
+          <label>Nombre</label>
+          <input type="text" name="nombre" class="form-control" required value="{{cliente.nombre}}">
         </div>
-        <div class="section-box" id="step-envio">
-          <h5><span class="step-number">2</span> ENVÍO</h5>
-            <div class="btn-group w-100 mb-3" role="group">
-              <button type="button" class="btn btn-warning font-weight-bold w-50 active" id="btnDireccion" onclick="toggleEnvio('direccion')">
-                Enviar a la dirección
-              </button>
-              <button type="button" class="btn btn-outline-warning font-weight-bold w-50" id="btnRetiro" onclick="toggleEnvio('retiro')">
-                Retirar en tienda
-              </button>
-            </div>
-
-                      <div id="envio-direccion">
-              <input type="text" class="form-control mb-3" placeholder="Dirección de envío">
-            </div>
-            <div id="envio-retiro" class="d-none">
-              <p>Seleccione tienda con stock:</p>
-              <select class="form-control mb-2">
-                <option value="1">Sucursal Santiago Centro</option>
-                <option value="2">Sucursal Maipú</option>
-              </select>
-              <input type="text" class="form-control" placeholder="¿Quién retira?">
-            </div>
-        </div>
-
-
-      <div class="section-box" id="step-pago">
-        <h5><span class="step-number">3</span> PAGO</h5>
-
-        <div class="custom-control custom-radio mb-2">
-          <input type="radio" id="pagoWebpay" name="metodoPago" class="custom-control-input" checked>
-          <label class="custom-control-label" for="pagoWebpay">Webpay - Pago al contado </label>
-        </div>
-
-        <div class="custom-control custom-radio mb-2">
-          <input type="radio" id="pagoTransferencia" name="metodoPago" class="custom-control-input">
-          <label class="custom-control-label" for="pagoTransferencia">Transferencia Bancaria - Instrucciones al finalizar</label>
-        </div>
-
-        <div class="custom-control custom-radio">
-          <input type="radio" id="pagoPaypal" name="metodoPago" class="custom-control-input">
-          <label class="custom-control-label" for="pagoPaypal">PayPal - Pago internacional</label>
+        <div class="form-group col-md-6">
+          <label>Apellido</label>
+          <input type="text" name="apellido" class="form-control" required value="{{cliente.apellido}}">
         </div>
       </div>
+
+      <div class="form-row">
+        <div class="form-group col-md-6">
+          <label>RUT</label>
+          <input type="text" name="rut" class="form-control" required value="{{cliente.rut}}">
+        </div>
+        <div class="form-group col-md-2 dropdown">
+          <label>Prefijo</label>
+          <div id="selected" class="selected">
+            <img src="https://flagcdn.com/w320/cl.png" alt="Chile"> +56
+          </div>
+          <div id="dropdown-content" class="dropdown-content"></div>
+          <!-- Campo oculto para enviar el prefijo -->
+          <input type="hidden" name="prefijo" id="prefijo-input" value="+56">
+        </div>
+        <div class="form-group col-md-4">
+          <label>Teléfono</label>
+          <input type="text" name="telefono" class="form-control" max="9" required value="{{cliente.telefono}}">
+        </div>
+      </div>
+
+    <div class="form-group">
+      <label>Tipo de documento</label><br>
+      <div class="form-check form-check-inline">
+        <input class="form-check-input" type="radio" name="tipoDoc" value="boleta" required>
+        <label class="form-check-label">Boleta</label>
+      </div>
+      <div class="form-check form-check-inline">
+        <input class="form-check-input" type="radio" name="tipoDoc" value="factura">
+        <label class="form-check-label">Factura</label>
+      </div>
+    </div>
+  </div>
+  {% else %}
+    <div class="section-box" id="step-identificacion">
+      <h5><span class="step-number">1</span> IDENTIFICACIÓN</h5>
+
+      <div class="form-group">
+        <label>Correo</label>
+        <input type="email" name="correo" class="form-control" required>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group col-md-6">
+          <label>Nombre</label>
+          <input type="text" name="nombre" class="form-control" required>
+        </div>
+        <div class="form-group col-md-6">
+          <label>Apellido</label>
+          <input type="text" name="apellido" class="form-control" required>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group col-md-6">
+          <label>RUT</label>
+          <input type="text" name="rut" class="form-control" required>
+        </div>
+        <div class="form-group col-md-2 dropdown">
+          <label>Prefijo</label>
+          <div id="selected" class="selected">
+            <img src="https://flagcdn.com/w320/cl.png" alt="Chile"> +56
+          </div>
+          <div id="dropdown-content" class="dropdown-content"></div>
+          <!-- Campo oculto para enviar el prefijo -->
+          <input type="hidden" name="prefijo" id="prefijo-input" value="+56">
+        </div>
+        <div class="form-group col-md-4">
+          <label>Teléfono</label>
+          <input type="text" name="telefono" class="form-control" max="9" required>
+        </div>
+      </div>
+
+    <div class="form-group">
+      <label>Tipo de documento</label><br>
+      <div class="form-check form-check-inline">
+        <input class="form-check-input" type="radio" name="tipoDoc" value="boleta" required>
+        <label class="form-check-label">Boleta</label>
+      </div>
+      <div class="form-check form-check-inline">
+        <input class="form-check-input" type="radio" name="tipoDoc" value="factura">
+        <label class="form-check-label">Factura</label>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- ENVÍO -->
+  <div class="section-box" id="step-envio">
+    <h5><span class="step-number">2</span> ENVÍO</h5>
+
+    <div class="btn-group w-100 mb-3" role="group">
+      <button type="button" class="btn btn-warning font-weight-bold w-50 active" id="btnDireccion" onclick="toggleEnvio('direccion')">Enviar a la dirección</button>
+      <button type="button" class="btn btn-outline-warning font-weight-bold w-50" id="btnRetiro" onclick="toggleEnvio('retiro')">Retirar en tienda</button>
+    </div>
+
+    <div id="envio-direccion">
+      <input type="text" name="direccion_envio" class="form-control mb-3" placeholder="Dirección de envío" required>
+    </div>
+
+    <div id="envio-retiro" class="d-none">
+      <p>Seleccione tienda con stock:</p>
+      <select name="sucursal" class="form-control mb-2">
+        <option value="Santiago Centro">Sucursal Santiago Centro</option>
+        <option value="Maipú">Sucursal Maipú</option>
+      </select>
+      <input type="text" name="quien_retira" class="form-control" placeholder="¿Quién retira?">
+    </div>
+  </div>
+
+  <!-- PAGO -->
+  <div class="section-box" id="step-pago">
+    <h5><span class="step-number">3</span> PAGO</h5>
+
+    <div class="custom-control custom-radio mb-2">
+      <input type="radio" id="pagoWebpay" name="metodoPago" class="custom-control-input" value="webpay" checked onchange="mostrarInstruccionesPago()">
+      <label class="custom-control-label" for="pagoWebpay">Webpay - Pago al contado</label>
+    </div>
+
+    <div class="custom-control custom-radio mb-2">
+      <input type="radio" id="pagoTransferencia" name="metodoPago" class="custom-control-input" value="transferencia" onchange="mostrarInstruccionesPago()">
+      <label class="custom-control-label" for="pagoTransferencia">Transferencia Bancaria - Instrucciones al finalizar</label>
+    </div>
+
+    <div class="custom-control custom-radio">
+      <input type="radio" id="pagoPaypal" name="metodoPago" class="custom-control-input" value="paypal" onchange="mostrarInstruccionesPago()">
+      <label class="custom-control-label" for="pagoPaypal">PayPal - Pago internacional</label>
+    </div>
+
+    <div id="instrucciones-transferencia" class="alert alert-info mt-3 d-none">
+      <p><strong>Instrucciones:</strong> Realiza una transferencia a la cuenta bancaria que se mostrará luego de confirmar.</p>
+    </div>
+    <div id="instrucciones-paypal" class="alert alert-info mt-3 d-none">
+      <p><strong>Instrucciones:</strong> Serás redirigido a PayPal para completar el pago de forma segura.</p>
+    </div>
+  </div>
+
+  <!-- SUBMIT -->
+  
 
       </div>
       <div class="col-md-4">
@@ -181,8 +320,7 @@
             <strong>${{ total }}</strong>
           </div>
         </div>
-        <form method="post">
-          {% csrf_token %}
+       
           <input type="hidden" name="valor" id="valor" value="{{ total }}">
           <button type="submit" class="btn btn-ferremas btn-block mt-3">Pagar</button>
         </form>
@@ -255,49 +393,121 @@
 
 
     <script>
-      function toggleEnvio(type) {
-        if (type === 'direccion') {
-          document.getElementById('envio-direccion').classList.remove('hidden');
-          document.getElementById('envio-retiro').classList.add('hidden');
-        } else {
-          document.getElementById('envio-direccion').classList.add('hidden');
-          document.getElementById('envio-retiro').classList.remove('hidden');
-        }
-      }
-    </script>
+  function toggleEnvio(type) {
+    const envioDireccion = document.getElementById('envio-direccion');
+    const envioRetiro = document.getElementById('envio-retiro');
+    const btnDireccion = document.getElementById('btnDireccion');
+    const btnRetiro = document.getElementById('btnRetiro');
+
+    const inputDireccion = document.querySelector('input[name="direccion_envio"]');
+    const selectSucursal = document.querySelector('select[name="sucursal"]');
+    const inputQuienRetira = document.querySelector('input[name="quien_retira"]');
+
+    if (type === 'direccion') {
+      envioDireccion.classList.remove('d-none');
+      envioRetiro.classList.add('d-none');
+
+      inputDireccion.required = true;
+      selectSucursal.required = false;
+      inputQuienRetira.required = false;
+
+      btnDireccion.classList.add('btn-warning', 'active');
+      btnDireccion.classList.remove('btn-outline-warning');
+      btnRetiro.classList.add('btn-outline-warning');
+      btnRetiro.classList.remove('btn-warning', 'active');
+    } else {
+      envioDireccion.classList.add('d-none');
+      envioRetiro.classList.remove('d-none');
+
+      inputDireccion.required = false;
+      selectSucursal.required = true;
+      inputQuienRetira.required = true;
+
+      btnRetiro.classList.add('btn-warning', 'active');
+      btnRetiro.classList.remove('btn-outline-warning');
+      btnDireccion.classList.add('btn-outline-warning');
+      btnDireccion.classList.remove('btn-warning', 'active');
+    }
+  }
+</script>
+
     <script>
-      function toggleEnvio(type) {
-        const envioDireccion = document.getElementById('envio-direccion');
-        const envioRetiro = document.getElementById('envio-retiro');
-        const btnDireccion = document.getElementById('btnDireccion');
-        const btnRetiro = document.getElementById('btnRetiro');
-    
-        if (type === 'direccion') {
-          envioDireccion.classList.remove('d-none');
-          envioRetiro.classList.add('d-none');
-    
-          // Activar botón "Enviar a la dirección"
-          btnDireccion.classList.add('btn-warning', 'active');
-          btnDireccion.classList.remove('btn-outline-warning');
-    
-          // Desactivar botón "Retirar en tienda"
-          btnRetiro.classList.add('btn-outline-warning');
-          btnRetiro.classList.remove('btn-warning', 'active');
-    
-        } else {
-          envioDireccion.classList.add('d-none');
-          envioRetiro.classList.remove('d-none');
-    
-          // Activar botón "Retirar en tienda"
-          btnRetiro.classList.add('btn-warning', 'active');
-          btnRetiro.classList.remove('btn-outline-warning');
-    
-          // Desactivar botón "Enviar a la dirección"
-          btnDireccion.classList.add('btn-outline-warning');
-          btnDireccion.classList.remove('btn-warning', 'active');
+  const selected = document.getElementById('selected');
+  const dropdown = document.getElementById('dropdown-content');
+  const inputHidden = document.getElementById('prefijo-input');
+
+  selected.addEventListener('click', () => {
+    dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+  });
+
+  document.addEventListener('click', (event) => {
+    if (!event.target.closest('.dropdown')) {
+      dropdown.style.display = 'none';
+    }
+  });
+
+  fetch('https://restcountries.com/v3.1/all')
+    .then(res => res.json())
+    .then(data => {
+      const paises = data
+        .filter(p => p.idd?.root && p.idd?.suffixes?.length > 0)
+        .sort((a, b) => a.name.common.localeCompare(b.name.common));
+
+      paises.forEach(pais => {
+        const codigo = pais.idd.root + pais.idd.suffixes[0];
+        const bandera = pais.flags.svg;
+        const nombre = pais.name.common;
+
+        const div = document.createElement('div');
+        div.innerHTML = `<img src="${bandera}" alt="flag"> ${codigo}`;
+        div.onclick = () => {
+          selected.innerHTML = `<img src="${bandera}" alt="flag"> ${codigo}`;
+          inputHidden.value = codigo;
+          dropdown.style.display = 'none';
+        };
+
+        dropdown.appendChild(div);
+      });
+    });
+</script>
+
+    <script>
+      function mostrarInstruccionesPago() {
+        const tipo = document.querySelector('input[name="metodoPago"]:checked').value;
+        document.getElementById("instrucciones-transferencia").classList.add("d-none");
+        document.getElementById("instrucciones-paypal").classList.add("d-none");
+
+        if (tipo === "transferencia") {
+          document.getElementById("instrucciones-transferencia").classList.remove("d-none");
+        } else if (tipo === "paypal") {
+          document.getElementById("instrucciones-paypal").classList.remove("d-none");
         }
       }
+
+      // Aseguramos que las instrucciones se actualicen al cargar
+      document.addEventListener("DOMContentLoaded", mostrarInstruccionesPago);
     </script>
+
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
+
+        <script src="{% static 'lib/easing/easing.min.js' %}"></script>
+        <script src="{% static 'lib/owlcarousel/owl.carousel.min.js' %}"></script>
+        <script src="{% static 'mail/jqBootstrapValidation.min.js' %}"></script>
+        <script src="{% static 'mail/contact.js' %}"></script>
+        <script src="{% static 'js/main.js' %}"></script>
+
+    <script>
+          const tasaUSD = {{tasa}}; // Por ejemplo, 1 CLP = 0.0011 USD
+        
+          document.querySelectorAll('.product').forEach(producto => {
+            const precioCLP = parseFloat(producto.dataset.precio);
+            const precioUSD = (precioCLP * tasaUSD).toFixed(2);
+            producto.querySelector('.product-precio-convertido').textContent = `$${precioUSD} {{ moneda }}`;
+          });
+        </script>
   
 </body>
 </html>

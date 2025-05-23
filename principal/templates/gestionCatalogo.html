@@ -145,7 +145,7 @@
           </div>
         </div>
         <button type="submit" class="btn btn-ferremas mt-3" id="crear" name="crear">Guardar Producto</button>
-        <button type="button" class="btn btn-ferremas mt-3 btn-editar-producto" data-toggle="modal" data-target="#modalExcel"> Editar</button>
+        <button type="button" class="btn btn-ferremas mt-3 btn-editar-producto" data-toggle="modal" data-target="#modalExcel"> Subir Excel</button>
       </form>
       
     </div>
@@ -186,7 +186,7 @@
                 >
                   Editar
                 </button>
-                <a href="{% url 'borrar' producto.idproducto %}" class="btn btn-sm btn-danger">Eliminar</a>
+                <a href="{% url 'borrar' producto.idproducto 'gestionCatalogo' %}" class="btn btn-sm btn-danger">Eliminar</a>
               </td>
             </tr>
           {% endfor %}

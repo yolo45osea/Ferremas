@@ -526,9 +526,21 @@
                 <img src="static/img/herramienta.png" alt="Icono Organización" style="width: 18px;">
                 </div>
                 {{ producto1.categoria }}</div>
-                    <a href="{% url 'unitario' producto1.idproducto  %}">
-                        <img src="data:image/jpeg;base64,{{ producto1.imagen_base64 }}" class="card-img-top" alt="Producto 1">
-                    </a>
+                    {% if producto1.idproducto %}
+    <a href="{% url 'unitario' producto1.idproducto %}">
+        {% if producto1.imagen_base64 %}
+          <img src="data:image/jpeg;base64,{{ producto1.imagen_base64 }}" class="card-img-top" alt="Producto 1">
+        {% else %}
+          {% if producto1.imagen_base64 %}
+          <img src="data:image/jpeg;base64,{{ producto1.imagen_base64 }}" class="card-img-top" alt="Producto 1">
+        {% else %}
+          <img src="{% static 'img/nofoto.png' %}" class="card-img-top" alt="Producto 1">
+        {% endif %}
+        {% endif %}
+    </a>
+{% else %}
+    <img src="data:image/jpeg;base64,{{ producto1.imagen_base64 }}" class="card-img-top" alt="Producto sin ID">
+{% endif %}
                     <div class="card-body p-3 bg-white" style="border-top: 4px solid #041e41;">
                         <small class="text-muted">SKU: {{ producto1.idproducto }}</small>
                         <p class="mb-2" style="font-size: 0.9rem;">{{ producto1.nombre }}</p>
@@ -547,9 +559,21 @@
                 <img src="static/img/herramienta.png" alt="Icono Organización" style="width: 18px;">
             </div>
             {{ producto2.categoria }}</div>
-                    <a href="{% url 'unitario' producto2.idproducto  %}">
-                        <img src="data:image/jpeg;base64,{{ producto2.imagen_base64 }}" class="card-img-top" alt="Producto 2">
-                    </a>
+                    {% if producto1.idproducto %}
+    <a href="{% url 'unitario' producto1.idproducto %}">
+        {% if producto2.imagen_base64 %}
+          <img src="data:image/jpeg;base64,{{ producto2.imagen_base64 }}" class="card-img-top" alt="Producto 1">
+        {% else %}
+          <img src="{% static 'img/nofoto.png' %}" class="card-img-top" alt="Producto 1">
+        {% endif %}
+    </a>
+{% else %}
+    {% if producto2.imagen_base64 %}
+          <img src="data:image/jpeg;base64,{{ producto2.imagen_base64 }}" class="card-img-top" alt="Producto 1">
+        {% else %}
+          <img src="{% static 'img/nofoto.png' %}" class="card-img-top" alt="Producto 1">
+        {% endif %}
+{% endif %}
                     <div class="card-body p-3 bg-white" style="border-top: 4px solid #041e41;">
                         <small class="text-muted">SKU: {{ producto2.idproducto }}</small>
                         <p class="mb-2" style="font-size: 0.9rem;">{{ producto2.nombre }}</p>
@@ -568,9 +592,21 @@
                 <img src="static/img/madera.png" alt="I#" style="width: 18px;">
             </div>
             {{ producto3.categoria }}</div>
-                    <a href="{% url 'unitario' producto3.idproducto  %}">
-                        <img src="data:image/jpeg;base64,{{ producto3.imagen_base64 }}" class="card-img-top" alt="Producto 3">
-                    </a>
+                    {% if producto3.idproducto %}
+    <a href="{% url 'unitario' producto3.idproducto %}">
+        {% if producto3.imagen_base64 %}
+          <img src="data:image/jpeg;base64,{{ producto3.imagen_base64 }}" class="card-img-top" alt="Producto 1">
+        {% else %}
+          <img src="{% static 'img/nofoto.png' %}" class="card-img-top" alt="Producto 1">
+        {% endif %}
+    </a>
+{% else %}
+    {% if producto3.imagen_base64 %}
+      <img src="data:image/jpeg;base64,{{ producto3.imagen_base64 }}" class="card-img-top" alt="Producto 1">
+    {% else %}
+      <img src="{% static 'img/nofoto.png' %}" class="card-img-top" alt="Producto 1">
+    {% endif %}
+{% endif %}
                     <div class="card-body p-3 bg-white" style="border-top: 4px solid #041e41;">
                         <small class="text-muted">SKU: {{ producto3.idproducto }}</small>
                         <p class="mb-2" style="font-size: 0.9rem;">{{ producto3.nombre }}</p>
@@ -590,9 +626,17 @@
                     </div>
                     {{ producto4.categoria }}</div>
 
-                    <a href="{% url 'unitario' producto4.idproducto  %}">
-                        <img src="data:image/jpeg;base64,{{ producto4.imagen_base64 }}" class="card-img-top" alt="Producto 4">
-                    </a>
+                    {% if producto4.idproducto %}
+    <a href="{% url 'unitario' producto4.idproducto %}">
+        {% if producto4.imagen_base64 %}
+          <img src="data:image/jpeg;base64,{{ producto4.imagen_base64 }}" class="card-img-top" alt="Producto 1">
+        {% else %}
+          <img src="{% static 'img/nofoto.png' %}" class="card-img-top" alt="Producto 1">
+        {% endif %}
+    </a>
+{% else %}
+    <img src="data:image/jpeg;base64,{{ producto4.imagen_base64 }}" class="card-img-top" alt="Producto sin ID">
+{% endif %}
                     <div class="card-body p-3 bg-white" style="border-top: 4px solid #041e41;">
                         <small class="text-muted">SKU: {{ producto4.idproducto }}</small>
                         <p class="mb-2" style="font-size: 0.9rem;">{{ producto4.nombre }}</p>

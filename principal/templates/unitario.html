@@ -319,8 +319,12 @@
       
           <!-- Imagen del producto -->
           <div class="col-md-6 text-center">
-            <img src="data:image/jpeg;base64,{{ producto.imagen_base64 }}" alt="Estante Metálico" class="img-fluid rounded shadow-sm" style="max-height: 500px;">
-          </div>
+            {% if not traduciendo %}
+              <img src="data:image/jpeg;base64,{{ producto.imagen_base64 }}" alt="Estante Metálico" class="img-fluid rounded shadow-sm" style="max-height: 500px;">
+            {% else %}
+              <!-- IMAGEN_AQUI -->
+            {% endif %}
+            </div>
       
           <!-- Detalles del producto -->
           <div class="col-md-6 mt-4 mt-md-0">

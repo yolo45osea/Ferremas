@@ -139,20 +139,15 @@
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td>Cemento 25kg</td>
-              <td>CM-25</td>
-              <td>Construcción</td>
-              <td>120</td>
-              <td>2025-05-13</td>
-            </tr>
-            <tr>
-              <td>Pintura Blanca 4L</td>
-              <td>PB-04</td>
-              <td>Hogar</td>
-              <td>42</td>
-              <td>2025-05-12</td>
-            </tr>
+            {% for producto in productos %}
+              <tr>
+                <td>{{ producto.nombre }}</td>
+                <td>{{ producto.idproducto }}</td>
+                <td>{{ producto.categoria }}</td>
+                <td>{{ producto.stock }}</td>
+                <td>{{ producto.fecha_actualizacion }}</td>
+              </tr>
+            {% endfor %}
           </tbody>
         </table>
       </div>
@@ -173,13 +168,21 @@
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td>Clavos 3"</td>
-              <td>CLV-03</td>
-              <td>4</td>
-              <td>20</td>
-              <td><button class="btn btn-sm btn-danger">Solicitar Reposición</button></td>
-            </tr>
+            {% for producto in productosCriticos %}
+              <tr>
+                <td>{{ producto.nombre }}</td>
+                <td>{{ producto.idproducto }}</td>
+                <td>{{ producto.stock }}</td>
+                <td>5</td>
+                <td>
+                  <form method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="idProducto" id="idProducto" value="{{producto.idproducto}}">
+                    <button type="submit" name="alerta" id="alerta" class="btn btn-sm btn-danger">Solicitar Reposición</button>
+                  </form>
+                </td>
+              </tr>
+            {% endfor %}
           </tbody>
         </table>
       </div>

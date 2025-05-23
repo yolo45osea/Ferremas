@@ -1,7 +1,13 @@
 from datetime import date
+from textwrap import wrap
+from django.utils import timezone
+from decimal import Decimal
+from django.db.models import Q
 import io
 import json
+from django.utils.timezone import now
 import subprocess
+import unicodedata
 from uuid import UUID
 from django.http import FileResponse, JsonResponse
 from django.shortcuts import render
@@ -12,6 +18,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from payments import get_payment_model, RedirectNeeded
 from payments.core import provider_factory
 from django.db.transaction import atomic
+from urllib.parse import quote
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
@@ -31,7 +38,9 @@ from reportlab.lib.pagesizes import A4
 from datetime import datetime
 from PIL import Image
 import pandas as pd
-from .models import Inventario
+from .models import Descuento, DetalleVenta, Inventario, Vendedor, Venta
+from django.core.mail import send_mail
+
 
 
 logger = logging.getLogger(__name__)
@@ -55,6 +64,15 @@ def git_commit(commit_message):
   subprocess.run(["git", "push", "origin", "main"])
 
 
+def enviar_correo():
+    asunto = 'Correo de prueba desde Django'
+    mensaje = 'Hola, este es un correo enviado usando Django.'
+    remitente = 'tucorreo@gmail.com'
+    destinatarios = ['destinatario@example.com']
+
+    send_mail(asunto, mensaje, remitente, destinatarios)
+
+
 def traducir_template(request):
     html_original = render_to_string("cuenta.html", {"usuario": request.user})
     html_traducido = traducir_html(html_original, "FR")  # Cambia "FR" por el idioma destino (FR, EN, DE, etc.)
@@ -62,10 +80,11 @@ def traducir_template(request):
 
 # Create your views here.
 def index(request):
+    tasa_conversion = 0
     login_form = AuthenticationForm()
     registro_form = RegistroForm()
     precio = 10000
-    tasa_conversion = 0
+    
     idioma = request.GET.get('traduccion')
     moneda = 'CLP'
     cliente = Cliente.objects.filter(usuario=request.user.username).first()
@@ -102,13 +121,18 @@ def index(request):
 
     if request.method == "GET":
         if 'traduccion' in request.GET:
+            
             idioma = request.GET.get('traduccion')
             print(f"idioma: {idioma}")
-            html_original = render_to_string("index.html", {"usuario": request.user})
+            html_original = render_to_string("index.html", {"usuario": request.user, 'producto1':producto1,
+        'producto2':producto2,
+        'producto3':producto3,
+        'producto4':producto4,})
             html_traducido = traducir_html(html_original, idioma)  # Cambia "FR" por el idioma destino (FR, EN, DE, etc.)
             return HttpResponse(html_traducido)
 
     if request.method == "POST":
+        tasa_conversion = 0
 
         if 'borrar' in request.POST:
             producto = request.POST.get('producto')
@@ -214,44 +238,50 @@ def index(request):
 
 
 def productos(request, categoria):
-    
-    moneda = ""
-    productos = Inventario.objects.filter(categoria=categoria)
-    if productos == None:
-        productos = Inventario.objects.filter(categoria_basica=categoria)
-    tasa_conversion = 1  # Por defecto
+
+    # Obtener productos según categoría
+    if categoria == 'todos':
+        productos = Inventario.objects.all()
+    else:
+        productos = Inventario.objects.filter(categoria=categoria)
+        
+
+    # Total carrito
     carrito = DetalleCarrito.objects.all()
-    total = 0
+    total = sum(i.idproducto.precio * i.cantidad for i in carrito)
 
-    for i in carrito:
-        total+= i.idproducto.precio * i.cantidad
-    print(total)
+    # Por defecto
+    moneda = ""
+    tasa_conversion = 1
 
-    # ----- TRADUCCIÓN -----
-    if 'traduccion' in request.GET:
-        idioma = request.GET.get('traduccion')
-        html_original = render_to_string("productos.html", {"productos": productos})
-        html_traducido = traducir_html(html_original, idioma)
-        return HttpResponse(html_traducido)
-
-    # ----- MONEDA Y FORMULARIOS -----
+    # Manejo POST: moneda, borrar, login, registro, etc.
     if request.method == "POST":
 
+        # Cambio de moneda
+        moneda_post = request.POST.get("moneda", "").upper()
+        monedas_validas = ["USD", "EUR", "CAD", "CLP"]
+        if moneda_post in monedas_validas:
+            moneda = moneda_post
+            url = f"https://v6.exchangerate-api.com/v6/e62c5a2d52f4a1d6b195a3b8/latest/CLP"
+            try:
+                response = requests.get(url)
+                if response.status_code == 200:
+                    data = response.json()
+                    tasa_conversion = data["conversion_rates"].get(moneda, 1)
+            except Exception as e:
+                print(f"Error al obtener tasa de cambio: {e}")
+
+        # Borrar producto del carrito
         if 'borrar' in request.POST:
-            producto = request.POST.get('producto')
-            Borrar_producto = DetalleCarrito.objects.filter(idproducto=producto)
-            Borrar_producto.delete()
-        # Traducción por POST (por compatibilidad)
+            producto_id = request.POST.get('producto')
+            DetalleCarrito.objects.filter(idproducto=producto_id).delete()
+
+        # Traducción vía POST (compatibilidad)
         if 'traduccion' in request.POST:
             idioma = request.POST.get('traduccion', 'FR')
-            html_original = render_to_string("productos.html", {"productos": productos})
-            html_traducido = traducir_html(html_original, idioma)
-            return HttpResponse(html_traducido)
-        
-        if 'addtocart' in request.POST:
-            print(f"cantidad: {request.POST.get('product-quantity')}")
+            # Se hará más abajo para mantener el contexto completo
 
-        # LOGIN
+        # Manejo login
         if 'login_form' in request.POST:
             login_form = AuthenticationForm(data=request.POST)
             if login_form.is_valid():
@@ -261,7 +291,7 @@ def productos(request, categoria):
             else:
                 messages.error(request, "Usuario o contraseña inválidos.")
 
-        # REGISTRO
+        # Manejo registro
         elif 'registro_form' in request.POST:
             registro_form = RegistroForm(request.POST)
             if registro_form.is_valid():
@@ -280,44 +310,103 @@ def productos(request, categoria):
             else:
                 messages.error(request, "Error al registrar el usuario.")
 
-        # CAMBIO DE MONEDA
-        moneda = request.POST.get("moneda", "USD").upper()
-        moneda_local = "CLP"
-        monedas_validas = ["USD", "EUR", "CAD", "CLP"]
-        if moneda in monedas_validas:
-            url = f"https://v6.exchangerate-api.com/v6/e62c5a2d52f4a1d6b195a3b8/latest/{moneda_local}"
-            try:
-                response = requests.get(url)
-                if response.status_code == 200:
-                    data = response.json()
-                    tasa_conversion = data["conversion_rates"].get(moneda, 1)
-            except Exception as e:
-                print(f"Error al obtener tasa de cambio: {e}")
-
-    # ----- APLICAR TASA A PRODUCTOS -----
+    # Aplicar tasa de cambio a productos
     productos_actualizados = []
     for p in productos:
-        p.precio_convertido = p.precio * tasa_conversion
+        p.precio_convertido = round(p.precio * tasa_conversion, 2)
         productos_actualizados.append(p)
 
+    # Paginación
     paginator = Paginator(productos_actualizados, 12)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
-    print(f"tasa:{tasa_conversion}, ")
-    return render(request, 'productos.html', {
-        'productos': productos_actualizados,
-        'tasa': tasa_conversion,
-        'moneda': moneda if moneda != "" else "CLP",
-        'categoria':categoria,
-        'total':total,
-        'page_obj': page_obj,
+    # Construir contexto completo
+    context = {
+        "usuario": request.user,
+        "productos": productos_actualizados,
+        "categoria": categoria,
+        "tasa": tasa_conversion,
+        "moneda": moneda if moneda else "CLP",
+        "total": total,
+        "page_obj": page_obj,
+    }
 
-    })
+    productos_sin_imagen = []
+    for p in productos_actualizados:
+        producto_sin_imagen = {
+        'idproducto': p.idproducto,
+        'nombre': p.nombre,
+        'precio': p.precio,
+        'stock':p.stock,
+        # cualquier otro campo que uses en la plantilla
+        'imagen_base64': '',  # vacío para que no envíe la imagen
+        }
+        productos_sin_imagen.append(producto_sin_imagen)
+
+    # Traducción (GET o POST)
+    if request.method == "GET":
+        if 'traduccion' in request.GET:
+            idioma = request.GET.get('traduccion')
+            print(f"idioma: {idioma}")
+
+            paginator = Paginator(productos_sin_imagen, 12)
+            page_number = request.GET.get('page')
+            page_obj = paginator.get_page(page_number)
+
+            # Renderizar sin imagen
+            html_original = render_to_string("productos.html", {
+                "usuario": request.user,
+                'idioma': idioma,
+                'page_obj': page_obj,
+                'traduciendo': True,  # bandera para el template
+            })
+
+            html_traducido, _ = traducir_html(html_original, idioma)  # ← aquí tomas solo el HTML
+
+            # Reinsertar imagen directamente si quieres
+            for producto in productos_actualizados:
+                print(producto.imagen_base64)
+                marcador = '<!-- IMAGEN_PRODUCTO_{{' + str(producto.idproducto) + '}} -->'
+                imagen_html = '<img src="data:image/jpeg;base64, {{ ' + producto.imagen_base64 + ' }}" alt="Producto" class="card-img-top">'
+                html_traducido = html_traducido.replace(marcador, imagen_html)
+
+            return HttpResponse(html_traducido)
+    return render(request, 'productos.html', context)
 
 def unitario(request, productoID):
-    print(productoID)
     producto = Inventario.objects.filter(idproducto = productoID).first()
+    producto_sin_imagen = {
+    'idproducto': producto.idproducto,
+    'nombre': producto.nombre,
+    'precio': producto.precio,
+    'stock':producto.stock,
+    # cualquier otro campo que uses en la plantilla
+    'imagen_base64': '',  # vacío para que no envíe la imagen
+}
+    print(producto)
+    if request.method == "GET":
+        if 'traduccion' in request.GET:
+            idioma = request.GET.get('traduccion')
+            print(f"idioma: {idioma}")
+
+            # Renderizar sin imagen
+            html_original = render_to_string("unitario.html", {
+                "usuario": request.user,
+                'idioma': idioma,
+                'producto': producto_sin_imagen,
+                'traduciendo': True,  # bandera para el template
+            })
+
+            html_traducido, _ = traducir_html(html_original, idioma)  # ← aquí tomas solo el HTML
+
+            # Reinsertar imagen directamente si quieres
+            imagen_html = f'<img src="data:image/jpeg;base64,{producto.imagen_base64}" alt="Producto" class="card-img-top">'
+            html_final = html_traducido.replace('<!-- IMAGEN_AQUI -->', imagen_html)
+
+            return HttpResponse(html_final)
+    print(productoID)
+    
     return render(request, 'unitario.html', {'producto':producto})
 
 @login_required
@@ -397,9 +486,17 @@ def webpay_cancel(request):
 def resumen(request):
     carrito = DetalleCarrito.objects.all()
     total = 0
+    subtotal = 0
+    totalPago = 0
+
+    print(f'carrito: {carrito}')
+
+    if not carrito.exists():
+        return redirect('index')
 
     for i in carrito:
         total+= i.idproducto.precio * i.cantidad
+        totalPago = total
     print(total)
 
     if request.method == 'POST':
@@ -416,47 +513,118 @@ def resumen(request):
                 return redirect('resumen')
             else:
                 return redirect('index')
-            
+
+        if 'aplicarDescuento' in request.POST: 
+            codigo = request.POST.get('codigo')
+            descuentos = Descuento.objects.filter(codigo=codigo).first() 
+            if descuentos != None:
+                subtotal = total * (descuentos.descuento/100)
+                totalPago = total - subtotal
     return render(request, 'resumen.html', {
+        'subtotal':subtotal,
+        'total':total,
+        'totalPago':int(totalPago)
         })
 
-def pago(request):
+def pago(request, total):
 
     carrito = DetalleCarrito.objects.all()
-    total = 0
+    #total = 0
+    cliente = Cliente.objects.filter(usuario = request.user.username).first()
 
-    for i in carrito:
-        total+= i.idproducto.precio * i.cantidad
+    if not carrito.exists():
+        return redirect('index')
+
+    #for i in carrito:
+    #    total+= i.idproducto.precio * i.cantidad
     print(total)
     payment_model = get_payment_model()  # Obtienes el modelo de pago de django-payments
 
     if request.method == 'POST':
         monto = request.POST.get('valor')
-        try:
-            # Crear un objeto de pago
-            payment = payment_model.objects.create(
-                variant="webpay",  # Debe coincidir con el nombre configurado en PAYMENT_VARIANTS
-                description="Pago por Orden #123",
-                total=monto,  # Monto en centavos (10000 = 100 pesos)
-                currency="CLP",
-                billing_first_name="Juan",
-                billing_last_name="Pérez",
-                billing_email="juan.perez@example.com",
-            )
+        metodoPago = request.POST.get('metodoPago')
+        nombre = request.POST.get('nombre')
+        apellido = request.POST.get('apellido')
+        email = request.POST.get('correo')
+        tipoDoc = request.POST.get('tipoDoc')
+        codigo = request.POST.get('prefijo')
+        numero = request.POST.get('telefono')
+        direccion = request.POST.get('direccion_envio')
+        retiro = request.POST.get('sucursal')
+        print(f'tipoDoc: {tipoDoc}')
+        if metodoPago == 'webpay':
+            try:
+                # Crear un objeto de pago
+                payment = payment_model.objects.create(
+                    variant="webpay",  # Debe coincidir con el nombre configurado en PAYMENT_VARIANTS
+                    description="Pago por Orden #123",
+                    total=int(monto),  # Monto en centavos (10000 = 100 pesos)
+                    currency="CLP",
+                    billing_first_name=nombre,
+                    billing_last_name=apellido,
+                    billing_email=email,
+                    billing_phone=codigo + numero,
+                    tipo_documento=tipoDoc,
+                    billing_address_1=direccion or None,
+                    billing_address_2= retiro or None
 
-            # Obtener el formulario que hace POST automáticamente a Webpay
-            form = payment.get_form()
-            
+                )
 
-            # Mostrar el formulario para que el navegador lo envíe automáticamente a Webpay
-            return render(request, 'redirigir_webpay.html', {'form': form})
+                # Obtener el formulario que hace POST automáticamente a Webpay
+                form = payment.get_form()
+                
 
-        except RedirectNeeded as redirect_to:
-            return redirect(str(redirect_to))
-        except Exception as e:
-            logger.error(f"Error al crear pago: {str(e)}")
-            return HttpResponse(f"Hubo un error: {str(e)}")
-    return render(request, 'pago.html', {'carrito': carrito,
+                # Mostrar el formulario para que el navegador lo envíe automáticamente a Webpay
+                return render(request, 'redirigir_webpay.html', {'form': form})
+
+            except RedirectNeeded as redirect_to:
+                return redirect(str(redirect_to))
+            except Exception as e:
+                logger.error(f"Error al crear pago: {str(e)}")
+                return HttpResponse(f"Hubo un error: {str(e)}")
+        elif metodoPago == 'paypal':
+            try:
+                # Crear un objeto de pago
+                payment = payment_model.objects.create(
+                    variant="paypal",  # Debe coincidir con el nombre configurado en PAYMENT_VARIANTS
+                    description="Pago por Orden #123",
+                    total=Decimal(monto),  # Monto en centavos (10000 = 100 pesos)
+                    currency="USD",
+                    billing_first_name="Juan",
+                    billing_last_name="Pérez",
+                    billing_email=email,
+                    captured_amount=Decimal("0.00"),
+                    delivery = Decimal("0.00"),
+                    tax = Decimal("0.00"),
+                )
+
+
+                print("TIPO total:", type(payment.total), "VALOR:", payment.total)
+                print("TIPO captured_amount:", type(payment.captured_amount), "VALOR:", payment.captured_amount)
+
+                # Parche temporal si es string
+                if isinstance(payment.captured_amount, str):
+                    payment.captured_amount = Decimal(payment.captured_amount)
+                # Obtener el formulario que hace POST automáticamente a Webpay
+                form = payment.get_form()
+                
+
+                # Mostrar el formulario para que el navegador lo envíe automáticamente a Webpay
+                return render(request, 'redirigir_webpay.html', {'form': form})
+
+            except RedirectNeeded as redirect_to:
+                return redirect(str(redirect_to))
+            except Exception as e:
+                logger.error(f"Error al crear pago: {str(e)}")
+                return HttpResponse(f"Hubo un error: {str(e)}")
+        elif metodoPago == 'transferencia':
+            return redirect('datosTransferencias')
+    
+    
+    return render(request, 'pago.html', {
+        'carrito': carrito, 
+        'total':int(total),
+        'cliente':cliente
         })
 
 
@@ -473,6 +641,14 @@ def contador(request):
     return render(request, 'contador.html')
 
 def nosotros(request):
+    if request.method == "GET":
+        if 'traduccion' in request.GET:
+            
+            idioma = request.GET.get('traduccion')
+            print(f"idioma: {idioma}")
+            html_original = render_to_string("nosotros.html", {"usuario": request.user, 'idioma':idioma})
+            html_traducido = traducir_html(html_original, idioma)  # Cambia "FR" por el idioma destino (FR, EN, DE, etc.)
+            return HttpResponse(html_traducido)
     return render(request, 'nosotros.html')
 
 def TerminosyCondiciones(request):
@@ -497,52 +673,76 @@ def gestionCatalogo(request):
         # ✅ SUBIDA DE EXCEL
         if request.FILES.get('archivo_excel'):
             archivo_excel = request.FILES['archivo_excel']
+            errores = []
+            productos_creados = 0
+            productos_actualizados = 0
+
             try:
                 df = pd.read_excel(archivo_excel)
 
                 for index, row in df.iterrows():
-                    idproducto = str(row.get('idproducto')).strip() if pd.notna(row.get('idproducto')) else None
+                    fila = index + 2  # Fila real en el Excel (considerando encabezado)
+
                     nombre = str(row.get('nombre')).strip() if pd.notna(row.get('nombre')) else ''
                     descripcion = str(row.get('descripcion')).strip() if pd.notna(row.get('descripcion')) else ''
-                    stock = int(row.get('stock')) if pd.notna(row.get('stock')) else 0
-                    precio = int(row.get('precio')) if pd.notna(row.get('precio')) else 0
+                    stock = int(float(row.get('stock'))) if pd.notna(row.get('stock')) else 0
+                    try:
+                        precio = int(float(row.get('precio'))) if pd.notna(row.get('precio')) else 0
+                    except:
+                        precio = 0
                     categoria_nombre = str(row.get('categoria')).strip() if pd.notna(row.get('categoria')) else ''
+                    marca = str(row.get('marca')).strip() if pd.notna(row.get('marca')) else ''
+                    imagen_base64 = str(row.get('imagen_base64')).strip() if pd.notna(row.get('imagen_base64')) else ''
 
-                    if not idproducto or not nombre:
-                        continue  # Saltar fila incompleta
+                    # Validación mínima
+                    if not nombre:
+                        errores.append(f"Fila {fila}: El campo 'nombre' está vacío.")
+                        continue
 
-                    producto, creado = Inventario.objects.get_or_create(
-                        idproducto=idproducto,
-                        defaults={
-                            'nombre': nombre,
-                            'descripcion': descripcion,
-                            'stock': stock,
-                            'precio': precio,
-                            'categoria': categoria_nombre,
-                            'alerta': False,
-                            'fecha_actualizacion': date.today(),
-                            'imagen_base64': '',
-                            'precio_convertido': 0,
-                            'marca': '',
-                        }
-                    )
+                    try:
+                        producto, creado = Inventario.objects.get_or_create(
+                            nombre=nombre,
+                            defaults={
+                                'descripcion': descripcion,
+                                'stock': stock,
+                                'precio': precio,
+                                'categoria': categoria_nombre,
+                                'alerta': False,
+                                'fecha_actualizacion': date.today(),
+                                'imagen_base64': imagen_base64,
+                                'precio_convertido': 0,
+                                'marca': marca,
+                            }
+                        )
 
-                    if not creado:
-                        producto.nombre = nombre
-                        producto.descripcion = descripcion
-                        producto.stock = stock
-                        producto.precio = precio
-                        producto.categoria = categoria_nombre
-                        producto.fecha_actualizacion = date.today()
-                        producto.save()
+                        if creado:
+                            productos_creados += 1
+                        else:
+                            producto.descripcion = descripcion
+                            producto.stock = stock
+                            producto.precio = precio
+                            producto.categoria = categoria_nombre
+                            producto.fecha_actualizacion = date.today()
+                            producto.marca = marca
+                            producto.imagen_base64 = imagen_base64
+                            producto.save()
+                            productos_actualizados += 1
 
-                messages.success(request, "Archivo procesado correctamente.")
+                    except Exception as e:
+                        errores.append(f"Fila {fila}: Error al crear/actualizar producto: {str(e)}")
+                        continue
+
+                if errores:
+                    for err in errores:
+                        messages.warning(request, err)
+
+                messages.success(request, f"Excel procesado: {productos_creados} producto(s) creado(s), {productos_actualizados} actualizado(s).")
                 git_commit("Subida de productos por Excel")
+
             except Exception as e:
-                messages.error(request, f"Error al procesar el archivo: {str(e)}")
+                messages.error(request, f"Error al leer el archivo: {str(e)}")
 
             return redirect('gestionCatalogo')
-
         # ✅ CREAR PRODUCTO
         if 'crear' in request.POST:
             nombre = request.POST.get('nombre') 
@@ -594,7 +794,34 @@ def gestionCatalogo(request):
 
 @login_required
 def gestionDescuento(request):
-    return render(request, 'gestionDescuento.html')
+    descuentos = Descuento.objects.all()
+    for d in descuentos:
+        if d.fechaTermino < timezone.now():
+            d.estado = 0
+            d.save()
+    if request.method == 'POST':
+        nombre = request.POST.get('nombre')
+        codigo = request.POST.get('codigo')
+        descuento = request.POST.get('descuento')
+        inicio = request.POST.get('inicio')
+        termino = request.POST.get('termino')
+
+        validacion = Descuento.objects.filter(codigo= codigo).first()
+        if validacion != None:
+            return redirect('gestionDescuento')
+
+        Descuento.objects.create(
+            nombreDescuento = nombre,
+            codigo=codigo,
+            descuento = descuento,
+            fechaInicio=inicio,
+            fechaTermino=termino,
+            estado=1
+        )
+        return redirect('gestionDescuento')
+    return render(request, 'gestionDescuento.html', {
+        'descuentos':descuentos
+    })
 
 def cerrar_sesion(request):
     logout(request)
@@ -636,12 +863,75 @@ def reportesFinancieros(request):
 
 @login_required
 def gestionReportesAdmin(request):
-    return render(request, 'gestionReportesAdmin.html')
+    productos = Inventario.objects.all()
+
+    productosCriticos = []
+    for p in productos:
+        if p.stock <= 5:
+            productosCriticos.append(p)
+
+    if request.method == 'POST':
+        if 'alerta' in request.POST:
+            idProducto = request.POST.get('idProducto')
+            print(f'id: {idProducto}')
+            productoCritico = Inventario.objects.filter(idproducto=idProducto).first()
+            print(f'producto: {productoCritico}')
+            productoCritico.alerta = 1
+            productoCritico.save()
+            return redirect('gestionReportesAdmin')
+    return render(request, 'gestionReportesAdmin.html', {
+        'productos':productos,
+        'productosCriticos':productosCriticos
+
+    })
 
 
 @login_required
 def gestionVenta(request):
-    return render(request, 'gestionVenta.html')
+    detalle = None
+    if request.user.is_authenticated:
+        usuario = Vendedor.objects.filter(usuario=request.user.username).first()
+
+        # Carga la venta activa (si existe)
+        venta = Venta.objects.filter(idvendedor=usuario, estado=1).first()
+
+        if venta:
+            detalle = DetalleVenta.objects.filter(idventa=venta)
+
+        if request.method == 'POST':
+            print('hola mundo')
+
+            if request.POST.get('submit') == "addtocart":
+                venta, creado = Venta.objects.get_or_create(
+                    idvendedor=usuario,
+                    estado=1,
+                    defaults={'fechacreacion': date.today()}
+                )
+
+                id_producto = request.POST.get('id_producto')
+                cantidad = int(request.POST.get('product-quantity'))
+
+                producto = Inventario.objects.filter(idproducto=id_producto).first()
+                detalle_item = DetalleVenta.objects.filter(idventa=venta, idproducto=id_producto).first()
+
+                if detalle_item:
+                    detalle_item.cantidad += cantidad
+                    detalle_item.save()
+                else:
+                    DetalleVenta.objects.create(
+                        idventa=venta,
+                        idproducto=producto,
+                        cantidad=cantidad,
+                    )
+
+                git_commit("creacion carrito")
+
+                return redirect('gestionVenta')
+    total_general = sum(item.total() for item in detalle) if detalle else 0
+    return render(request, 'gestionVenta.html', {
+        'detalle': detalle,
+        'total_general':total_general
+    })
 
 @login_required
 def bodeguero(request):
@@ -666,35 +956,82 @@ def entregasContador(request):
 
 
 def agregarCarrito(request):
-    if request.method == 'POST':
-        usuario = Cliente.objects.filter(usuario=request.user.username).first()
-        if request.POST.get('submit') == "addtocart":
-            carrito, creado = CarritoCompra.objects.get_or_create(
-                idcliente=usuario,
-                estado= 1,  # Asegúrate que este campo existe
-                defaults={'fechacreacion': date.today()}
-            )
-
-            id_producto = request.POST.get('id_producto')
-            cantidad = int(request.POST.get('product-quantity'))
-
-            detalle = DetalleCarrito.objects.filter(idcarrito=carrito.idcarrito, idproducto=id_producto).first()
-            producto = Inventario.objects.filter(idproducto=id_producto).first()
-
-            if detalle:
-                detalle.cantidad += cantidad
-                detalle.save()
-            else:
-                DetalleCarrito.objects.create(
-                    idcarrito=carrito,
-                    idproducto=producto,
-                    cantidad=cantidad,
+    print(request.user)
+    if request.user.is_authenticated:
+        if request.method == 'POST':
+            usuario = Cliente.objects.filter(usuario=request.user.username).first()
+            if request.POST.get('submit') == "addtocart":
+                carrito, creado = CarritoCompra.objects.get_or_create(
+                    idcliente=usuario,
+                    estado= 1,  # Asegúrate que este campo existe
+                    defaults={'fechacreacion': date.today()}
                 )
 
-            git_commit("creacion carrito")
+                id_producto = request.POST.get('id_producto')
+                cantidad = int(request.POST.get('product-quantity'))
 
-            return redirect('productos/'+ request.POST.get('categoria'))
+                detalle = DetalleCarrito.objects.filter(idcarrito=carrito.idcarrito, idproducto=id_producto).first()
+                producto = Inventario.objects.filter(idproducto=id_producto).first()
 
+                if detalle:
+                    detalle.cantidad += cantidad
+                    detalle.save()
+                else:
+                    DetalleCarrito.objects.create(
+                        idcarrito=carrito,
+                        idproducto=producto,
+                        cantidad=cantidad,
+                    )
+
+                git_commit("creacion carrito")
+
+                categoria = request.POST.get('categoria')
+                busqueda = request.POST.get('busqueda')
+
+                if categoria:
+                    return redirect(f'/productos/{quote(categoria)}')
+                elif busqueda:
+                    return redirect(f'/buscar?busqueda={quote(busqueda)}')
+    
+    else:
+        if request.method == 'POST':
+            if not request.session.session_key:
+                request.session.create()
+            session_key = request.session.session_key
+            if request.POST.get('submit') == "addtocart":
+                carrito, creado = CarritoCompra.objects.get_or_create(
+                    idcliente= None,
+                    session_key = session_key,
+                    estado= 1,  # Asegúrate que este campo existe
+                    defaults={'fechacreacion': date.today()}
+                )
+
+                id_producto = request.POST.get('id_producto')
+                cantidad = int(request.POST.get('product-quantity'))
+
+                detalle = DetalleCarrito.objects.filter(idcarrito=carrito.idcarrito, idproducto=id_producto).first()
+                producto = Inventario.objects.filter(idproducto=id_producto).first()
+
+                if detalle:
+                    detalle.cantidad += cantidad
+                    detalle.save()
+                else:
+                    DetalleCarrito.objects.create(
+                        idcarrito=carrito,
+                        idproducto=producto,
+                        cantidad=cantidad,
+                    )
+
+                git_commit("creacion carrito")
+
+                categoria = request.POST.get('categoria')
+                busqueda = request.POST.get('busqueda')
+
+                if categoria:
+                    return redirect(f'/productos/{quote(categoria)}')
+                elif busqueda:
+                    return redirect(f'/buscar?busqueda={quote(busqueda)}')
+    
     return render(request, 'productos.html')
 
 
@@ -705,7 +1042,11 @@ def actualizarCarrito(request):
         categoria = request.POST.get('categoria')
         operacion = request.POST.get('operacion')
         cliente = Cliente.objects.filter(usuario=request.user.username).first()
-        carrito = CarritoCompra.objects.filter(idcliente=cliente.idcliente).first()
+        if cliente:
+            carrito = CarritoCompra.objects.filter(idcliente=cliente.idcliente).first()
+        else:
+            session_key = request.session.session_key
+            carrito = CarritoCompra.objects.filter(session_key=session_key).first()
         detalle = DetalleCarrito.objects.filter(idcarrito=carrito, idproducto=id_producto).first()
         producto = Inventario.objects.filter(idproducto = id_producto).first()
         print(f"carrito: {carrito}")
@@ -730,10 +1071,15 @@ def actualizarCarrito(request):
             return redirect('resumen') 
     return redirect('resumen')
 
-def borrar(request, productoID):
-    producto = Inventario.objects.filter(idproducto = productoID).first()
-    producto.delete()
-    return redirect('gestionCatalogo')
+def borrar(request, productoID, html):
+    if html == 'gestionCatalogo':
+        
+        producto = Inventario.objects.filter(idproducto = int(productoID)).first()
+        producto.delete()
+    elif html == 'gestionDescuento':
+        descuento = Descuento.objects.filter(codigo=productoID).first()
+        descuento.delete()
+    return redirect(html)
 
 
 
@@ -768,7 +1114,7 @@ def generar_comprobante_pdf(request, pago_id: UUID):
         pago.save()
 
     datos = {
-        "ID Pago": pago.idPagoAPI.payment_id,
+        "ID Pago": pago.idPagoAPI.id,
         "Estado": pago.idPagoAPI.status,
         "Monto": pago.idPagoAPI.total,
         "Tipo de pago": pago.idPagoAPI.extra_data.get('commit_response', {}).get('payment_type_code_str', 'N/A'),
@@ -791,57 +1137,80 @@ def generar_comprobante(request):
     pdf = canvas.Canvas(buffer, pagesize=A4)
     width, height = A4
 
-    # Datos de ejemplo
-    empresa = "FERREMAS"
-    producto = "Cemento 25kg"
-    codigo = "CM-25"
-    cantidad = 2
-    precio_unitario = 12000
-    descuento = 10  # %
-    subtotal = cantidad * precio_unitario
-    total = subtotal * (1 - descuento / 100)
-    fecha = datetime.now().strftime('%d/%m/%Y %H:%M')
+    # Obtener vendedor
+    vendedor = Vendedor.objects.filter(usuario=request.user.username).first()
+    venta = Venta.objects.filter(idvendedor=vendedor, estado=1).first()  # Venta activa
 
-    # Título
+    if not venta:
+        return HttpResponse("No hay venta activa", status=400)
+
+    detalles = DetalleVenta.objects.filter(idventa=venta)
+
+    empresa = "FERREMAS"
+    fecha = now().strftime('%d/%m/%Y %H:%M')
+    y = height - 100
+    total_general = 0
+
+    # Título y fecha
     pdf.setFont("Helvetica-Bold", 16)
     pdf.drawCentredString(width / 2, height - 40, f"COMPROBANTE DE VENTA - {empresa}")
-
-    # Fecha
     pdf.setFont("Helvetica", 10)
     pdf.drawRightString(width - 40, height - 60, f"Fecha: {fecha}")
 
-    # Detalles de producto
-    pdf.setFont("Helvetica-Bold", 12)
-    pdf.drawString(40, height - 100, "Producto:")
-    pdf.setFont("Helvetica", 11)
-    pdf.drawString(120, height - 100, producto)
-    pdf.drawString(40, height - 120, f"Código: {codigo}")
-    pdf.drawString(40, height - 140, f"Cantidad: {cantidad}")
-    pdf.drawString(40, height - 160, f"Precio Unitario: ${precio_unitario:,}")
-    pdf.drawString(40, height - 180, f"Descuento: {descuento}%")
-    pdf.drawString(40, height - 200, f"Subtotal: ${subtotal:,}")
-    pdf.setFont("Helvetica-Bold", 12)
-    pdf.drawString(40, height - 220, f"Total a Pagar: ${int(total):,}")
+    # Encabezado tabla
+    pdf.setFont("Helvetica-Bold", 11)
+    pdf.drawString(40, y, "Producto")
+    pdf.drawString(200, y, "Cantidad")
+    pdf.drawString(280, y, "P. Unitario")
+    pdf.drawString(380, y, "Subtotal")
+    y -= 20
 
-    # QR con info de venta
-    qr_data = f"{empresa} - Producto: {producto}, Total: ${int(total):,}, Fecha: {fecha}"
+    pdf.setFont("Helvetica", 10)
+    for item in detalles:
+        producto = item.idproducto.nombre
+        cantidad = item.cantidad
+        precio = item.idproducto.precio
+        subtotal = cantidad * precio
+        total_general += subtotal
+
+        # Envolver nombre en líneas de 30 caracteres
+        lineas = wrap(producto, 30)
+
+        # Escribir cada línea del nombre
+        for i, linea in enumerate(lineas):
+            pdf.drawString(40, y - (i * 12), linea)
+
+        # Escribir los demás datos en la primera línea
+        pdf.drawString(200, y, str(cantidad))
+        pdf.drawString(280, y, f"${precio:,}")
+        pdf.drawString(380, y, f"${subtotal:,}")
+
+        # Ajustar el cursor vertical según las líneas del nombre
+        y -= max(20, 12 * len(lineas))
+
+    # Total final
+    y -= 20
+    pdf.setFont("Helvetica-Bold", 12)
+    pdf.drawString(40, y, f"Total a Pagar: ${total_general:,}")
+
+    # QR con resumen
+    qr_data = f"{empresa} - Total: ${total_general:,}, Fecha: {fecha}"
     qr_img = qrcode.make(qr_data)
-
-    # Convertimos a formato compatible
-    qr_pil = qr_img.convert("RGB")
     qr_io = io.BytesIO()
-    qr_pil.save(qr_io, format="PNG")
+    qr_img.save(qr_io, format="PNG")
     qr_io.seek(0)
-
-    # Insertar imagen en el PDF
-    pdf.drawInlineImage(Image.open(qr_io), width - 140, height - 260, 100, 100)
+    pdf.drawInlineImage(Image.open(qr_io), width - 140, y - 100, 100, 100)
 
     pdf.showPage()
     pdf.save()
     buffer.seek(0)
 
-    return FileResponse(buffer, as_attachment=True, filename='comprobante_ferremas.pdf')
+    for item in detalles:
+        item.delete()
+    venta.estado = 0
+    venta.save()
 
+    return FileResponse(buffer, as_attachment=True, filename='comprobante_ferremas.pdf')
 
 
 def subir_excel(request):
@@ -870,3 +1239,104 @@ def subir_excel(request):
 
         return redirect('gestionCatalogo')
     return render(request, 'gestionCatalogo.html')
+
+def normalizar_texto(texto):
+    return ''.join(
+        c for c in unicodedata.normalize('NFD', texto)
+        if unicodedata.category(c) != 'Mn'
+    ).lower()
+
+def buscar(request):
+    moneda = ""
+    tasa_conversion = 1
+    busqueda = request.GET.get("busqueda", "")
+
+    # Normaliza y divide en palabras
+    busqueda_normalizada = normalizar_texto(busqueda)
+    palabras = busqueda_normalizada.split()
+
+    # Construir filtro dinámico
+    filtro = Q()
+    for palabra in palabras:
+        filtro |= Q(nombre__icontains=palabra)
+        filtro |= Q(categoria__icontains=palabra)
+        # Agrega más campos si lo deseas, por ejemplo:
+        # filtro |= Q(descripcion__icontains=palabra)
+
+    productos = Inventario.objects.filter(filtro)
+
+    if request.method == "POST":
+
+        if 'borrar' in request.POST:
+            producto = request.POST.get('producto')
+            Borrar_producto = DetalleCarrito.objects.filter(idproducto=producto)
+            Borrar_producto.delete()
+        # Traducción por POST (por compatibilidad)
+        if 'traduccion' in request.POST:
+            idioma = request.POST.get('traduccion', 'FR')
+            html_original = render_to_string("productos.html", {"productos": productos})
+            html_traducido = traducir_html(html_original, idioma)
+            return HttpResponse(html_traducido)
+        
+        # LOGIN
+        if 'login_form' in request.POST:
+            login_form = AuthenticationForm(data=request.POST)
+            if login_form.is_valid():
+                user = login_form.get_user()
+                login(request, user)
+                return redirect('index')
+            else:
+                messages.error(request, "Usuario o contraseña inválidos.")
+
+        # REGISTRO
+        elif 'registro_form' in request.POST:
+            registro_form = RegistroForm(request.POST)
+            if registro_form.is_valid():
+                user = registro_form.save()
+                Cliente.objects.create(
+                    usuario=request.POST.get('username'),
+                    correo=request.POST.get('email'),
+                    contrasena=request.POST.get('password1'),
+                    nombre="", apellido="", rut="",
+                    direccion="", telefono="",
+                    fecha_registro=date.today()
+                )
+                login(request, user)
+                git_commit("registro usuario")
+                return redirect('index')
+            else:
+                messages.error(request, "Error al registrar el usuario.")
+
+        # CAMBIO DE MONEDA
+        moneda = request.POST.get("moneda", "USD").upper()
+        moneda_local = "CLP"
+        monedas_validas = ["USD", "EUR", "CAD", "CLP"]
+        if moneda in monedas_validas:
+            url = f"https://v6.exchangerate-api.com/v6/e62c5a2d52f4a1d6b195a3b8/latest/{moneda_local}"
+            try:
+                response = requests.get(url)
+                if response.status_code == 200:
+                    data = response.json()
+                    tasa_conversion = data["conversion_rates"].get(moneda, 1)
+            except Exception as e:
+                print(f"Error al obtener tasa de cambio: {e}")
+
+
+    productos_actualizados = []
+    for p in productos:
+        p.precio_convertido = p.precio * tasa_conversion
+        productos_actualizados.append(p)
+
+    paginator = Paginator(productos_actualizados, 12)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, 'productos.html', {
+        'page_obj': page_obj,
+        'tasa': tasa_conversion,
+        'moneda': moneda if moneda != "" else "CLP",
+        })
+
+
+def datosTransferencias(request):
+    return render(request, 'datosTransferencias.html')

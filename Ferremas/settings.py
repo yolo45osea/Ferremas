@@ -173,6 +173,21 @@ PAYMENT_VARIANTS = {
             'api_endpoint': 'integracion',
         }
     ),
+    'paypal': ('payments.paypal.PaypalProvider', 
+        {
+        'client_id': 'AUVSadF7IO2XCugl69Q7StclNqfZMfBlZnQ4nWeJxZQsc2rZQN3ks4P-OP86B9EbrbfWVHyrTC3xHUyZ',
+        'secret': 'EIkgBp5b_209rQx91DvQMVpgW6bfGMwmEFNnMY0a4TkcSIzn0EcVV1qUzgSwl7R5QNlkccBfdPebkxEY',
+        'endpoint': 'https://api-m.sandbox.paypal.com',  # O el endpoint de producción
+        'capture': True,
+        }
+    ),
 }
 
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'ferremas69@gmail.com'
+EMAIL_HOST_PASSWORD = 'beib abqr rvly edzt'
 

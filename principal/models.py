@@ -8,7 +8,7 @@ from django.db import models
 
 class Payment(BasePayment):
     # Cambiar el campo pk para que sea un UUID
-    payment_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    #payment_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 
     def get_failure_url(self) -> str:
         return reverse('payment_failure', kwargs={'pk': self.pk})
@@ -51,7 +51,8 @@ class Contador(models.Model):
 
 class CarritoCompra(models.Model):
     idcarrito = models.AutoField(primary_key=True)
-    idcliente = models.ForeignKey(Cliente, on_delete=models.CASCADE)
+    idcliente = models.ForeignKey(Cliente, on_delete=models.CASCADE, null=True, blank=True)
+    session_key = models.CharField(max_length=40, null=True, blank=True)  # para invitados
     fechacreacion = models.DateField()
     estado = models.BooleanField()
 
@@ -104,6 +105,7 @@ class Pedido(models.Model):
 
 class Vendedor(models.Model):
     idvendedor = models.AutoField(primary_key=True)
+    usuario = models.CharField(max_length=25)
     nombre = models.CharField(max_length=25)
     apellido = models.CharField(max_length=25)
     rut = models.CharField(max_length=12)
@@ -116,4 +118,29 @@ class Vendedor(models.Model):
 class Pago(models.Model):
     idPagoAPI = models.ForeignKey(Pagos, on_delete=models.CASCADE, primary_key=True)
     idcliente = models.ForeignKey(Cliente, on_delete=models.CASCADE)
-    
+
+
+class Descuento(models.Model):
+    nombreDescuento = models.CharField(max_length=25)
+    codigo = models.CharField(max_length=25, primary_key=True)
+    descuento = models.IntegerField()
+    fechaInicio = models.DateTimeField()
+    fechaTermino = models.DateTimeField()
+    estado = models.BooleanField()
+
+class Venta(models.Model):
+    idcarrito = models.AutoField(primary_key=True)
+    idvendedor = models.ForeignKey(Vendedor, on_delete=models.CASCADE, null=True, blank=True)
+    fechacreacion = models.DateField()
+    estado = models.BooleanField()
+
+
+class DetalleVenta(models.Model):
+    idventaprod = models.AutoField(primary_key=True)
+    idventa = models.ForeignKey(Venta, on_delete=models.CASCADE)
+    idproducto = models.ForeignKey(Inventario, on_delete=models.CASCADE)
+    cantidad = models.IntegerField()
+    #total = models.IntegerField()
+
+    def total(self):
+        return self.idproducto.precio * self.cantidad

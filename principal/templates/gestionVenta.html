@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Gestión de Ventas - FERREMAS</title>
+  {% load formatos %}
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
   <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
@@ -61,21 +62,22 @@
     <!-- Formulario de ingreso de producto -->
     <div class="form-section">
       <h5 class="mb-3" style="color: #041e41;">Agregar Producto a la Venta</h5>
-      <form class="row">
+      <form class="row" method="post">
+        {% csrf_token %}
         <div class="form-group col-md-5">
           <label>Código de Producto / Escáner</label>
-          <input type="text" class="form-control" placeholder="Escanea o escribe el código">
+          <input type="text" name="id_producto" id="id_producto" class="form-control" placeholder="Escanea o escribe el código">
         </div>
         <div class="form-group col-md-3">
           <label>Cantidad</label>
-          <input type="number" class="form-control" value="1" min="1">
+          <input type="number" name="product-quantity" id="product-quantity" class="form-control" value="1" min="1">
         </div>
         <div class="form-group col-md-2">
           <label>Descuento (%)</label>
           <input type="number" class="form-control" placeholder="0" min="0" max="100">
         </div>
         <div class="col-md-2 d-flex align-items-end">
-          <button class="btn btn-warning font-weight-bold text-dark w-100">Agregar</button>
+          <button type="submit" class="btn btn-warning font-weight-bold text-dark w-100" name="submit" id="addtocart" value="addtocart">Agregar</button>
         </div>
       </form>
     </div>
@@ -91,21 +93,21 @@
               <th>Código</th>
               <th>Cantidad</th>
               <th>Precio Unitario</th>
-              <th>Descuento</th>
               <th>Total</th>
               <th>Acciones</th>
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td>Cemento 25kg</td>
-              <td>CM-25</td>
-              <td>2</td>
-              <td>$12.000</td>
-              <td>10%</td>
-              <td>$21.600</td>
-              <td><button class="btn btn-sm btn-danger">Eliminar</button></td>
-            </tr>
+            {% for producto in detalle %}
+              <tr>
+                <td>{{ producto.idproducto.nombre }}</td>
+                <td>{{ producto.idproducto.idproducto }}</td>
+                <td>{{ producto.cantidad }}</td>
+                <td>{{ producto.idproducto.precio|formatear_pesos }}</td>
+                <td>${{ producto.total|formatear_pesos }}</td>
+                <td><button class="btn btn-sm btn-danger">Eliminar</button></td>
+              </tr>
+            {% endfor %}
             <!-- Más productos -->
           </tbody>
         </table>
@@ -128,9 +130,8 @@
         </div>
         <div class="col-md-6 text-md-right mt-4 mt-md-0">
           <h5 style="color: #041e41;">Resumen</h5>
-          <p class="mb-1">Subtotal: <strong>$21.600</strong></p>
-          <p class="mb-1">Descuentos: <strong>$2.400</strong></p>
-          <p class="mb-1">Total a Pagar: <strong>$19.200</strong></p>
+          <p class="mb-1">Subtotal: <strong>${{ total_general|formatear_pesos }}</strong></p>
+          <p class="mb-1">Total a Pagar: <strong>${{ total_general|formatear_pesos }}</strong></p>
           <a href="{% url 'generar_comprobante' %}" class="btn btn-ferremas mt-2" target="_blank">
             <i class="fas fa-receipt"></i> Generar Comprobante con QR
           </a>

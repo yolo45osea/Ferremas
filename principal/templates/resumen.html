@@ -108,15 +108,18 @@
             <div class="card border shadow-sm">
               <div class="card-body">
                 <h5 class="mb-3" style="color: #041e41;">Resumen de pago</h5>
-                <div class="form-group">
-                  <label for="codigoDescuento" class="text-muted">Código de descuento</label>
-                  <div class="input-group">
-                    <input type="text" class="form-control" id="codigoDescuento" placeholder="Ingresa tu código">
-                    <div class="input-group-append">
-                      <button class="btn btn-warning text-dark font-weight-bold">Aplicar</button>
+                <form method="post">
+                  {% csrf_token %}
+                  <div class="form-group">
+                    <label for="codigoDescuento" class="text-muted">Código de descuento</label>
+                    <div class="input-group">
+                      <input type="text" class="form-control" id="codigoDescuento" name="codigo" placeholder="Ingresa tu código">
+                      <div class="input-group-append">
+                        <button type="submit" name="aplicarDescuento" id="aplicarDescuento" class="btn btn-warning text-dark font-weight-bold">Aplicar</button>
+                      </div>
                     </div>
                   </div>
-                </div>
+                </form>
                 <hr>
                 <div class="d-flex justify-content-between">
                   <span>Subtotal</span>
@@ -124,20 +127,22 @@
                 </div>
                 <div class="d-flex justify-content-between">
                   <span>Descuento</span>
-                  <strong>$0</strong>
+                  <strong>${{ subtotal }}</strong>
                 </div>
                 <hr>
                 <div class="d-flex justify-content-between mb-3">
                   <span style="font-weight: bold; color: #041e41;">Total</span>
-                  <strong style="font-size: 1.2rem; color: #041e41;">${{ total }}</strong>
+                  <strong style="font-size: 1.2rem; color: #041e41;">${{ totalPago }}</strong>
                 </div>
-                <div class="form-check mb-3">
-                  <input type="checkbox" class="form-check-input" id="condiciones">
-                  <label class="form-check-label small text-muted" for="condiciones">
-                    Acepto los <a href="#" style="color:#041e41;">Términos y Condiciones</a>
-                  </label>
-                </div>
-                <a href="{% url 'pago' %}" class="btn btn-warning btn-block font-weight-bold text-dark">Continuar compra</a>
+                <form action="{% url 'pago' total=totalPago %}">
+                  <div class="form-check mb-3">
+                    <input type="checkbox" class="form-check-input" id="condiciones" required>
+                    <label class="form-check-label small text-muted" for="condiciones">
+                      Acepto los <a href="{% url 'TerminosyCondiciones' %}" style="color:#041e41;">Términos y Condiciones</a>
+                    </label>
+                  </div>
+                  <button type="submit" class="btn btn-warning btn-block font-weight-bold text-dark">Continuar compra</button>
+                </form>
               </div>
             </div>
           </div>

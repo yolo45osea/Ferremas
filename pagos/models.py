@@ -7,7 +7,8 @@ from django.db import models
 
 class Payment(BasePayment):
     # Cambiar el campo pk para que sea un UUID
-    payment_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    id = models.AutoField(primary_key=True)
+    tipo_documento = models.TextField(blank=True, null=True)
 
     def get_failure_url(self) -> str:
         return reverse('payment_failure', kwargs={'pk': self.pk})
