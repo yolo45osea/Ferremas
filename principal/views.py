@@ -328,7 +328,7 @@ def productos(request, categoria):
         "categoria": categoria,
         "tasa": tasa_conversion,
         "moneda": moneda if moneda else "CLP",
-        "total": total,
+        #"total": total,
         "page_obj": page_obj,
     }
 
