@@ -312,8 +312,8 @@
   </div>
 
   <!----------------------------------------------------------------------- Info Producto----------------------------------------------------------------------->
-  
-    <form action="">
+    <form action="{% url 'agregar' %}" method="post">
+      {% csrf_token %}
       <div class="container my-5">
         <div class="row align-items-start">
       
@@ -337,17 +337,26 @@
             </p>
       
             <!-- Cantidad + Botón -->
+                
+                <input type="hidden" name="id_producto" value="{{ producto.idproducto }}">
+                <input type="hidden" name="template" value="unitario">
+                {% if request.GET.busqueda %}
+                  <input type="hidden" name="busqueda" value="{{ request.GET.busqueda }}">
+                {% elif categoria %}
+                  <input type="hidden" name="categoria" value="{{ categoria }}">
+                {% endif %}
             <div class="product-card col-auto">
               <ul class="list-inline pb-3">
                   <li class="list-inline-item text-right">
                       Cantidad
-                      <input type="hidden" name="product-quanity" class="product-quantity" value="1">
+                      <input type="hidden" name="product-quantity" class="product-quantity" value="1">
                   </li>
                   <li class="list-inline-item">
                       <span class="btn btn-warning btn-minus">-</span>
                   </li>
                   <li class="list-inline-item">
-                      <span class="badge bg-secondary var-value" data-max="{{ producto.stock }}">1</span>
+                      <span class="badge bg-secondary var-value" data-max="{{ stockActualizado }}">1</span>
+                      <input type="hidden" name="cantidad">
                   </li>
                   <li class="list-inline-item">
                       <span class="btn btn-warning btn-plus">+</span>
@@ -364,7 +373,7 @@
                                                     </div>
                                                     <div class="col d-grid">
                                                         <input type="hidden" name="user">
-                                                        <button type="submit" class="btn btn-warning btn-lg" name="submit" value="addtocard" disabled>Agregar al Carrito</button>
+                                                        <button type="submit" class="btn btn-warning btn-lg" name="submit" value="addtocart" disabled>Agregar al Carrito</button>
                                                     </div>
                                                 </div>
                                                 <p>Producto no disponible</p>
@@ -373,9 +382,11 @@
                                                     <div class="col d-grid">
                                                         <button type="submit" class="btn btn-warning btn-lg" name="submit" value="Comprar">Comprar</button>
                                                     </div>
-                                                    <div class="col d-grid">
-                                                        <button type="submit" class="btn btn-warning btn-lg" name="submit" value="addtocard">Agregar al Carrito</button>
-                                                    </div>
+                                                    
+                                                      
+                                                      <div class="col d-grid">
+                                                          <button type="submit" class="btn btn-warning btn-lg" name="submit" value="addtocart">Agregar al Carrito</button>
+                                                      </div>
                                                 </div>
                                             {% endif %}
                                         {% else %}
@@ -385,7 +396,7 @@
                                                 </div>
                                                 <div class="col d-grid">
                                                     <input type="hidden" name="user">
-                                                    <button type="submit" class="btn btn-warning btn-lg" name="submit" value="addtocard" disabled>Agregar al Carrito</button>
+                                                    <button type="submit" class="btn btn-warning btn-lg" name="submit" value="addtocart" disabled>Agregar al Carrito</button>
                                                 </div>
                                             </div>
                                             <p><b>No</b> puede comprar como <b>Administrador</b></p>
@@ -398,7 +409,7 @@
                                                     </div>
                                                     <div class="col d-grid">
                                                         <input type="hidden" name="user">
-                                                        <button type="submit" class="btn btn-warning btn-lg" name="submit" value="addtocard" disabled>Agregar al Carrito</button>
+                                                        <button type="submit" class="btn btn-warning btn-lg" name="submit" value="addtocart" disabled>Agregar al Carrito</button>
                                                     </div>
                                                 </div>
                                                 <p>Producto no disponible</p>
@@ -408,7 +419,7 @@
                                                         <button type="submit" class="btn btn-warning btn-lg" name="submit" value="Comprar">Comprar</button>
                                                     </div>
                                                     <div class="col d-grid">
-                                                        <button type="submit" class="btn btn-warning btn-lg" name="submit" value="addtocard">Agregar al Carrito</button>
+                                                        <button type="submit" class="btn btn-warning btn-lg" name="submit" value="addtocart">Agregar al Carrito</button>
                                                     </div>
                                                 </div>
                                             {% endif %}
@@ -708,6 +719,7 @@
 
           // Si todos los elementos existen dentro de esta tarjeta
           if (minusBtn && plusBtn && varValue && quantityInput) {
+            quantityInput.value = 1;
             minusBtn.addEventListener('click', function (e) {
               e.preventDefault(); // evita el submit si es accidental
               let currentValue = parseInt(varValue.textContent);

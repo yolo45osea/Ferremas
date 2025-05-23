@@ -328,7 +328,7 @@ def productos(request, categoria):
         "categoria": categoria,
         "tasa": tasa_conversion,
         "moneda": moneda if moneda else "CLP",
-        #"total": total,
+        "total": total,
         "page_obj": page_obj,
     }
 
@@ -406,6 +406,13 @@ def unitario(request, productoID):
 
             return HttpResponse(html_final)
     print(productoID)
+    if request.method == "POST":
+        if 'borrar' in request.POST:
+            producto = request.POST.get('producto')
+            Borrar_producto = DetalleCarrito.objects.filter(idproducto=producto)
+            Borrar_producto.delete()
+            return redirect(f'/unitario/{productoID}')
+
     
     return render(request, 'unitario.html', {'producto':producto})
 
@@ -974,6 +981,7 @@ def agregarCarrito(request):
 
                 id_producto = request.POST.get('id_producto')
                 cantidad = int(request.POST.get('product-quantity'))
+                template = request.POST.get('template')
 
                 detalle = DetalleCarrito.objects.filter(idcarrito=carrito.idcarrito, idproducto=id_producto).first()
                 producto = Inventario.objects.filter(idproducto=id_producto).first()
@@ -993,50 +1001,77 @@ def agregarCarrito(request):
                 categoria = request.POST.get('categoria')
                 busqueda = request.POST.get('busqueda')
 
-                if categoria:
-                    return redirect(f'/productos/{quote(categoria)}')
-                elif busqueda:
-                    return redirect(f'/buscar?busqueda={quote(busqueda)}')
+                if template == 'unitario':
+                    return redirect(f'{template}/{id_producto}')
+                else:
+                    if categoria:
+                        return redirect(f'/productos/{quote(categoria)}')
+                    elif busqueda:
+                        return redirect(f'/buscar?busqueda={quote(busqueda)}')
     
     else:
+        print('holamundo sin POST')
         if request.method == 'POST':
             if not request.session.session_key:
                 request.session.create()
             session_key = request.session.session_key
             if request.POST.get('submit') == "addtocart":
-                carrito, creado = CarritoCompra.objects.get_or_create(
-                    idcliente= None,
-                    session_key = session_key,
-                    estado= 1,  # Asegúrate que este campo existe
+                carrito, _ = CarritoCompra.objects.get_or_create(
+                    idcliente=None,
+                    session_key=session_key,
+                    estado=1,
                     defaults={'fechacreacion': date.today()}
                 )
 
                 id_producto = request.POST.get('id_producto')
-                cantidad = int(request.POST.get('product-quantity'))
+                cantidad_solicitada = int(request.POST.get('product-quantity', 1))
+                template = request.POST.get('template')
+
+                producto = Inventario.objects.filter(idproducto=id_producto).first()
+                if not producto:
+                    messages.error(request, "Producto no encontrado.")
+                    return redirect('pagina_de_error')
 
                 detalle = DetalleCarrito.objects.filter(idcarrito=carrito.idcarrito, idproducto=id_producto).first()
-                producto = Inventario.objects.filter(idproducto=id_producto).first()
+
+                cantidad_en_carrito = detalle.cantidad if detalle else 0
+                stock_disponible = producto.stock
+
+                categoria = request.POST.get('categoria')
+                busqueda = request.POST.get('busqueda')
+
+                # ✅ Validación principal
+                if cantidad_en_carrito + cantidad_solicitada > stock_disponible:
+                    messages.error(request, f"No puedes agregar más de {stock_disponible} unidades en total.")
+                    if template == 'unitario':
+                        return redirect(f'{template}/{id_producto}')  # Cambia esto por tu ruta real
+                    elif categoria:
+                        return redirect(f'/productos/{quote(categoria)}')
+                    elif busqueda:
+                        return redirect(f'/buscar?busqueda={quote(busqueda)}')
 
                 if detalle:
-                    detalle.cantidad += cantidad
+                    detalle.cantidad += cantidad_solicitada
                     detalle.save()
                 else:
                     DetalleCarrito.objects.create(
                         idcarrito=carrito,
                         idproducto=producto,
-                        cantidad=cantidad,
+                        cantidad=cantidad_solicitada,
                     )
 
-                git_commit("creacion carrito")
+                git_commit("creación carrito")
 
-                categoria = request.POST.get('categoria')
-                busqueda = request.POST.get('busqueda')
+                # Redirección limpia
+                
 
-                if categoria:
+                if template == 'unitario':
+                    return redirect(f'{template}/{id_producto}')
+                elif categoria:
                     return redirect(f'/productos/{quote(categoria)}')
                 elif busqueda:
                     return redirect(f'/buscar?busqueda={quote(busqueda)}')
-    
+                
     return render(request, 'productos.html')
 
 
