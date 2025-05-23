@@ -328,7 +328,7 @@ def productos(request, categoria):
         "categoria": categoria,
         "tasa": tasa_conversion,
         "moneda": moneda if moneda else "CLP",
-        "total": total,
+        #"total": total,
         "page_obj": page_obj,
     }
 
@@ -493,9 +493,10 @@ def webpay_cancel(request):
 def resumen(request):
     session_key = request.session.session_key
     cliente = Cliente.objects.filter(usuario = request.user.username).first()
-    carrito = CarritoCompra.objects.filter(
-        Q(session_key=session_key) | Q(idcliente=cliente)
-    ).first()
+    if request.user.is_authenticated:
+        carrito = CarritoCompra.objects.filter(idcliente = cliente, estado=1).first()
+    else:
+        carrito = CarritoCompra.objects.filter(session_key = session_key, estado=1).first()
     detalle = DetalleCarrito.objects.filter(idcarrito = carrito)
     total = 0
     subtotal = 0
@@ -1045,10 +1046,11 @@ def agregarCarrito(request):
                     messages.error(request, f"No puedes agregar más de {stock_disponible} unidades en total.")
                     if template == 'unitario':
                         return redirect(f'{template}/{id_producto}')  # Cambia esto por tu ruta real
-                    elif categoria:
-                        return redirect(f'/productos/{quote(categoria)}')
-                    elif busqueda:
-                        return redirect(f'/buscar?busqueda={quote(busqueda)}')
+                    else:
+                        if categoria:
+                            return redirect(f'/productos/{quote(categoria)}')
+                        elif busqueda:
+                            return redirect(f'/buscar?busqueda={quote(busqueda)}')
 
                 if detalle:
                     detalle.cantidad += cantidad_solicitada
