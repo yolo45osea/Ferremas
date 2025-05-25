@@ -142,6 +142,7 @@
             <label>Imagen</label>
             <input type="file" id="imageInput" class="form-control-file">
             <input type="hidden" id="imageBase64" name="imageBase64">
+            
           </div>
         </div>
         <button type="submit" class="btn btn-ferremas mt-3" id="crear" name="crear">Guardar Producto</button>
@@ -183,6 +184,7 @@
                   data-precio="{{ producto.precio }}"
                   data-stock="{{ producto.stock }}"
                   data-marca="{{ producto.marca }}"
+                  data-imagen="{{producto.imagen_base64}}"
                 >
                   Editar
                 </button>
@@ -288,6 +290,7 @@
               <label>Imagen</label>
               <input type="file" class="form-control-file" id="editarImagen" name="editarImagen">
               <input type="hidden" id="imageBase64Editada" name="imageBase64Editada">
+              <input type="hidden" name="imagenActual" id="imagenActual">
             </div>
           </div>
           <button type="submit" id="editar" name="editar" class="btn btn-ferremas">Guardar Cambios</button>
@@ -336,6 +339,7 @@
         document.getElementById('editarPrecio').value = this.getAttribute('data-precio');
         document.getElementById('editarStock').value = this.getAttribute('data-stock');
         document.getElementById('editarMarca').value = this.getAttribute('data-marca');
+        document.getElementById('imagenActual').value = this.getAttribute('data-imagen');
         // La imagen no se puede llenar automáticamente en un <input type="file">
       });
     });

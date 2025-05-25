@@ -439,7 +439,7 @@ def cuenta(request):
         usuario.telefono = request.POST.get('telefono', usuario.telefono)
         usuario.direccion = request.POST.get('direccion', usuario.direccion)
         usuario.save()
-        git_commit("actualizacion perfil")
+        #git_commit("actualizacion perfil")
         return redirect('cuenta')
     
     return render(request, 'cuenta.html', {'usuario': usuario, 'tipo_usuario':tipo_usuario})
@@ -578,7 +578,7 @@ def pago(request, total):
                     billing_email=email,
                     billing_phone=codigo + numero,
                     tipo_documento=tipoDoc,
-                    billing_address_1=direccion or None,
+                    billing_address_1=direccion or "",
                     billing_address_2= retiro or None
 
                 )
@@ -750,7 +750,7 @@ def gestionCatalogo(request):
                         messages.warning(request, err)
 
                 messages.success(request, f"Excel procesado: {productos_creados} producto(s) creado(s), {productos_actualizados} actualizado(s).")
-                git_commit("Subida de productos por Excel")
+                #git_commit("Subida de productos por Excel")
 
             except Exception as e:
                 messages.error(request, f"Error al leer el archivo: {str(e)}")
@@ -778,12 +778,13 @@ def gestionCatalogo(request):
                 precio=int(precio) if precio else 0,
                 precio_convertido=0
             )
-            git_commit("creación producto")
+            #git_commit("creación producto")
             return redirect('gestionCatalogo')
 
         # ✅ EDITAR PRODUCTO
         if 'editar' in request.POST:
             editarCodigo = request.POST.get('editarCodigo')
+            imagenActual = request.POST.get('imagenActual')
             producto_editado = Inventario.objects.filter(idproducto=editarCodigo).first()
 
             if producto_editado:
@@ -795,11 +796,11 @@ def gestionCatalogo(request):
                 producto_editado.alerta = False
                 producto_editado.fecha_actualizacion = date.today()
                 producto_editado.precio = int(request.POST.get('editarPrecio') or 0)
-                producto_editado.imagen_base64 = request.POST.get('imageBase64Editada') or ""
+                producto_editado.imagen_base64 = request.POST.get('imageBase64Editada') or imagenActual
                 producto_editado.precio_convertido = 0
 
                 producto_editado.save()
-                git_commit("edición producto")
+                #git_commit("edición producto")
             return redirect('gestionCatalogo')
 
     return render(request, 'gestionCatalogo.html', {'productos': productos})
@@ -927,17 +928,32 @@ def gestionVenta(request):
                 producto = Inventario.objects.filter(idproducto=id_producto).first()
                 detalle_item = DetalleVenta.objects.filter(idventa=venta, idproducto=id_producto).first()
 
-                if detalle_item:
-                    detalle_item.cantidad += cantidad
-                    detalle_item.save()
+                if producto:
+                    if detalle_item:
+                        detalle_item.cantidad += cantidad
+                        detalle_item.save()
+                    else:
+                        DetalleVenta.objects.create(
+                            idventa=venta,
+                            idproducto=producto,
+                            cantidad=cantidad,
+                        )
                 else:
-                    DetalleVenta.objects.create(
-                        idventa=venta,
-                        idproducto=producto,
-                        cantidad=cantidad,
-                    )
+                    return redirect('gestionVenta')
 
-                git_commit("creacion carrito")
+                #git_commit("creacion carrito")
+
+                return redirect('gestionVenta')
+            
+            if request.POST.get('submit') == "borrar":
+                idProducto = request.POST.get('idProducto')
+
+                producto = Inventario.objects.filter(idproducto=idProducto).first()
+                detalle_item = DetalleVenta.objects.filter(idventa=venta, idproducto=idProducto).first()
+
+                detalle_item.delete()
+
+                #git_commit("creacion carrito")
 
                 return redirect('gestionVenta')
     total_general = sum(item.total() for item in detalle) if detalle else 0
@@ -997,7 +1013,7 @@ def agregarCarrito(request):
                         cantidad=cantidad,
                     )
 
-                git_commit("creacion carrito")
+                #git_commit("creacion carrito")
 
                 categoria = request.POST.get('categoria')
                 busqueda = request.POST.get('busqueda')
@@ -1062,7 +1078,7 @@ def agregarCarrito(request):
                         cantidad=cantidad_solicitada,
                     )
 
-                git_commit("creación carrito")
+                #git_commit("creación carrito")
 
                 # Redirección limpia
                 
@@ -1253,6 +1269,7 @@ def generar_comprobante(request):
     venta.save()
 
     return FileResponse(buffer, as_attachment=True, filename='comprobante_ferremas.pdf')
+    return redirect('gestionVenta')
 
 
 def subir_excel(request):
@@ -1344,7 +1361,7 @@ def buscar(request):
                     fecha_registro=date.today()
                 )
                 login(request, user)
-                git_commit("registro usuario")
+                #git_commit("registro usuario")
                 return redirect('index')
             else:
                 messages.error(request, "Error al registrar el usuario.")

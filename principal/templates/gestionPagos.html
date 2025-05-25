@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Gestión de Pagos - FERREMAS</title>
+  {% load formatos %}
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
   <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet" />
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet" />
@@ -103,9 +104,9 @@
           <tbody>
             {% for pago in pagos %}
               <tr>
-              <td>{{ pago.idcliente.nombre }} {{ pago.idcliente.apellido }}</td>
+              <td>{{ pago.idPagoAPI.billing_first_name }} {{ pago.idPagoAPI.billing_last_name }}</td>
               <td>{{ pago.idPagoAPI.modified }}</td>
-              <td>${{ pago.idPagoAPI.total }}</td>
+              <td>${{ pago.idPagoAPI.total|formatear_pesos }}</td>
               <td>{{ pago.idPagoAPI.extra_data.commit_response.payment_type_code_str }}</td>
               {% if pago.idPagoAPI.status == 'Aprobado' %}
                 <td><span class="badge badge-success">{{ pago.idPagoAPI.status }}</span></td>

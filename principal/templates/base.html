@@ -7,6 +7,7 @@
     <meta content="Free HTML Templates" name="keywords">
     <meta content="Free HTML Templates" name="description">
     {% load static %}
+    {% load formatos %}
 
     <!-- Favicon -->
     <link href="{% static 'img/favicon.png' %}" rel="icon">
@@ -402,7 +403,7 @@
               
               <!-- Fondo superior con color -->
               <div style="background-color: #041e41; border-top-left-radius: 16px; border-top-right-radius: 16px; padding: 20px;" class="text-center">
-                <img src="static/img/logo3.png" alt="Logo" style="height: 60px;">
+                <img src="{% static 'img/logo3.png' %}" alt="Logo" style="height: 60px;">
               </div>
         
               <!-- Contenido principal del modal -->
@@ -443,7 +444,7 @@
               
               <!-- Encabezado con color y logo -->
               <div style="background-color: #041e41; padding: 20px; text-align: center;">
-                <img src="static/img/logo3.png" alt="FERREMAS Logo" style="max-height: 40px;">
+                <img src="{% static 'img/logo3.png' %}" alt="FERREMAS Logo" style="max-height: 40px;">
               </div>
         
               <!-- Contenido del formulario -->
@@ -555,7 +556,7 @@
                       <img src="data:image/jpeg;base64,{{ producto.idproducto.imagen_base64 }}" alt="Producto">
                       <div class="cart-info">
                         <strong>{{ producto.idproducto.nombre }}</strong>
-                        <p>${{ producto.idproducto.precio }}</p>
+                        <p>${{ producto.idproducto.precio|formatear_pesos }}</p>
                         <p>cantidad: {{ producto.cantidad }}</p>
                       </div>
                       <form method="post">
@@ -567,7 +568,7 @@
                   {% endfor %}
                 </div>
                 <div class="side-cart-footer">
-                  <p>Total: <strong>${{ total }}</strong></p>
+                  <p>Total: <strong>${{ total|formatear_pesos }}</strong></p>
                   <a class="btn btn-warning btn-block" href="{% url 'resumen' %}">Finalizar Compra</a>
                 </div>
               {% else %}

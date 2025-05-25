@@ -29,7 +29,7 @@ def generar_documento_pdf(pago, cliente, detalle_productos, tipo_documento):
 
     c.setFont("Helvetica", 12)
     c.drawString(50, height - 80, f"Cliente: {cliente.usuario}")
-    c.drawString(50, height - 100, f"Email: {cliente.email if hasattr(cliente, 'email') else 'N/A'}")
+    c.drawString(50, height - 100, f"Email: {cliente.email if hasattr(cliente, 'email') else pago.billing_email}")
     c.drawString(50, height - 120, f"Fecha: {timezone.now().strftime('%d/%m/%Y %H:%M')}")
 
     c.drawString(50, height - 150, "Productos:")
@@ -142,7 +142,11 @@ def payment_success(request, pk):
             pago.save()
 
             cliente = Cliente.objects.filter(usuario = request.user.username).first()
-            carrito = CarritoCompra.objects.filter(idcliente = cliente, estado = 1).first()
+            session_key = request.session.session_key
+            if cliente:
+                carrito = CarritoCompra.objects.filter(idcliente = cliente, estado = 1).first()
+            else:
+                carrito = CarritoCompra.objects.filter(session_key = session_key, estado = 1).first()
             detalle = DetalleCarrito.objects.filter(idcarrito = carrito)
 
             Pago.objects.create(

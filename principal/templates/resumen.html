@@ -10,6 +10,7 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
   
   {% load static %}
+  {% load formatos %}
 
   <style>
     html, body {
@@ -93,7 +94,7 @@
                     <button type="submit" name="operacion" id="operacion" value="mas" class="btn btn-outline-secondary btn-sm ml-2">+</button>
                   </form>
                 </div>
-                <div class="ml-4 font-weight-bold" style="color: #041e41;">${{ producto.total }}</div>
+                <div class="ml-4 font-weight-bold" style="color: #041e41;">${{ producto.total|formatear_pesos }}</div>
                 <form method="post">
                   {% csrf_token %}
                   <input type="hidden" name="producto_borrado" value="{{ producto.idproducto.idproducto }}">
@@ -123,16 +124,16 @@
                 <hr>
                 <div class="d-flex justify-content-between">
                   <span>Subtotal</span>
-                  <strong>${{ total }}</strong>
+                  <strong>${{ total|formatear_pesos }}</strong>
                 </div>
                 <div class="d-flex justify-content-between">
                   <span>Descuento</span>
-                  <strong>${{ subtotal }}</strong>
+                  <strong>${{ subtotal|formatear_pesos }}</strong>
                 </div>
                 <hr>
                 <div class="d-flex justify-content-between mb-3">
                   <span style="font-weight: bold; color: #041e41;">Total</span>
-                  <strong style="font-size: 1.2rem; color: #041e41;">${{ totalPago }}</strong>
+                  <strong style="font-size: 1.2rem; color: #041e41;">${{ totalPago|formatear_pesos }}</strong>
                 </div>
                 <form action="{% url 'pago' total=totalPago %}">
                   <div class="form-check mb-3">

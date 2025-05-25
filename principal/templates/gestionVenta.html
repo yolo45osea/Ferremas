@@ -66,7 +66,7 @@
         {% csrf_token %}
         <div class="form-group col-md-5">
           <label>Código de Producto / Escáner</label>
-          <input type="text" name="id_producto" id="id_producto" class="form-control" placeholder="Escanea o escribe el código">
+          <input type="text" name="id_producto" id="id_producto" class="form-control" placeholder="Escanea o escribe el código" required>
         </div>
         <div class="form-group col-md-3">
           <label>Cantidad</label>
@@ -98,16 +98,20 @@
             </tr>
           </thead>
           <tbody>
-            {% for producto in detalle %}
-              <tr>
-                <td>{{ producto.idproducto.nombre }}</td>
-                <td>{{ producto.idproducto.idproducto }}</td>
-                <td>{{ producto.cantidad }}</td>
-                <td>{{ producto.idproducto.precio|formatear_pesos }}</td>
-                <td>${{ producto.total|formatear_pesos }}</td>
-                <td><button class="btn btn-sm btn-danger">Eliminar</button></td>
-              </tr>
-            {% endfor %}
+            <form method="post">
+              {% csrf_token %}
+              {% for producto in detalle %}
+                <tr>
+                  <td>{{ producto.idproducto.nombre }}</td>
+                  <td>{{ producto.idproducto.idproducto }}</td>
+                  <td>{{ producto.cantidad }}</td>
+                  <td>{{ producto.idproducto.precio|formatear_pesos }}</td>
+                  <td>${{ producto.total|formatear_pesos }}</td>
+                  <input type="hidden" name="idProducto" id="idProducto" value="{{producto.idproducto.idproducto}}">
+                  <td><button type="submit" name="submit" id="submit" value="borrar" class="btn btn-sm btn-danger">Eliminar</button></td>
+                </tr>
+              {% endfor %}
+            </form>
             <!-- Más productos -->
           </tbody>
         </table>
@@ -116,30 +120,68 @@
 
     <!-- Sección de entrega y resumen -->
     <div class="summary-section">
-      <div class="row">
-        <div class="col-md-6">
-          <h5 style="color: #041e41;">Tipo de Entrega</h5>
-          <div class="form-check">
-            <input class="form-check-input" type="radio" name="entrega" id="retiro" checked>
-            <label class="form-check-label" for="retiro">Retiro Inmediato en Tienda</label>
-          </div>
-          <div class="form-check">
-            <input class="form-check-input" type="radio" name="entrega" id="despacho">
-            <label class="form-check-label" for="despacho">Despacho a Domicilio</label>
-          </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h5 style="color: #041e41;">Tipo de Entrega</h5>
+      <div class="form-check">
+        <input class="form-check-input" type="radio" name="entrega" id="retiro" checked onchange="toggleDespacho()">
+        <label class="form-check-label" for="retiro">Retiro Inmediato en Tienda</label>
+      </div>
+      <div class="form-check">
+        <input class="form-check-input" type="radio" name="entrega" id="despacho" onchange="toggleDespacho()">
+        <label class="form-check-label" for="despacho">Despacho a Domicilio</label>
+      </div>
+
+      <!-- Campos adicionales para despacho -->
+      <div id="despacho-info" class="mt-3 d-none">
+        <div class="form-group">
+          <label for="direccion" class="font-weight-bold">Dirección de despacho</label>
+          <input type="text" class="form-control" id="direccion" placeholder="Ingrese la dirección">
         </div>
-        <div class="col-md-6 text-md-right mt-4 mt-md-0">
-          <h5 style="color: #041e41;">Resumen</h5>
-          <p class="mb-1">Subtotal: <strong>${{ total_general|formatear_pesos }}</strong></p>
-          <p class="mb-1">Total a Pagar: <strong>${{ total_general|formatear_pesos }}</strong></p>
-          <a href="{% url 'generar_comprobante' %}" class="btn btn-ferremas mt-2" target="_blank">
-            <i class="fas fa-receipt"></i> Generar Comprobante con QR
-          </a>
+        <div class="form-group">
+          <label for="recibe" class="font-weight-bold">¿Quién recibe?</label>
+          <input type="text" class="form-control" id="recibe" placeholder="Nombre completo de quien recibe">
+        </div>
+        <div class="alert alert-info" style="font-size: 0.9rem;">
+          El despacho se realizará dentro de <strong>2 días hábiles</strong>.
         </div>
       </div>
     </div>
 
+    <div class="col-md-6 text-md-right mt-4 mt-md-0">
+      <h5 style="color: #041e41;">Resumen</h5>
+      <p class="mb-1">Subtotal: <strong>${{ total_general|formatear_pesos }}</strong></p>
+      <p class="mb-1">Total a Pagar: <strong>${{ total_general|formatear_pesos }}</strong></p>
+      <a href="{% url 'generar_comprobante' %}" id="btn-comprobante" class="btn btn-ferremas mt-2" target="_blank">
+        <i class="fas fa-receipt"></i> Generar Comprobante con QR
+      </a>
+    </div>
+  </div>
+</div>
+
   </div>
+
+  <script>
+  document.getElementById("btn-comprobante").addEventListener("click", function () {
+    // Esperar unos segundos y luego redirigir la página actual
+    setTimeout(() => {
+      window.location.href = "/gestionVenta";
+    }, 100); // Redirige después de 3 segundos del clic
+  });
+</script>
+
+  <script>
+  function toggleDespacho() {
+    const despachoRadio = document.getElementById('despacho');
+    const infoDespacho = document.getElementById('despacho-info');
+    
+    if (despachoRadio.checked) {
+      infoDespacho.classList.remove('d-none');
+    } else {
+      infoDespacho.classList.add('d-none');
+    }
+  }
+</script>
 
   <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
