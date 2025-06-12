@@ -16,6 +16,11 @@ from . import PurchasedItem
 from .core import provider_factory
 
 logger = logging.getLogger(__name__)
+#para produccion
+host = 'https://ferremas-svwd.onrender.com'
+
+#para desarrollo
+#host = 'http://127.0.0.1:8000'
 
 
 class PaymentAttributeProxy:
@@ -186,7 +191,7 @@ class BasePayment(models.Model):
         raise NotImplementedError
 
     def get_process_url(self) -> str:
-        return f"http://127.0.0.1:8000/{reverse('process_payment', kwargs={'token': self.token})}"
+        return f"{host}/{reverse('process_payment', kwargs={'token': self.token})}"
 
     def capture(self, amount=None):
         """Capture a pre-authorized payment.
