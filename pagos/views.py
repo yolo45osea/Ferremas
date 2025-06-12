@@ -28,10 +28,10 @@ from django.core.mail import EmailMultiAlternatives
 from principal.models import Bodeguero, CarritoCompra, Cliente, DetalleCarrito, Inventario, Notificacion, Pago, Pedido, Sucursal
 
 #para produccion
-#host = 'https://ferremas-svwd.onrender.com'
+host = 'https://ferremas-svwd.onrender.com'
 
 #para desarrollo
-host = 'http://127.0.0.1:8000'
+#host = 'http://127.0.0.1:8000'
 
 logger = logging.getLogger(__name__)
 
