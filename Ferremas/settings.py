@@ -19,7 +19,7 @@ import os
 BASE_DIR = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(BASE_DIR / "externals"))
 
-LOGIN_URL = '/'
+LOGIN_URL = '/?login=1'
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
