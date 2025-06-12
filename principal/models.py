@@ -18,6 +18,7 @@ class Payment(BasePayment):
 
 class Administrador(models.Model):
     idadmin = models.AutoField(primary_key=True)
+    usuario = models.CharField(max_length=25)
     nombre = models.CharField(max_length=25)
     apellido = models.CharField(max_length=25)
     rut = models.CharField(max_length=12, unique=True)
@@ -85,34 +86,12 @@ class Informe(models.Model):
     fecha_creacion = models.DateField()
     descripcion = models.CharField(max_length=100)
 
-class Notificacion(models.Model):
-    idnotificacion = models.AutoField(primary_key=True)
-    idcliente = models.ForeignKey(Cliente, on_delete=models.CASCADE)
-    mensaje = models.CharField(max_length=100)
-    fecha_envio = models.DateField()
-    leido = models.BooleanField()
-
-class Pedido(models.Model):
-    idpedido = models.AutoField(primary_key=True)
-    idcliente = models.ForeignKey(Cliente, on_delete=models.CASCADE)
-    idvendedor = models.IntegerField()  # Se puede reemplazar por ForeignKey si se define el modelo Vendedor
-    fecha_pedido = models.DateField()
-    estado = models.CharField(max_length=10)
-    tipo_entrega = models.CharField(max_length=9)
-    direccion_entrega = models.CharField(max_length=50, null=True, blank=True)
-    fecha_estimada = models.DateField()
 
 
-class Vendedor(models.Model):
-    idvendedor = models.AutoField(primary_key=True)
-    usuario = models.CharField(max_length=25)
-    nombre = models.CharField(max_length=25)
-    apellido = models.CharField(max_length=25)
-    rut = models.CharField(max_length=12)
-    correo = models.EmailField(max_length=50)
-    contrasena = models.CharField(max_length=25)
-    idadmin = models.ForeignKey(Administrador, on_delete=models.CASCADE)
-    zona = models.CharField(max_length=20)
+
+
+
+
 
 
 class Pago(models.Model):
@@ -127,6 +106,46 @@ class Descuento(models.Model):
     fechaInicio = models.DateTimeField()
     fechaTermino = models.DateTimeField()
     estado = models.BooleanField()
+
+
+
+
+
+
+
+class Sucursal(models.Model):
+    idSucursal = models.AutoField(primary_key=True)
+    nombre = models.CharField(max_length=25)
+    direccion = models.CharField(max_length=50, null=True, blank=True)
+
+
+
+class Vendedor(models.Model):
+    idvendedor = models.AutoField(primary_key=True)
+    usuario = models.CharField(max_length=25)
+    nombre = models.CharField(max_length=25)
+    apellido = models.CharField(max_length=25)
+    rut = models.CharField(max_length=12)
+    correo = models.EmailField(max_length=50)
+    contrasena = models.CharField(max_length=25)
+    idadmin = models.ForeignKey(Administrador, on_delete=models.CASCADE)
+    zona = models.ForeignKey(Sucursal, on_delete=models.CASCADE)
+
+
+class Pedido(models.Model):
+    idpedido = models.AutoField(primary_key=True)
+    idcliente = models.ForeignKey(Cliente, on_delete=models.CASCADE)
+    idvendedor = models.ForeignKey(Vendedor, on_delete=models.CASCADE, null=True, blank=True)
+    idPagoAPI = models.ForeignKey(Pagos, on_delete=models.CASCADE)
+    productos = models.JSONField()
+    fecha_pedido = models.DateField()
+    estado = models.CharField(max_length=10)
+    tipo_entrega = models.CharField(max_length=9)
+    direccion_entrega = models.CharField(max_length=50, null=True, blank=True)
+    fecha_estimada = models.DateField()
+    notificado = models.BooleanField()
+    notificado_cliente = models.BooleanField(default=0)
+
 
 class Venta(models.Model):
     idcarrito = models.AutoField(primary_key=True)
@@ -144,3 +163,24 @@ class DetalleVenta(models.Model):
 
     def total(self):
         return self.idproducto.precio * self.cantidad
+    
+
+class Bodeguero(models.Model):
+    idbodeguero = models.AutoField(primary_key=True)
+    usuario = models.CharField(max_length=25)
+    nombre = models.CharField(max_length=25)
+    apellido = models.CharField(max_length=25)
+    rut = models.CharField(max_length=12)
+    correo = models.EmailField(max_length=50)
+    contrasena = models.CharField(max_length=25)
+    idadmin = models.ForeignKey(Administrador, on_delete=models.CASCADE)
+    zona = models.ForeignKey(Sucursal, on_delete=models.CASCADE)
+    
+class Notificacion(models.Model):
+    idnotificacion = models.AutoField(primary_key=True)
+    idcliente = models.ForeignKey(Cliente, on_delete=models.CASCADE, null=True, blank=True)
+    idvendedor = models.ForeignKey(Vendedor, on_delete=models.CASCADE, null=True, blank=True)
+    idbodeguero = models.ForeignKey(Bodeguero, on_delete=models.CASCADE, null=True, blank=True)
+    mensaje = models.CharField(max_length=100)
+    fecha_envio = models.DateField()
+    leido = models.BooleanField()

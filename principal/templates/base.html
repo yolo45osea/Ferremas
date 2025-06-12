@@ -321,11 +321,15 @@
   </div>
 
     <!----------------------------------------------------------------------- Mensaje Informativo ------------------------------------------------------------------------>
-    <div class="w-100 text-center py-2" style="background-color: #d6d6d6;">
+    <div class="w-100 text-center py-2" style="background-color: #ffffff; height: 120px;">
         <strong style="color: #041e41; font-weight: bold;">
             Tus compras en ferremas.cl en hasta <span style="text-transform: uppercase;">3 cuotas sin interés</span>
         </strong>
     </div>
+
+    <!-------------------------------------------------------------------------------------------------------------------------------------------------------------------->
+
+    
 
 
     <!----------------------------------------------------------------- Inicio Carrusel ---------------------------------------------------------------------------------->
@@ -395,6 +399,16 @@
         </div>
         
         <!----------------------------------------------------------------------------- Fin Footer ----------------------------------------------------------------------->
+        <style>
+          .invalid {
+            border: 2px solid red;
+            color: red;
+          }
+          .valid {
+            border: 2px solid green;
+            color: black;
+          }
+        </style>
         <form method="post" action="{% url 'index' %}" id="inicio">
           {% csrf_token %}
         <div class="modal fade" id="loginModal" tabindex="-1" role="dialog">
@@ -414,18 +428,20 @@
                 </div>
                 
                   <div class="form-group">
+                    <div style="color: red;"> {{ mensaje }}</div>
                     <label>Usuario</label>
                     <input type="text" class="form-control" name="username" placeholder="Tu nombre de usuario">
                   </div>
                   <div class="form-group">
                     <label>Contraseña</label>
-                    <input type="password" class="form-control" name="password" placeholder="Tu contraseña">
+                    <input type="password" class="form-control" name="password" id="password" placeholder="Tu contraseña">
                   </div>
+                  <!--<div id="message"></div>-->
                   <input type="hidden" name="login_form" value="1">
                   <button type="submit" class="btn btn-block mt-3" style="background-color:#feb81f; color:#041e41; font-weight:bold;" name="login_form">Entrar</button>
                 
                 <div class="text-center mt-3">
-                  <a href="#" class="small text-muted">¿Olvidaste tu contraseña?</a>
+                  <a href="{% url 'password_reset' %}" class="small text-muted">¿Olvidaste tu contraseña?</a>
                 </div>
                 <div class="text-center mt-2">
                   <span class="small text-muted">¿No tienes cuenta? <a href="#" data-dismiss="modal" data-toggle="modal" data-target="#registerModal">Regístrate</a></span>
@@ -435,6 +451,17 @@
           </div>
         </div>
         </form>
+
+        <style>
+          .invalid {
+            border: 2px solid red;
+            color: red;
+          }
+          .valid {
+            border: 2px solid green;
+            color: black;
+          }
+        </style>
         
         <form method="post" action="{% url 'index' %}" id="registro">
         {% csrf_token %}
@@ -451,10 +478,16 @@
               <div class="modal-body p-4">
                 <h5 class="text-center mb-1" style="color: #041e41; font-weight: 600;">Registrarse</h5>
                 <p class="text-center text-muted mb-4" style="font-size: 14px;">Crea tu cuenta para comenzar</p>
+
+                <div style="color: red;"> {{ mensaje }}</div>
                 
-                  <div class="form-group">
+                  <!--<div class="form-group">
                     <label>Nombre</label>
-                    <input type="text" class="form-control" name="username" id="username" placeholder="Tu nombre completo">
+                    <input type="text" class="form-control" name="nombre" id="nombre" placeholder="Tu nombre completo">
+                  </div>-->
+                  <div class="form-group">
+                    <label>Nombre de usuario</label>
+                    <input type="text" class="form-control" name="username" id="username" placeholder="Nombre de usuario">
                   </div>
                   <div class="form-group">
                     <label>RUT</label>
@@ -464,10 +497,22 @@
                     <label>Correo</label>
                     <input type="email" class="form-control" name="email" id="email" placeholder="ejemplo@mail.com">
                   </div>
+                  <div id="error-message"></div>
                   <div class="form-group">
                     <label>Contraseña</label>
                     <input type="password" class="form-control" name="password1" id="password1" placeholder="Crear contraseña">
                   </div>
+                  <ul id="lista">
+                    <li>
+                      <p id="caracteres">debe tener minimo 8 caracteres</p>
+                    </li>
+                    <li>
+                      <p id="mayus">debe tener minimo una mayuscula</p>
+                    </li>
+                    <li>
+                      <p id="numero">debe tener minimo un numero</p>
+                    </li>
+                  </ul>
                   <div class="form-group">
                     <label>Repita Contraseña</label>
                     <input type="password" class="form-control" name="password2" id="password2" placeholder="Repita contraseña">
@@ -587,6 +632,99 @@
         <!-- Back to Top -->
         <a href="#" class="btn btn-primary back-to-top"><i class="fa fa-angle-double-up"></i></a>
         <!-- Scripts desde CDNs (se dejan igual) -->
+
+        <script>
+          const passwordInput = document.getElementById('password1');
+          const message = document.getElementById('message');
+          const mayus = document.getElementById('mayus');
+          const numero = document.getElementById('numero');
+          const caracteres = document.getElementById('caracteres');
+          const lista = document.getElementById('lista');
+        
+          passwordInput.addEventListener('input', () => {
+            const value = passwordInput.value;
+        
+            // Ejemplo de requisitos: mínimo 8 caracteres, al menos una letra y un número
+            const valid = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/.test(value);
+            const hasLetter = /[A-Z]/.test(value);
+            if (!hasLetter) {
+              mayus.style.color = "red";
+            } else {
+              mayus.style.color = "green";
+              
+            }
+
+            // Validación de al menos un número
+            const hasNumber = /\d/.test(value);
+            if (!hasNumber) {
+              numero.style.color = "red";
+            } else {
+              numero.style.color = "green";
+              
+            }
+
+            // Validación de longitud mínima (8 caracteres)
+            const isLongEnough = value.length >= 8;
+            if (!isLongEnough) {
+              caracteres.style.color = "red";
+            } else {
+              caracteres.style.color = "green";
+              
+            }
+
+            if (isLongEnough && hasLetter && hasNumber) {
+              lista.classList.add('d-none');
+              caracteres.classList.add('d-none');
+              numero.classList.add('d-none');
+              mayus.classList.add('d-none');
+            } else {
+              lista.classList.remove('d-none');
+              caracteres.classList.remove('d-none');
+              numero.classList.remove('d-none');
+              mayus.classList.remove('d-none');
+            }
+        
+            
+          });
+        </script>
+        
+        <script>
+          document.getElementById("registro").addEventListener("submit", function(event) {
+          const password = document.getElementById("password1").value;
+          const password2 = document.getElementById("password2").value;
+          const errorMessage = document.getElementById("error-message");
+
+          // RegExp para verificar los requisitos
+          const passwordRegex = /^(?=.*[A-Z])(?=.*\d).{8,}$/;
+
+          // Si la contraseña no cumple con los requisitos
+          if (!passwordRegex.test(password)) {
+            event.preventDefault(); // Prevenir el envío del formulario
+            console.log('poto')
+            errorMessage.textContent = "la contraseña no es valida";
+            errorMessage.style.color = "red";
+            errorMessage.style.display = "block"; // Mostrar el mensaje de error
+          } else {
+            if (password !== password2) {
+              event.preventDefault(); // Prevenir el envío del formulario
+              errorMessage.textContent = "las contraseñas no coinciden";
+              errorMessage.style.color = "red";
+              errorMessage.style.display = "block"; // Mostrar el mensaje de error
+            } else {
+              console.log('potoooooo')
+            }
+          }
+
+          /*if (password !== password2) {
+            event.preventDefault(); // Prevenir el envío del formulario
+            errorMessage.textContent = "las contraseñas no coinciden";
+            errorMessage.style.color = "red";
+            errorMessage.style.display = "block"; // Mostrar el mensaje de error
+          } else {
+            errorMessage.style.display = "none"; // Ocultar el mensaje si es válida
+          }*/
+        });
+        </script>
          
         <script>
           function toggleEnvio(type) {
@@ -629,6 +767,17 @@
           });
         </script>
         {% endif %}
+
+
+        {% if login_form.errors %}
+        <script>
+          document.addEventListener("DOMContentLoaded", function() {
+            var modal = new bootstrap.Modal(document.getElementById('loginModal'));
+            modal.show();
+          });
+        </script>
+        {% endif %}
+
         <script>
           const tasaUSD = {{tasa}}; // Por ejemplo, 1 CLP = 0.0011 USD
         

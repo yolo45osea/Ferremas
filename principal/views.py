@@ -1,5 +1,8 @@
+import base64
 from datetime import date
+import os
 from textwrap import wrap
+from django.conf import settings
 from django.utils import timezone
 from decimal import Decimal
 from django.db.models import Q
@@ -38,12 +41,23 @@ from reportlab.lib.pagesizes import A4
 from datetime import datetime
 from PIL import Image
 import pandas as pd
-from .models import Descuento, DetalleVenta, Inventario, Vendedor, Venta
+from .models import Descuento, DetalleVenta, Inventario, Notificacion, Pedido, Sucursal, Vendedor, Venta
 from django.core.mail import send_mail
+from django.core.mail import EmailMultiAlternatives
+import imagenes
 
+#para produccion
+#host = 'https://ferremas-svwd.onrender.com'
 
+#para desarrollo
+host = 'http://127.0.0.1:8000'
 
 logger = logging.getLogger(__name__)
+
+ruta_json = os.path.join(settings.BASE_DIR, 'imagenes.json')
+
+with open(ruta_json, 'r') as f:
+    imagenes = json.load(f)
 
 def git_commit(commit_message):
 
@@ -84,6 +98,8 @@ def index(request):
     login_form = AuthenticationForm()
     registro_form = RegistroForm()
     precio = 10000
+
+    mensaje = ''
     
     idioma = request.GET.get('traduccion')
     moneda = 'CLP'
@@ -152,15 +168,20 @@ def index(request):
                     login(request, user)
                     return redirect('index')
                 else:
-                    messages.error(request, "Usuario o contraseña inválidos.")
+                    mensaje = "Usuario o contraseña inválidos."
             else:
                 print('tonto')
-                messages.error(request, "Usuario o contraseña inválidos.")
+                mensaje = "Usuario o contraseña inválidos."
 
 
         # FORMULARIO REGISTRO
         elif 'registro_form' in request.POST:
-            registro_form = RegistroForm(request.POST)
+            post_data = request.POST.copy()  # copiar para poder modificar
+            username = post_data.get('username', '')
+            username = username.replace(" ", "_")  # reemplaza espacios por guiones bajos
+            post_data['username'] = username
+
+            registro_form = RegistroForm(post_data)  # usa los datos modificados
             if registro_form.is_valid():
                 user = registro_form.save()
                 Cliente.objects.create(
@@ -175,10 +196,11 @@ def index(request):
                     fecha_registro = date.today()
                 )
                 login(request, user)
-                git_commit("registro usuario")
+                #git_commit("registro usuario")
                 return redirect('index')
             else:
-                messages.error(request, "Error al registrar el usuario.")
+                logger.error(f"Error al registrar usuario. Errores del formulario: {registro_form.errors.as_json()}")
+                mensaje = messages.error(request, "Error al registrar el usuario.")
 
         moneda = request.POST.get("moneda", "USD").upper()
         moneda_local = 'CLP'
@@ -233,6 +255,7 @@ def index(request):
         'producto2':producto2,
         'producto3':producto3,
         'producto4':producto4,
+        'mensaje':mensaje
     })
 
 
@@ -305,7 +328,7 @@ def productos(request, categoria):
                     fecha_registro=date.today()
                 )
                 login(request, user)
-                git_commit("registro usuario")
+                #git_commit("registro usuario")
                 return redirect('index')
             else:
                 messages.error(request, "Error al registrar el usuario.")
@@ -544,6 +567,7 @@ def pago(request, total):
     carrito = DetalleCarrito.objects.all()
     #total = 0
     cliente = Cliente.objects.filter(usuario = request.user.username).first()
+    sucursales = Sucursal.objects.all()
 
     if not carrito.exists():
         return redirect('index')
@@ -637,7 +661,8 @@ def pago(request, total):
     return render(request, 'pago.html', {
         'carrito': carrito, 
         'total':int(total),
-        'cliente':cliente
+        'cliente':cliente,
+        'sucursales':sucursales
         })
 
 
@@ -850,8 +875,116 @@ def vendedor(request):
     return render(request, 'vendedor.html')
 
 @login_required
-def gestionPedidos(request):
-    return render(request, 'gestionPedidos.html')
+def gestionPedidos(request, leido, notificacion):
+    if notificacion != 0:
+        noti = Notificacion.objects.filter(idnotificacion = notificacion).first()
+        if leido == 1:
+            noti.leido = 1
+            noti.save()
+    vendedor = Vendedor.objects.filter(usuario=request.user.username).first()
+    pedidos = Pedido.objects.filter(idvendedor = vendedor.idvendedor)
+    print(pedidos)
+
+    if request.method == 'POST':
+        print('post realizado')
+        idpedido = request.POST.get('idpedido')
+        pedido = Pedido.objects.filter(idpedido=idpedido).first()
+        if request.POST.get('submit') == "entregar":
+            pedido.estado = 'entregado'
+            pedido.save()
+
+            subject = f'Retiro confirmado'
+            from_email = 'ferremas69@gmail.com'
+            if pedido.idcliente_id == 1:
+                to = [f'{pedido.idPagoAPI.billing_email}']
+            else:
+                to = [f'{pedido.idcliente.correo}']
+
+            if pedido.idcliente_id == 1:
+                text_content = f'Hola {pedido.idPagoAPI.billing_first_name}, el pedido nro {pedido.idpedido} fue entregado, gracias por confiar en nosotros.'
+            else:
+                text_content = f'Hola {pedido.idcliente.nombre}, el pedido nro {pedido.idpedido} fue entregado, gracias por confiar en nosotros.'
+
+
+            ruta_imagen = 'static/img/logo1.png'
+
+            # Abrir imagen en modo binario y codificar
+            with open(ruta_imagen, 'rb') as imagen_file:
+                imagen_base64 = base64.b64encode(imagen_file.read()).decode('utf-8')
+            
+
+            # Accede al valor de la imagen
+            logo_url = imagenes['logo']['imagen']
+            html_content = f'''
+            <img src="{host}/static/img/logo1.png" style="justify-content: center;">
+            <p>Hola, tu pedido está listo.</p>
+            <p>{text_content}</p>
+            '''
+
+            msg = EmailMultiAlternatives(subject, text_content, from_email, to)
+            msg.attach_alternative(html_content, "text/html")
+            msg.send()
+
+            return redirect('gestionPedidos', leido=0, notificacion=0)
+        
+        elif request.POST.get('submit') == "notificar":
+            print('validacion notificacion')
+            asunto = f'Retiro'
+            if pedido.idcliente_id == 1:
+                mensaje = f'Hola {pedido.idPagoAPI.billing_first_name}, el pedido nro {pedido.idpedido} está listo para ser retirado.'
+            else:
+                mensaje = f'Hola {pedido.idcliente.nombre}, el pedido nro {pedido.idpedido} está listo para ser retirado.'
+            remitente = 'ferremas69@gmail.com'
+            if pedido.idcliente_id == 1:
+                destinatarios = [f'{pedido.idPagoAPI.billing_email}']
+            else:
+                destinatarios = [f'{pedido.idcliente.correo}']
+
+            notificacion = Notificacion.objects.create(
+                mensaje=mensaje,
+                fecha_envio = date.today(),
+                leido= 0,
+                idcliente = pedido.idcliente
+            )
+
+            subject = f'Retiro'
+            from_email = 'ferremas69@gmail.com'
+            if pedido.idcliente_id == 1:
+                to = [f'{pedido.idPagoAPI.billing_email}']
+            else:
+                to = [f'{pedido.idcliente.correo}']
+
+            if pedido.idcliente_id == 1:
+                text_content = f'Hola {pedido.idPagoAPI.billing_first_name}, el pedido nro {pedido.idpedido} está listo para ser retirado.'
+            else:
+                text_content = f'Hola {pedido.idcliente.nombre}, el pedido nro {pedido.idpedido} está listo para ser retirado.'
+
+
+            ruta_imagen = 'static/img/logo1.png'
+
+            # Abrir imagen en modo binario y codificar
+            with open(ruta_imagen, 'rb') as imagen_file:
+                imagen_base64 = base64.b64encode(imagen_file.read()).decode('utf-8')
+            
+
+            # Accede al valor de la imagen
+            logo_url = imagenes['logo']['imagen']
+            html_content = f'''
+            <img src="{host}/static/img/logo1.png" style="justify-content: center;">
+            <p>Hola, tu pedido está listo.</p>
+            <p>{text_content}</p>
+            '''
+
+            msg = EmailMultiAlternatives(subject, text_content, from_email, to)
+            msg.attach_alternative(html_content, "text/html")
+            msg.send()
+
+            pedido.notificado_cliente = 1
+            pedido.save()
+
+            return redirect('gestionPedidos', leido=0, notificacion=0)
+
+    return render(request, 'gestionPedidos.html', {'pedidos':pedidos})
 
 @login_required
 def gestionPagos(request):
@@ -967,8 +1100,30 @@ def bodeguero(request):
     return render(request, 'bodeguero.html')
 
 @login_required
-def entregaPedidos(request):
-    return render(request, 'entregaPedidos.html')
+def entregaPedidos(request, leido, notificacion):
+    abrir_modal = ''
+    pedido_seleccionado = None
+
+    pedidos = Pedido.objects.filter(tipo_entrega='presencial')
+
+    if request.method == 'POST':
+        idproducto = request.POST.get('idproducto')
+        if idproducto:
+            try:
+                pedido_seleccionado = Pedido.objects.get(idpedido=idproducto)
+                abrir_modal = True
+            except Pedido.DoesNotExist:
+                pedido_seleccionado = None
+                abrir_modal = False
+
+    context = {
+        'pedidos': pedidos,
+        'abrir_modal': abrir_modal,
+        'pedido_seleccionado': pedido_seleccionado,
+    }
+    return render(request, 'entregaPedidos.html', context)
+
+
 
 @login_required
 def preparacionDespacho(request):
@@ -1399,3 +1554,52 @@ def buscar(request):
 
 def datosTransferencias(request):
     return render(request, 'datosTransferencias.html')
+
+def prepararRetiro(request, Id):
+    pedido = Pedido.objects.filter(idpedido=Id).first()
+    sucursal = Sucursal.objects.filter(nombre=pedido.idPagoAPI.billing_address_2).first()
+    vendedores = Vendedor.objects.filter(zona = sucursal)
+   
+    if request.method == 'POST':
+        idvendedor = request.POST.get('vendedor')
+        print(idvendedor)
+        vendedor = Vendedor.objects.filter(idvendedor=idvendedor).first()
+        pedido.idvendedor = vendedor
+        pedido.estado = 'preparado'
+        pedido.save()
+        return redirect('entregaPedidos', leido = 0, notificacion = 0)
+
+    return render(request, 'prepararRetiro.html', {'pedido':pedido, 'vendedores':vendedores})
+
+def enviarNotificacion(request, Id):
+    pedido = Pedido.objects.filter(idpedido=Id).first()
+    asunto = f'Pedido nro {Id}'
+    mensaje = f'Hola {pedido.idvendedor.nombre}, el pedido nro {Id} está listo para ser retirado.'
+    remitente = 'ferremas69@gmail.com'
+    destinatarios = [f'{pedido.idvendedor.correo}']
+
+    notificacion = Notificacion.objects.create(
+        mensaje=mensaje,
+        fecha_envio = date.today(),
+        leido= 0,
+        idvendedor = pedido.idvendedor
+    )
+
+    subject = f'Pedido nro {Id}'
+    from_email = 'ferremas69@gmail.com'
+    to = [f'{pedido.idvendedor.correo}']
+
+    text_content = f'Hola {pedido.idvendedor.nombre}, el pedido nro {notificacion.idnotificacion} está listo para ser retirado. {host}/gestionPedidos/1/{Id}'
+    html_content = f'''
+    <p>Hola, el pedido nro {Id} está listo.</p>
+    <p>El pedido ya se puede entregar: <a href="{host}/gestionPedidos/1/{notificacion.idnotificacion}">Notificar al cliente</a></p>
+    '''
+
+    msg = EmailMultiAlternatives(subject, text_content, from_email, to)
+    msg.attach_alternative(html_content, "text/html")
+    msg.send()
+
+    #send_mail(asunto, mensaje, remitente, destinatarios)
+    pedido.notificado = 1
+    pedido.save()
+    return redirect('entregaPedidos', leido = 0, notificacion = 0)

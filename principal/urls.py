@@ -1,6 +1,7 @@
 from django.urls import path
 from . import views
 from pagos import views as view
+from django.contrib.auth import views as auth_views
 
 urlpatterns = [
     #path('crear_pago', view.crear_pago, name='crear_pago'),
@@ -22,14 +23,16 @@ urlpatterns = [
     path('gestionCatalogo', views.gestionCatalogo, name='gestionCatalogo'),
     path('gestionDescuento', views.gestionDescuento, name='gestionDescuento'),
     path('gestionInventario', views.gestionInventario, name='gestionInventario'),
-    path('gestionPedidos', views.gestionPedidos, name='gestionPedidos'),
+    path('gestionPedidos/<int:leido>/<int:notificacion>', views.gestionPedidos, name='gestionPedidos'),
     path('gestionPagos', views.gestionPagos, name='gestionPagos'),
     path('transferencias', views.transferencias, name='transferencias'),
     path('reportesFinancieros', views.reportesFinancieros, name='reportesFinancieros'),
     path('gestionReportesAdmin', views.gestionReportesAdmin, name='gestionReportesAdmin'),
     path('gestionVenta', views.gestionVenta, name='gestionVenta'),
-    path('entregaPedidos', views.entregaPedidos, name='entregaPedidos'),
+    path('entregaPedidos/<int:leido>/<int:notificacion>', views.entregaPedidos, name='entregaPedidos'),
+    path('prepararRetiro/<int:Id>', views.prepararRetiro, name='prepararRetiro'),
     path('preparacionDespacho', views.preparacionDespacho, name='preparacionDespacho'),
+    path('enviarNotificacion/<int:Id>', views.enviarNotificacion, name='enviarNotificacion'),
     path('verOrdenes', views.verOrdenes, name='verOrdenes'),
     path('entregasContador', views.entregasContador, name='entregasContador'),
 
@@ -47,5 +50,11 @@ urlpatterns = [
     path('comprobante/<int:pago_id>/', views.generar_comprobante_pdf, name='comprobante'),
     path('comprobante/', views.generar_comprobante, name='generar_comprobante'),
     path('subir_excel/', views.subir_excel, name='subir_excel'),
+
+
+    path('password_reset/', auth_views.PasswordResetView.as_view(), name='password_reset'),
+    path('password_reset/done/', auth_views.PasswordResetDoneView.as_view(), name='password_reset_done'),
+    path('reset/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
+    path('reset/done/', auth_views.PasswordResetCompleteView.as_view(), name='password_reset_complete'),
     
 ]

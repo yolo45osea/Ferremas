@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     "pagos",
     'django_payments_chile',
     'django.contrib.humanize',
+    #'principal.apps.PrincipalConfig',
 
 ]
 
@@ -100,9 +101,9 @@ DATABASES = {
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
+    #{
+    #    'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+    #},
     {
         'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
     },

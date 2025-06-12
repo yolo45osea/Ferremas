@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Entrega de Pedidos Presenciales - FERREMAS</title>
+  {% load static %}
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
   <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet" />
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet" />
@@ -64,44 +65,105 @@
           <tr>
             <th>Fecha</th>
             <th>Cliente</th>
-            <th>Producto</th>
-            <th>Código</th>
-            <th>Cantidad</th>
+            <th>Producto(s)</th>
             <th>Vendedor</th>
             <th>Estado</th>
             <th>Acciones</th>
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td>2025-05-14</td>
-            <td>Camila Díaz</td>
-            <td>Cemento 25kg</td>
-            <td>CM-25</td>
-            <td>2</td>
-            <td>Juan Pérez</td>
-            <td><span class="badge badge-warning">Listo para entrega</span></td>
-            <td>
-              <button class="btn btn-sm btn-success">Entregado</button>
-            </td>
-          </tr>
-          <tr>
-            <td>2025-05-13</td>
-            <td>Pedro Torres</td>
-            <td>Pintura Blanca 4L</td>
-            <td>PB-04</td>
-            <td>1</td>
-            <td>Ana López</td>
-            <td><span class="badge badge-warning">Listo para entrega</span></td>
-            <td>
-              <button class="btn btn-sm btn-success">Entregado</button>
-            </td>
-          </tr>
+          {% for pedido in pedidos %}
+            <tr>
+              <td>{{ pedido.fecha_pedido }}</td>
+              {% if pedido.idcliente_id == 1 %}
+                <td>{{ pedido.idPagoAPI.billing_first_name }} {{ pedido.idPagoAPI.billing_last_name }}</td>
+              {% else %}
+                <td>{{ pedido.idcliente_id.nombre }}</td>
+              {% endif %}
+              <td>
+                <ul>
+                  {% for producto in pedido.productos %}
+                    <li>{{ producto.nombre }}, {{ producto.cantidad }} unidades</li>
+                  {% endfor %}
+                </ul>
+              </td>
+              {% if pedido.estado != "pendiente" %}
+                <td>{{ pedido.idvendedor.nombre }} {{ pedido.idvendedor.apellido }}</td>
+              {% else %}
+                <td>Falta preparación</td>
+              {% endif %}
+              <td>{{ pedido.estado }}</td>
+              {% if pedido.estado == 'pendiente' %}
+                <td>
+                  <a href="{% url 'prepararRetiro' pedido.idpedido %}"><button type="submit" class="btn btn-sm btn-warning" >Preparar</button></a>
+                </td>
+              {% else %}
+                {% if not pedido.notificado %}
+                  <td>
+                    <a href="{% url 'enviarNotificacion' pedido.idpedido %}"><button type="submit" class="btn btn-sm btn-success" >Notificar</button></a>
+                  </td>
+                {% else %}
+                  <td>
+                    <button type="submit" class="btn btn-sm btn-success" disabled>Notificado</button>
+                  </td>
+                {% endif %}
+              {% endif %}
+            </tr>
+          {% endfor %}
           <!-- Más registros -->
         </tbody>
       </table>
     </div>
   </div>
+
+
+  <form method="post" action="{% url 'entregaPedidos' 0 0 %}" id="inicio">
+          {% csrf_token %}
+        <div class="modal fade" id="loginModal" tabindex="-1" role="dialog">
+          <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content p-0" style="border-radius: 16px; border: none;">
+              
+              <!-- Fondo superior con color -->
+              <div style="background-color: #041e41; border-top-left-radius: 16px; border-top-right-radius: 16px; padding: 20px;" class="text-center">
+                <img src="{% static 'img/logo3.png' %}" alt="Logo" style="height: 60px;">
+              </div>
+        
+              <!-- Contenido principal del modal -->
+              <div class="p-4">
+                <div class="text-center">
+                  <h5 class="mb-2" style="color: #041e41; font-weight: bold;">Preparar Pedido</h5>
+                  <p class="text-muted small">Ingresa a tu cuenta</p>
+                </div>
+                
+                  <ul id="productos-modal" class="list-group">
+  {% for producto in pedido_seleccionado.productos %}
+    <li class="list-group-item">{{ producto.nombre }}, {{ producto.cantidad }} unidades</li>
+  {% endfor %}
+</ul>
+                  
+                  
+                  <input type="hidden" name="login_form" value="1">
+                  <button type="submit" class="btn btn-block mt-3" style="background-color:#feb81f; color:#041e41; font-weight:bold;" name="login_form">Entrar</button>
+                
+                <div class="text-center mt-3">
+                  <a href="{% url 'password_reset' %}" class="small text-muted">¿Olvidaste tu contraseña?</a>
+                </div>
+                <div class="text-center mt-2">
+                  <span class="small text-muted">¿No tienes cuenta? <a href="#" data-dismiss="modal" data-toggle="modal" data-target="#registerModal">Regístrate</a></span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        </form>
+
+  {% if abrir_modal %}
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      $('#loginModal').modal('show');
+    });
+  </script>
+{% endif %}
 
   <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>

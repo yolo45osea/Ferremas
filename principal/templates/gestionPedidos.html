@@ -99,29 +99,41 @@
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td>#10245</td>
-              <td>Juan Pérez</td>
-              <td>2025-05-12</td>
-              <td>$95.000</td>
-              <td><span class="badge badge-warning text-dark">Pendiente</span></td>
-              <td>Sin fecha</td>
-              <td>
-                <button class="btn btn-sm btn-success mb-1">Marcar Entregado</button>
-                <button class="btn btn-sm btn-primary">Programar</button>
-              </td>
-            </tr>
-            <tr>
-              <td>#10232</td>
-              <td>Ana Martínez</td>
-              <td>2025-05-10</td>
-              <td>$125.000</td>
-              <td><span class="badge badge-success">Entregado</span></td>
-              <td>2025-05-11</td>
-              <td>
-                <button class="btn btn-sm btn-secondary" disabled>Completado</button>
-              </td>
-            </tr>
+            {% for pedido in pedidos %}
+              <form method="post">
+                {% csrf_token %}
+                <tr>
+                  <td>{{ pedido.idpedido }}</td>
+                  <input type="hidden" name="idpedido" id="idpedido" value="{{ pedido.idpedido }}">
+                  {% if pedido.idcliente_id != 1 %}
+                    <td>{{ pedido.idcliente.nombre }} {{ pedido.idcliente.apellido }}</td>
+                  {% else %}
+                    <td>{{ pedido.idPagoAPI.billing_first_name }} {{ pedido.idPagoAPI.billing_last_name }}</td>
+                  {% endif %}
+                  <td>{{ pedido.fecha_pedido }}</td>
+                  <td>{{ pedido.idPagoAPI.total }}</td>
+                  {% if pedido.estado == 'preparado' %}
+                    <td><span class="badge badge-warning text-dark">Pendiente</span></td>
+                  {% else %}
+                    <td><span class="badge badge-success">Entregado</span></td>
+                  {% endif %}
+                  <td>Sin fecha</td>
+                  <td>
+                    {% if pedido.estado == "entregado" %}
+                      <button type="submit" class="btn btn-sm btn-success mb-1" name="submit" id="entregar" value="entregar" disabled>Entregado</button>
+                    {% else %}
+                      <button type="submit" class="btn btn-sm btn-success mb-1" name="submit" id="entregar" value="entregar">Marcar Entregado</button>
+                    {% endif %}
+                    {% if pedido.notificado_cliente %}
+                      <button type="submit" class="btn btn-sm btn-primary" name="submit" id="notificar" value="notificar" disabled>Notificado</button>
+                    {% else %}
+                      <button type="submit" class="btn btn-sm btn-primary" name="submit" id="notificar" value="notificar">Notificar</button>
+                    {% endif %}
+                  </td>
+                </tr>
+              </form>
+            {% endfor %}
+            
             <!-- Más pedidos -->
           </tbody>
         </table>

@@ -110,7 +110,7 @@
               <td>{{ pago.idPagoAPI.extra_data.commit_response.payment_type_code_str }}</td>
               {% if pago.idPagoAPI.status == 'Aprobado' %}
                 <td><span class="badge badge-success">{{ pago.idPagoAPI.status }}</span></td>
-              {% elif pago.idPagoAPI.status == 'rechazado' %}
+              {% elif pago.idPagoAPI.status == 'Rechazado' %}
                 <td><span class="badge badge-danger">{{ pago.idPagoAPI.status }}</span></td>
               {% endif %}
               <td>

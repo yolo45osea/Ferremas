@@ -111,7 +111,7 @@
     <div class="container-fluid ferremas-header py-2">
         <div class="d-flex justify-content-between align-items-center">
           <!-- Logo alineado a la izquierda -->
-          <a href="index.html" class="ml-3">
+          <a href="{% url 'index' %}" class="ml-3">
             <img src="{% static 'img/logo3.png' %}" alt="Logo" style="height: 60px;">
           </a>
           <!-- Título centrado -->
@@ -257,8 +257,9 @@
     <div id="envio-retiro" class="d-none">
       <p>Seleccione tienda con stock:</p>
       <select name="sucursal" class="form-control mb-2">
-        <option value="Santiago Centro">Sucursal Santiago Centro</option>
-        <option value="Maipú">Sucursal Maipú</option>
+        {% for sucursal in sucursales %}
+          <option value="{{ sucursal.nombre }}">Sucursal {{ sucursal.nombre }}</option>
+        {% endfor %}
       </select>
       <input type="text" name="quien_retira" class="form-control" placeholder="¿Quién retira?">
     </div>
