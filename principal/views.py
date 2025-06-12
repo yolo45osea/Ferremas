@@ -308,11 +308,13 @@ def productos(request, categoria):
         if 'login_form' in request.POST:
             login_form = AuthenticationForm(data=request.POST)
             if login_form.is_valid():
-                user = login_form.get_user()
-                login(request, user)
-                return redirect('index')
-            else:
-                messages.error(request, "Usuario o contraseña inválidos.")
+                username = login_form.cleaned_data.get('username')
+                password = login_form.cleaned_data.get('password')
+                user = authenticate(request, username=username, password=password)
+                if user is not None:
+                    login(request, user)
+                    next_url = request.POST.get('next')
+                    return redirect(next_url if next_url else 'index')
 
         # Manejo registro
         elif 'registro_form' in request.POST:
